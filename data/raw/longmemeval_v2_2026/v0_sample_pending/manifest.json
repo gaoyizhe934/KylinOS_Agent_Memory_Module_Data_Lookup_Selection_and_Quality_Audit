@@ -1,0 +1,12 @@
+{
+  "dataset_id": "longmemeval_v2_2026",
+  "formal_name": "LongMemEval-V2",
+  "official_url": "https://github.com/xiaowu0162/LongMemEval-V2",
+  "data_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-v2",
+  "version": "repo main 2026-08-07 访问；README/LICENSE 已存档",
+  "downloaded_at": null,
+  "status": "样本下载待网络可用后执行",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

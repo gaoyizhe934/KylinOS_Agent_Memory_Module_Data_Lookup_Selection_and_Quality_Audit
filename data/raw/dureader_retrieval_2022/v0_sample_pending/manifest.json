@@ -1,0 +1,12 @@
+{
+  "dataset_id": "dureader_retrieval_2022",
+  "formal_name": "DuReader Retrieval",
+  "official_url": "https://github.com/baidu/DuReader/tree/master/DuReader-Retrieval",
+  "data_url": "https://github.com/PaddlePaddle/RocketQA/tree/main/research/DuReader-Retrieval-Baseline",
+  "version": "README 已存档；数据发布 2022-03",
+  "downloaded_at": null,
+  "status": "样本下载待网络可用后执行",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

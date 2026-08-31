@@ -1,0 +1,26 @@
+# 大文件（>50MB，Git LFS 未启用）
+data/raw/longmemeval_cleaned_2025/v0_sample/longmemeval_s_cleaned.json
+data/raw/longmemeval_v2_2026/v0_sample/trajectories.jsonl
+data/raw/multiwoz_2_2_2020/v0_sample/dialogues_001.json
+data/raw/multiwoz_2_2_2020/v0_sample/multiwoz_dialogues_001.json
+data/raw/t2ranking_2023/v0_sample/qrels.retrieval.dev.tsv
+data/raw/t2ranking_2023/v0_sample/t2ranking_qrels_retrieval_dev.tsv
+data/raw/t2ranking_2023/v0_sample/queries.dev.tsv
+data/raw/t2ranking_2023/v0_sample/t2ranking_queries_dev.tsv
+
+# 浏览器下载缓存
+*.crdownload
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 系统文件
+Thumbs.db
+.DS_Store
+
+# Office 临时文件
+~$*
+
+# 备份文件
+*.bak

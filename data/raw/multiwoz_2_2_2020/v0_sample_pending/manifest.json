@@ -1,0 +1,12 @@
+{
+  "dataset_id": "multiwoz_2_2_2020",
+  "formal_name": "MultiWOZ 2.2",
+  "official_url": "https://github.com/budzianowski/multiwoz/tree/master/data/MultiWOZ_2.2",
+  "data_url": "https://github.com/budzianowski/multiwoz",
+  "version": "2.2 dev 子集；dialogues_001.json（11.7MB）已下载；仓库 LICENSE/README/schema 已存档",
+  "downloaded_at": null,
+  "status": "已下载 dev 样本 dialogues_001.json（100 条抽样审计）",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

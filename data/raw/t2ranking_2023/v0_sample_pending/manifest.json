@@ -1,0 +1,12 @@
+{
+  "dataset_id": "t2ranking_2023",
+  "formal_name": "T2Ranking",
+  "official_url": "https://github.com/THUIR/T2Ranking",
+  "data_url": "https://huggingface.co/datasets/THUIR/T2Ranking",
+  "version": "README 已存档；HF 数据集版本待下载确认",
+  "downloaded_at": null,
+  "status": "样本下载待网络可用后执行",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

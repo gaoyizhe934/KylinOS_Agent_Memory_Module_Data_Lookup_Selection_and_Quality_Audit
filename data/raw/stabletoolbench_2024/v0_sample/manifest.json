@@ -1,0 +1,19 @@
+{
+  "dataset_id": "stabletoolbench_2024",
+  "version": "v0_sample",
+  "downloaded_at": "2026-08-11",
+  "files": [
+    "stabletoolbench_queries_sample.json",
+    "stabletoolbench_query_ids_sample.json",
+    "stabletoolbench_sample_1073.json",
+    "stabletoolbench_sample_1073_dfs.json",
+    "stabletoolbench_sample_588.json"
+  ],
+  "sha256": {
+    "stabletoolbench_queries_sample.json": "f8faf3d69231275850b6a2931eaecd3517331fa8b6ea73163bd66f53403eebf3",
+    "stabletoolbench_query_ids_sample.json": "46dfd0c40990d12e60a7f9b81b6de9f583daf74daf93dfcba8ee5843488556c8",
+    "stabletoolbench_sample_1073.json": "118679388221048baa891181cecb99e89c04a4aa7272a45e1f7480222694ce4b",
+    "stabletoolbench_sample_1073_dfs.json": "883d5327278438a36b1a8e9f1533526326f905ede156af047c99e79c138e1c45",
+    "stabletoolbench_sample_588.json": "81cfe9fb39d75845f8c2eee7f6feca485e66743ed8be4713d2127882a805cb82"
+  }
+}

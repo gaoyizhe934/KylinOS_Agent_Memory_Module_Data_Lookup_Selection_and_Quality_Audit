@@ -1,0 +1,11 @@
+{
+  "dataset_id": "bpmn_2_0_2013",
+  "version": "v0_sample",
+  "downloaded_at": "2026-08-11",
+  "files": [
+    "bpmn_2_0.pdf"
+  ],
+  "sha256": {
+    "bpmn_2_0.pdf": "e62d0aecde8a62d3c90077843e5fa2fd0cdad9a9254998e8ba9accdb86f69a83"
+  }
+}

@@ -1,0 +1,14 @@
+dataset_id,source_type,url,evidence_file,checked_at,status,notes
+longmemeval_cleaned_2025,official_repo,https://github.com/xiaowu0162/LongMemEval,evidence/source/longmemeval_cleaned_2025/source_review.md,2026-08-07,已核验,cleaned 2025-09 更新；HF resolve/main；仓库 main 2026-08-07 访问
+longmemeval_v2_2026,official_repo,https://github.com/xiaowu0162/LongMemEval-V2,evidence/source/longmemeval_v2_2026/source_review.md,2026-08-07,已核验,repo main 2026-08-07 访问；README/LICENSE 已存档
+locomo_2024,official_repo,https://github.com/snap-research/locom,evidence/source/locomo_2024/source_review.md,2026-08-07,部分核验,官方仓库 snap-research/locom 已核实；README 数据入口待网络恢复后确认
+stabletoolbench_2024,official_repo,https://github.com/THUNLP-MT/StableToolBench,evidence/source/stabletoolbench_2024/source_review.md,2026-08-07,已核验,master 仓库 zip 已下载（含 data_example 官方样例）
+toolbench_2024,official_repo,https://github.com/OpenBMB/ToolBench,evidence/source/toolbench_2024/source_review.md,2026-08-07,已核验,master README 已存档
+t2ranking_2023,official_repo,https://github.com/THUIR/T2Ranking,evidence/source/t2ranking_2023/source_review.md,2026-08-07,已核验,dev 2023；queries.dev.tsv + qrels.retrieval.dev.tsv 已下载
+dureader_retrieval_2022,official_repo,https://github.com/baidu/DuReader/tree/master/DuReader-Retrieval,evidence/source/dureader_retrieval_2022/source_review.md,2026-08-07,已核验,README 已存档；数据发布 2022-03
+multiwoz_2_2_2020,official_repo,https://github.com/budzianowski/multiwoz/tree/master/data/MultiWOZ_2.2,evidence/source/multiwoz_2_2_2020/source_review.md,2026-08-07,已核验,2.2 dev 子集；dialogues_001.json（11.7MB）已下载；仓库 LICENSE/README/schema 已存档
+dailydialog_2017,official_repo,http://yanran.li/dailydialog/,evidence/source/dailydialog_2017/source_review.md,2026-08-07,已核验,官方页 200 已访问；下载包被本机安全软件拦截
+personachat_2018,official_repo,https://github.com/facebookresearch/ParlAI,evidence/source/personachat_2018/source_review.md,2026-08-07,部分核验,待核验
+msmarco_2021,official_repo,https://microsoft.github.io/msmarco/,evidence/source/msmarco_2021/source_review.md,2026-08-07,部分核验,官网访问失败（连接被重置），待人工核验
+trec_tracks_2024,official_repo,https://trec.nist.gov/,evidence/source/trec_tracks_2024/source_review.md,2026-08-07,已核验,官方门户 200 已访问
+bpmn_2_0_2013,official_repo,https://www.omg.org/spec/BPMN/,evidence/source/bpmn_2_0_2013/source_review.md,2026-08-07,已核验,BPMN 2.0 官方规范 PDF 已下载

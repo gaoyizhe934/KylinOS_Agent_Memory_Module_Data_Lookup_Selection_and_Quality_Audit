@@ -1,0 +1,37 @@
+{
+  "schema_name": "kylin_memory_gold",
+  "schema_version": "v1.0",
+  "task_types": [
+    "preference_extraction",
+    "knowledge_retrieval",
+    "conflict_resolution",
+    "precise_forgetting",
+    "tool_result",
+    "end_to_end_session",
+    "auxiliary_dialogue"
+  ],
+  "required_fields": [
+    "sample_id",
+    "dataset_version",
+    "task_type",
+    "language",
+    "user_id",
+    "conversation_id",
+    "timestamp",
+    "input",
+    "gold",
+    "evidence",
+    "source",
+    "template_family",
+    "annotator_a",
+    "annotator_b",
+    "review_status"
+  ],
+  "field_rules": {
+    "sample_id": "前缀按任务类型：pref_/retr_/conf_/forg_/tool_/e2e_",
+    "review_status": "candidate_only | approved | rejected",
+    "source": "team_authored | public_derived | runtime_replay",
+    "evidence": "数组，至少包含 source_event_id 与 span",
+    "raw_id": "可选；public_derived 样本必须保留 raw_id/source_file/source_version"
+  }
+}

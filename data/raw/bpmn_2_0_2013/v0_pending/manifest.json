@@ -1,0 +1,12 @@
+{
+  "dataset_id": "bpmn_2_0_2013",
+  "formal_name": "BPMN 2.0 (OMG 标准)",
+  "official_url": "https://www.omg.org/spec/BPMN/",
+  "data_url": "",
+  "version": "官方规范页 200 已访问",
+  "downloaded_at": null,
+  "status": "未下载",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

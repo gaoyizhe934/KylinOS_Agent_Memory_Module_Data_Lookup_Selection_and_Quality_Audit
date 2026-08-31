@@ -1,0 +1,12 @@
+{
+  "dataset_id": "trec_tracks_2024",
+  "formal_name": "TREC (NIST)",
+  "official_url": "https://trec.nist.gov/",
+  "data_url": "",
+  "version": "官方门户 200 已访问",
+  "downloaded_at": null,
+  "status": "未下载",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

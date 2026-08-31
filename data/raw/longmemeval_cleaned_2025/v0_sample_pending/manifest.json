@@ -1,0 +1,12 @@
+{
+  "dataset_id": "longmemeval_cleaned_2025",
+  "formal_name": "LongMemEval (cleaned)",
+  "official_url": "https://github.com/xiaowu0162/LongMemEval",
+  "data_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned",
+  "version": "cleaned 2025-09 更新；HF resolve/main；仓库 main 2026-08-07 访问",
+  "downloaded_at": null,
+  "status": "样本下载待网络可用后执行",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

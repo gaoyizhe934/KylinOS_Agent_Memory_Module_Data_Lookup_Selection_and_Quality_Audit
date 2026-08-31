@@ -1,0 +1,12 @@
+{
+  "dataset_id": "msmarco_2021",
+  "formal_name": "MS MARCO",
+  "official_url": "https://microsoft.github.io/msmarco/",
+  "data_url": "",
+  "version": "官网访问失败（连接被重置），待人工核验",
+  "downloaded_at": null,
+  "status": "网络受限，未下载",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}

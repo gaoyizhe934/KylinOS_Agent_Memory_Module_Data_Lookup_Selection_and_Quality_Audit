@@ -1,0 +1,18 @@
+{
+  "package": "kylin_memory_gold_v1.0_candidate_draft",
+  "created": "2026-08-07",
+  "status": "待人工在麒麟虚拟机执行",
+  "datasets": [
+    "preference",
+    "retrieval",
+    "conflict",
+    "forgetting",
+    "tool_result",
+    "end_to_end"
+  ],
+  "commands": [
+    "rsync -av --delete ./data/gold/ user@kylin:/home/kylin/eval/gold/",
+    "bash scripts/evaluate/run_runtime_replay.sh",
+    "python scripts/evaluate/collect_metrics.py --out evidence/runtime/raw_metrics.json"
+  ]
+}

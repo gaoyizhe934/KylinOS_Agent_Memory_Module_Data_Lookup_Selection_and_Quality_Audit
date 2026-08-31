@@ -1,0 +1,12 @@
+{
+  "dataset_id": "toolbench_2024",
+  "formal_name": "ToolBench",
+  "official_url": "https://github.com/OpenBMB/ToolBench",
+  "data_url": "",
+  "version": "待核验",
+  "downloaded_at": null,
+  "status": "网络受限，未下载",
+  "files": [],
+  "sha256": {},
+  "notes": "样本下载脚本见 scripts/download/download_samples.py；下载后运行 sha256 校验并回填本清单。"
+}
