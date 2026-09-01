@@ -3,10 +3,14 @@
 
 依据手册 3.4 候选搜索停止条件与 v2.0 重建计划阶段 2 要求：
 1. 六类任务每类至少 2 个正式候选（方法论/结构参考不计入候选数）；
-2. Gate 2 登记完整性：每个候选有正式名称、版本线索、官方来源和任务说明。
+2. Gate 2 登记完整性：每个数据集有正式名称、版本线索、官方来源、
+   任务说明，以及数据入口（data_url）。
 
 只读本地 registry/dataset_registry.csv，不访问网络，可随时复跑。
-退出码: 覆盖达标为 0，否则为 1。
+与 URL 可访问性检查的分工：本脚本只验证登记完整性（data_url 已填写）；
+可访问性由 stage2_check_urls.py 以网络请求验证并按失败条件退出。
+
+退出码: 覆盖达标且无 ❌缺失 字段为 0，否则为 1。
 """
 import argparse
 import csv
@@ -107,11 +111,12 @@ def main():
     print()
 
     # Gate 2 登记完整性
-    print('## 二、Gate 2 登记完整性（正式名称/版本线索/官方来源/任务说明）')
+    print('## 二、Gate 2 登记完整性（正式名称/版本线索/官方来源/任务说明/数据入口）')
     print()
-    print('| 数据集 | 正式名称 | 版本线索 | 官方来源 | 任务说明 | 定位 |')
-    print('| --- | --- | --- | --- | --- | --- |')
+    print('| 数据集 | 正式名称 | 版本线索 | 官方来源 | 任务说明 | 数据入口 | 定位 |')
+    print('| --- | --- | --- | --- | --- | --- | --- |')
     pending_items = []
+    missing_items = []
     for row in rows:
         did = row['dataset_id']
         statuses = {
@@ -119,21 +124,30 @@ def main():
             'version': field_status(row.get('version')),
             'official_url': field_status(row.get('official_url')),
             'task': field_status(row.get('task')),
+            'data_url': field_status(row.get('data_url')),
         }
         for field, st in statuses.items():
-            if st != '✅':
+            if st == '❌缺失':
+                missing_items.append(f'{did}.{field}')
+            elif st != '✅':
                 pending_items.append(f'{did}.{field}={st}')
         print(f'| {did} | {statuses["formal_name"]} | {statuses["version"]} | '
-              f'{statuses["official_url"]} | {statuses["task"]} | {row.get("conclusion", "")} |')
+              f'{statuses["official_url"]} | {statuses["task"]} | {statuses["data_url"]} | '
+              f'{row.get("conclusion", "")} |')
 
     print()
+    if missing_items:
+        print(f'❌缺失字段（阻塞项，须补齐后重跑本命令）: {"; ".join(missing_items)}')
     if pending_items:
         print(f'待人工核验项（不阻塞覆盖结论，Gate 2 批准前需 Reviewer 确认）: {"; ".join(pending_items)}')
-    else:
+    if not missing_items and not pending_items:
         print('登记完整性: 全部字段齐备')
+    integrity_pass = not missing_items
     print()
-    print(f'总体结论: 覆盖{"达标" if all_pass else "不达标"}；Gate 2 最终状态待 Reviewer 批准。')
-    sys.exit(0 if all_pass else 1)
+    print(f'总体结论: 覆盖{"达标" if all_pass else "不达标"}；登记完整性{"通过" if integrity_pass else "不通过"}；'
+          f'Gate 2 最终状态待 Reviewer 批准。')
+    print('数据入口可访问性验证: python scripts/oneclick/stage2_check_urls.py（按失败条件退出）')
+    sys.exit(0 if (all_pass and integrity_pass) else 1)
 
 
 if __name__ == '__main__':

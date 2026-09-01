@@ -79,6 +79,9 @@ python scripts/evaluate/evaluate_metrics.py --gold "data/processed/*.jsonl" --hy
 
 # 候选覆盖检查
 python scripts/oneclick/stage2_coverage_check.py
+
+# URL 可访问性检查（严格模式：有 EMPTY/ERROR/TIMEOUT 即退出码 1；可选 --proxy）
+python scripts/oneclick/stage2_check_urls.py
 ```
 
 ## Git 工作约定
