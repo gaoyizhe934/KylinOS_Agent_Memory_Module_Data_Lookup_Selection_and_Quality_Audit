@@ -1,0 +1,36 @@
+name: Baseline Validation
+
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline-validation:
+    name: baseline-validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 检查 Python 脚本语法
+        run: python -m compileall -q scripts
+
+      - name: 校验处理后数据 Schema
+        run: python scripts/validate/validate_schema.py
+
+      - name: 校验转换幂等性
+        run: python scripts/convert/test_convert.py
+
+      - name: 检查数据切分泄漏
+        run: python scripts/split/leakage_check.py
