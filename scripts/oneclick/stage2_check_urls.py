@@ -46,29 +46,43 @@ def main():
     print('========== 现有数据集 URL 可访问性检查 ==========')
     print(f'登记表: {os.path.relpath(args.registry, REPO_ROOT)}')
     print(f'数据集总数: {len(rows)}')
+    print('验收范围: 全部数据集的 official_url（来源核验必备）; data_url 仅验收正式候选,')
+    print('          conclusion 标记「方法论参考」的数据集不要求数据可获取（Reviewer PR#1 裁决语义）')
     print()
     print('| 数据集 | 官方URL | 状态 | 下载URL | 状态 |')
     print('| --- | --- | --- | --- | --- |')
     counts = {'OK': 0, 'EMPTY': 0, 'ERROR': 0, 'TIMEOUT': 0}
     failures = []
+    skipped_data = []
     for row in rows:
         did = row['dataset_id']
         official = (row.get('official_url') or '').strip()
         data_url = (row.get('data_url') or '').strip()
+        conclusion = (row.get('conclusion') or '').strip()
         s1 = check_url(official, timeout=args.timeout, insecure=args.insecure)
-        s2 = check_url(data_url, timeout=args.timeout, insecure=args.insecure)
         counts[s1[0]] += 1
-        counts[s2[0]] += 1
+        if conclusion.startswith('方法论参考'):
+            # Reviewer 裁决（PR#1 审批第四节第4条）: 方法论参考不进首版封存,
+            # 不求数据可获取; data_url 仅作登记留痕, 标记 SKIPPED 不计入验收
+            s2 = ('SKIPPED', '方法论参考, 数据入口不验收')
+            skipped_data.append(did)
+        else:
+            s2 = check_url(data_url, timeout=args.timeout, insecure=args.insecure)
+            counts[s2[0]] += 1
         print(f'| {did} | {official[:50]} | {s1[0]}:{s1[1]} | {data_url[:50]} | {s2[0]}:{s2[1]} |')
         for field, status in ((f'{did} official_url', s1), (f'{did} data_url', s2)):
-            if status[0] != 'OK':
+            if status[0] not in ('OK', 'SKIPPED'):
                 failures.append((field, status))
 
     total = len(rows)
     print()
     print(f'统计（{total} 个数据集 x 官方/下载两列，共 {total * 2} 项）: '
-          f"OK={counts['OK']}  EMPTY={counts['EMPTY']}  ERROR={counts['ERROR']}  TIMEOUT={counts['TIMEOUT']}")
-    print('说明: OK=可访问, EMPTY=登记表未填写该 URL, ERROR=不可访问, TIMEOUT=超时')
+          f"OK={counts['OK']}  EMPTY={counts['EMPTY']}  ERROR={counts['ERROR']}  TIMEOUT={counts['TIMEOUT']}"
+          f"  SKIPPED={len(skipped_data)}")
+    print('说明: OK=可访问, EMPTY=登记表未填写该 URL, ERROR=不可访问, TIMEOUT=超时, '
+          'SKIPPED=方法论参考候选的 data_url 不验收')
+    if skipped_data:
+        print(f'不验收 data_url 的方法论参考候选: {", ".join(skipped_data)}')
 
     if failures:
         print()
