@@ -51,3 +51,18 @@
 ## 阻塞
 
 - 无（推送权限已开通，本分支可直接推送）。
+
+# 数据工作日志 2026-09-01（补记：B 复核 + 证据移交）
+
+## 事项：阶段1~2 产出复核 + License 证据移交
+
+- 完成 `reports/b_review_stage1_2.md`：阶段1通过（2 建议），阶段2发现 1 不合格项（F1: machine_unlearning_bench 证据目录不存在、零证据文件，违反"下载前 License 证据先行"红线）+ 2 待确认项
+- 整理 `evidence/source_workpack_handover/`：v1.0 时期 AI 辅助核验产出（7 数据集 30 文件）移交 A 用于阶段3
+- 覆盖统计独立复算：认可修订后口径（知识检索 4 正式候选，msmarco/trec 为方法论参考）
+- 登记表 12 行字段完整性 + evidence_dir 真实性验证：11/12 通过，machine_unlearning_bench_2025 失败
+- Gate 状态不变：0~2 仍待 Reviewer 批准；F1 修复建议在 Gate 2 批准前完成
+
+## 产出物
+
+- reports/b_review_stage1_2.md
+- evidence/source_workpack_handover/（30 文件 + 移交说明）
