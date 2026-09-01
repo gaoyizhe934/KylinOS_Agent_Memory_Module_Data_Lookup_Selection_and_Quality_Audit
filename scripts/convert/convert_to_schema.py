@@ -25,7 +25,8 @@ def main():
                 row["source_version"] = "v0_candidate_draft"
                 rows.append(row)
         out_name = name.replace("gold_candidates_", "").replace(".jsonl", ".jsonl")
-        with open(os.path.join(processed, out_name), "w", encoding="utf-8") as fh:
+        # 显式 LF：仓库 blob 为 LF，Windows 文本模式默认写 CRLF 会破坏字节级幂等
+        with open(os.path.join(processed, out_name), "w", encoding="utf-8", newline="\n") as fh:
             for row in rows:
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
         total += len(rows)
