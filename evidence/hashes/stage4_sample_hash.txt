@@ -1,0 +1,39 @@
+# 阶段4 抽样哈希（SHA256, 由 stage4_sample_audit.py 生成）
+
+## bpmn_2_0_2013
+（无数据文件）
+
+## dureader_retrieval_2022
+（无数据文件）
+
+## longmemeval_cleaned_2025
+5a6a52e1a98f85eb70dcbd6c353ee116fe5f1c1c43dd7c63afa783b9a2f41a3e  v0_sample\longmemeval_oracle.json
+
+## longmemeval_v2_2026
+2fb7335e6eafc4b53bce3e07c69cb3adcdde4893a2f65711fcd903717a9eb5a5  v0_sample\questions.jsonl
+
+## msmarco_2021
+（无数据文件）
+
+## multiwoz_2_2_2020
+（无数据文件）
+
+## personachat_2018
+（无数据文件）
+
+## stabletoolbench_2024
+8822ce503d6b295c656087ea5fd810ff604a7499905202179ca3c874d014a30c  v0_sample\G1_instruction.json
+8822ce503d6b295c656087ea5fd810ff604a7499905202179ca3c874d014a30c  v0_sample\stabletoolbench_queries_sample.json
+11aa7757f7311dabe32f0cb2b6ab67b0ad556a56440ca3958b8b320fb2ed18a8  v0_sample\stabletoolbench_query_ids_sample.json
+69c89b9b07c2888ceb2c14da9a3974cfe3d502e4301fa34f44a7ababc2a72d58  v0_sample\stabletoolbench_sample_1073.json
+210cf0777831d809a1ce2fcf523c58826f3cce268c648dc8c6d1ed8e3dc2e10b  v0_sample\stabletoolbench_sample_1073_dfs.json
+054067087387da566bfe11211ffad515282a86c1e7d0dbf11f69e15dda74e3e0  v0_sample\stabletoolbench_sample_588.json
+
+## t2ranking_2023
+（无数据文件）
+
+## toolbench_2024
+（无数据文件）
+
+## trec_tracks_2024
+（无数据文件）
