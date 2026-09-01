@@ -21,7 +21,7 @@
 
 - [x] 阶段 0：工作区初始化 — 目录验证 + 分工表更新
 - [x] 阶段 1：需求—数据映射 — v2.0 六项指标映射完成
-- [x] 阶段 2：候选查找与登记 — 12 个数据集登记，六类任务候选覆盖检查通过（每类 ≥2 正式候选，方法论/结构参考不计入；复查命令 `python scripts/oneclick/stage2_coverage_check.py`）。URL 体检 2026-09-01 复查：官方 URL 12/12 可访问，数据 URL 7/12 已登记且可访问、5/12 未登记（详见 reports/stage2_coverage_report.md 修订说明）
+- [x] 阶段 2：候选查找与登记 — 12 个数据集登记，六类任务候选覆盖检查通过（每类 ≥2 正式候选，方法论/结构参考不计入；复查命令 `python scripts/oneclick/stage2_coverage_check.py`，退出码 0，登记完整性五项字段全部齐备）。URL 体检 2026-09-01 第二轮复测：官方 URL 12/12 可访问，数据 URL 11/12 已登记且可访问，toolbench_2024 官方 Drive 数据入口失效（404，核验记录见 evidence/audit/stage2_url_check_output_20260901.md，待 Reviewer 裁决处置）；`stage2_check_urls.py` 严格模式退出码 1 如实反映该项失败（详见 reports/stage2_coverage_report.md）
 - [ ] 阶段 3~11：待后续分支推进
 
 ## 说明
