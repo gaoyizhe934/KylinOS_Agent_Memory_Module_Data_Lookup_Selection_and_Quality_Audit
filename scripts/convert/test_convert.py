@@ -7,7 +7,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 def sha(p):
     h = hashlib.sha256()
     with open(p, "rb") as fh:
-        h.update(fh.read())
+        # 规范化换行后比较：字节级比较会因 checkout EOL 配置
+        # (autocrlf) 与转换器输出 LF 的差异而误报
+        h.update(fh.read().replace(b"\r\n", b"\n"))
     return h.hexdigest()
 
 def main():
