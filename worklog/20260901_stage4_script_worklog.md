@@ -23,15 +23,21 @@
     + 补足至 min(6.3 最低抽样量, 唯一ID数)；不提前截断、全类别覆盖、seed=42 可复现；
   - 静默丢失风险清单（Prompt 05-R 要求）显式写入报告；
   - 红线遵守：只读 data/raw（含启动断言），产出仅写 4 个指定位置；
-    启动时提示正式运行需 Gate 3 批准。
-- `scripts/audit/test_stage4_sample_audit.py`（单元测试，合成夹具，14 项断言全过）：
-  夹具为代码内构造的合成记录，仅验证脚本逻辑，不属于数据包任何层级。
+    启动时提示正式运行需 Gate 3 批准；
+  - **Gate 3 门禁（PR#3 复审新增补强）**：正式运行前校验三关——
+    (1) `gate3_approved()` 读 reports/gate_status.md，未获 Reviewer 批准直接非零退出（退出码 2）；
+    (2) `load_registry_gate3_status()` 读 registry `gate3_status` 列，仅放行「允许试用」候选；
+    (3) `in_formal_sample_range()` 每集 50~100 条新样本，超出范围非零退出（退出码 3）。
+- `registry/dataset_registry.csv`：新增 `gate3_status` 列（默认「需确认」），为 Gate 3 门禁提供候选状态依据。
+- `scripts/audit/test_stage4_sample_audit.py`（单元测试，合成夹具，22 项断言全过）：
+  夹具为代码内构造的合成记录，仅验证脚本逻辑，不属于数据包任何层级；
+  新增 `test_gate3_enforcement()` 覆盖门禁批准判定、gate3_status 读取、50~100 样本量范围。
 
 ## PR #3 审查意见修复记录
 
 | 意见 | 处置 |
 | --- | --- |
-| P1-1 Gate 纪律（运行产物构成实际执行） | 移除 4 个试运行产物（报告/异常清单/哈希/摘要），worklog 改为脚本准备记录 |
+| P1-1 Gate 纪律（运行产物构成实际执行） | 移除 4 个试运行产物（报告/异常清单/哈希/摘要），worklog 改为脚本准备记录；并在脚本内新增 Gate 3 门禁（未批准强制非零退出）做代码级兜底 |
 | P1-2 字段类型校验未实现 | 新增 field_types 规则 + type_mismatch 异常 + 单元测试 |
 | P1-3 人工抽检清单不足最低样本量 | 重写清单生成：全部异常 + 每类别≥2 + 补足至最低抽样量，无截断 |
 | P2-4 分支命名 | 分支建于 PR #2（命名规范）合并前；后续新分支将按 `feat/B-<topic>` 规范（见 PR 评论说明） |
@@ -39,7 +45,8 @@
 
 ## 本地验证（不构成阶段4执行，产物未提交）
 
-- 单元测试 14 项全部通过（类型规则命中/零误报、抽样量/类别覆盖/可复现性）;
+- 单元测试 22 项全部通过（类型规则命中/零误报、抽样量/类别覆盖/可复现性、Gate 3 门禁批准/状态/范围）;
+- `scripts/convert/test_convert.py` 幂等测试通过（215 条转换、silent_drop 0、无字段丢失）;
 - 全脚本本地试跑验证无崩溃；新增类型检查在本地样本上即发现真实问题：
   longmemeval_cleaned 有 32 条 `answer` 为 int（应为 str）、stabletoolbench
   的 query_id 存在 str/int 混用（与此前发现的样本文件混装问题相互印证）。

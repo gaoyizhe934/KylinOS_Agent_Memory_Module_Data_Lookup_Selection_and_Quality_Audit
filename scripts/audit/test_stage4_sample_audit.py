@@ -11,6 +11,8 @@
 - P1-3 人工复核清单: 总量 >= min(6.3 最低抽样量, 唯一ID数); 每个类别
   至少 2 条（类别记录不足 2 条则全取）; 覆盖全部类别; 全部异常 ID 入选;
   seed 固定可复现
+- Gate 3 门禁: 未获 Reviewer 批准返回 False; registry gate3_status 列读取;
+  50~100 条样本量范围校验
 
 运行: python scripts/audit/test_stage4_sample_audit.py
 退出码: 全部通过 0, 任一失败 1; 本测试不读 data/raw, 不写任何产物文件
@@ -150,6 +152,47 @@ def test_flagged_all_included_and_deterministic():
           result['manual_review_total'] >= 50, '总量 %d' % result['manual_review_total'])
 
 
+def test_gate3_enforcement():
+    """P1-2 Gate 3 门禁: 批准状态判定 / 候选状态读取 / 50~100 样本量范围."""
+    tmp = tempfile.mkdtemp(prefix='stage4_gate3_')
+    try:
+        not_approved = os.path.join(tmp, 'gate_not.md')
+        with open(not_approved, 'w', encoding='utf-8') as f:
+            f.write('| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ⏳ 下一阶段 |\n')
+        ok, _ = audit.gate3_approved(not_approved)
+        check('P1-2 Gate3 未批准 -> 返回 False', ok is False)
+
+        approved = os.path.join(tmp, 'gate_ok.md')
+        with open(approved, 'w', encoding='utf-8') as f:
+            f.write('| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ✅ 通过 |\n')
+        ok, _ = audit.gate3_approved(approved)
+        check('P1-2 Gate3 已批准 -> 返回 True', ok is True)
+
+        reg = os.path.join(tmp, 'registry.csv')
+        with open(reg, 'w', encoding='utf-8-sig', newline='') as f:
+            f.write('dataset_id,gate3_status\n')
+            f.write('a,允许试用\n')
+            f.write('b,需确认\n')
+            f.write('c,淘汰\n')
+        m = audit.load_registry_gate3_status(reg)
+        check('P1-2 registry gate3_status 映射正确',
+              m == {'a': '允许试用', 'b': '需确认', 'c': '淘汰'}, str(m))
+
+        reg2 = os.path.join(tmp, 'registry_nocol.csv')
+        with open(reg2, 'w', encoding='utf-8-sig', newline='') as f:
+            f.write('dataset_id,conclusion\n')
+            f.write('a,核心候选\n')
+        check('P1-2 registry 无 gate3_status 列 -> 空 dict',
+              audit.load_registry_gate3_status(reg2) == {})
+
+        check('P1-2 范围: 49 拒绝', audit.in_formal_sample_range(49) is False)
+        check('P1-2 范围: 50 允许', audit.in_formal_sample_range(50) is True)
+        check('P1-2 范围: 100 允许', audit.in_formal_sample_range(100) is True)
+        check('P1-2 范围: 101 拒绝', audit.in_formal_sample_range(101) is False)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def main():
     print('=' * 60)
     print('阶段4 审计脚本单元测试（PR #3 P1-2 / P1-3 修复验证）')
@@ -160,6 +203,7 @@ def main():
     test_manual_sampling_topup_large()
     test_manual_sampling_small_dataset()
     test_flagged_all_included_and_deterministic()
+    test_gate3_enforcement()
     print('-' * 60)
     if FAILED:
         print('失败 %d 项: %s' % (len(FAILED), ', '.join(FAILED)))
