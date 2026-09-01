@@ -18,11 +18,19 @@
 纪律:
 - raw 只读; 异常只标记不删除; 本报告为 AI 辅助草案, Gate 4 由 Reviewer 决定
 - 正式运行应在 Gate 3（候选标记）批准后, 由 A 下载 50~100 条新样本再执行
+  （Gate 3 批准前仅允许运行单元测试 test_stage4_sample_audit.py, 不产生运行产物）
+
+字段类型校验（Prompt 05 "字段类型"）:
+- 已配置数据集: DATASET_CONFIGS[*]['field_types'] 声明每个字段的期望 Python 类型
+- 自动探测数据集: 按 id(str|int) / 标签(str|list) / 类别(str) / 文本(str) 泛化规则
+- 类型不符记 type_mismatch 异常; bool 因 Python 的 bool<int 继承被显式排除;
+  缺失/空值由 missing_field / missing_label / missing_evidence 检查负责, 不重复报类型
 
 用法:
     python scripts/audit/stage4_sample_audit.py                     # 审计 data/raw 下全部数据集
     python scripts/audit/stage4_sample_audit.py --datasets longmemeval_v2_2026
-    python scripts/audit/stage4_sample_audit.py --note "试运行备注"
+    python scripts/audit/stage4_sample_audit.py --note "正式运行备注"
+    python scripts/audit/test_stage4_sample_audit.py                # 单元测试（不读 raw, 不写产物）
 """
 import argparse
 import csv
@@ -73,22 +81,30 @@ LOW_RISK_SAMPLE_LIMIT = 5  # 每数据集低危敏感命中的抽样上报条数
 NULL_STRINGS = {'none', 'null', 'nan', 'n/a', ''}
 
 # 已知数据集的专用配置; 未列出的数据集走通用自动探测
+# field_types: 字段期望类型（单值或元组）; bool 一律视为类型错误（不因 bool<int 继承漏报）
 DATASET_CONFIGS = {
     'longmemeval_cleaned_2025': {
         'id_field': 'question_id', 'label_field': 'answer',
         'evidence_fields': ['haystack_sessions', 'answer_session_ids'],
         'text_fields': ['question', 'answer'], 'category_field': 'question_type',
         'ref_check': 'longmemeval_oracle',
+        'field_types': {'question_id': str, 'answer': str, 'question': str,
+                        'question_type': str, 'haystack_sessions': list,
+                        'answer_session_ids': list, 'haystack_session_ids': list},
     },
     'longmemeval_v2_2026': {
         'id_field': 'id', 'label_field': 'answer',
         'evidence_fields': ['eval_function'],
         'text_fields': ['question', 'answer'], 'category_field': 'question_type',
+        'field_types': {'id': str, 'answer': str, 'question': str,
+                        'question_type': str, 'eval_function': str},
     },
     'stabletoolbench_2024': {
         'id_field': 'query_id', 'label_field': 'relevant APIs',
         'evidence_fields': ['api_list'],
         'text_fields': ['query'], 'category_field': None,
+        'field_types': {'query_id': str, 'query': str,
+                        'relevant APIs': list, 'api_list': list},
     },
 }
 
@@ -184,8 +200,18 @@ def detect_config(ds_id, records):
     lab = next((k for k in keys if LABEL_FIELD_HINT.match(k)), None)
     cat = next((k for k in keys if CATEGORY_FIELD_HINT.match(k)), None)
     texts = [k for k in keys if isinstance(records[0].get(k), str) and k not in (idf, cat)] if keys else []
+    gft = {}
+    if idf:
+        gft[idf] = (str, int)
+    if lab:
+        gft[lab] = (str, list)
+    if cat:
+        gft[cat] = (str,)
+    for t in texts[:5]:
+        gft[t] = (str,)
     return {'id_field': idf, 'label_field': lab, 'evidence_fields': [],
-            'text_fields': texts[:5], 'category_field': cat, 'ref_check': None}
+            'text_fields': texts[:5], 'category_field': cat, 'ref_check': None,
+            'field_types': gft}
 
 
 def percentile(sorted_vals, p):
@@ -219,8 +245,10 @@ def scan_sensitive(text):
     return hits, urls
 
 
-def audit_dataset(ds_id, note):
-    ds_dir = os.path.join(RAW_DIR, ds_id)
+def audit_dataset(ds_id, note, ds_dir=None):
+    """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>."""
+    if ds_dir is None:
+        ds_dir = os.path.join(RAW_DIR, ds_id)
     anomalies = []
     result = {'dataset_id': ds_id, 'status': 'ok', 'files': 0, 'records': 0,
               'parse_failed': 0, 'file_hashes': [], 'empty_files': [], 'unhandled_files': [],
@@ -294,6 +322,20 @@ def audit_dataset(ds_id, note):
             if v is None or v == [] or v == {} or str(v).strip() == '':
                 anomalies.append(_anom(ds_id, rel, idx, str(rid), 'missing_evidence', 'medium',
                                        '证据字段 %s 为空（标签-证据可推导性存疑，需人工核）' % ev))
+        # 字段类型校验（Prompt 05）: 缺失/空值由上面的缺失检查负责, 这里只报类型不符
+        for field, expected in (cfg.get('field_types') or {}).items():
+            if field not in rec:
+                continue
+            v = rec[field]
+            if v is None or (isinstance(v, str) and not v.strip()):
+                continue
+            expected_types = expected if isinstance(expected, tuple) else (expected,)
+            if isinstance(v, bool) or not isinstance(v, expected_types):
+                anomalies.append(_anom(ds_id, rel, idx, str(rid), 'type_mismatch', 'medium',
+                                       '字段 %s 期望类型 %s, 实际 %s: %s' % (
+                                           field,
+                                           '|'.join(t.__name__ for t in expected_types),
+                                           type(v).__name__, str(v)[:80])))
         for k, v in rec.items():
             if isinstance(v, str) and v.strip().lower() in NULL_STRINGS and v != '':
                 anomalies.append(_anom(ds_id, rel, idx, str(rid), 'null_string', 'low',
@@ -383,22 +425,40 @@ def audit_dataset(ds_id, note):
     n = result['records']
     result['required_manual_sample'] = min(n, 50) if n <= 500 else (100 if n <= 5000 else 200)
 
-    # --- 人工复核清单: 全部异常记录 + 分层随机抽检正常记录 ---
-    flagged = {a['record_id'] for a in anomalies if a['record_id']}
+    # --- 人工复核清单（手册 6.3）: 全部异常记录 + 分层抽样的正常记录 ---
+    # 规则: (1) 全部异常记录 ID 必须入选; (2) 每个类别至少抽 2 条正常记录（不足则全取）;
+    #       (3) 补足至 min(6.3 最低抽样量, 唯一ID数); (4) 不提前截断, 全类别覆盖
+    flagged = sorted({a['record_id'] for a in anomalies if a['record_id']})
+    flagged_set = set(flagged)
+    rid_category = {}
     normal_by_cat = {}
     for (rel, idx), rec in zip(rec_sources, all_records):
         if isinstance(rec, dict) and idf:
             rid = str(rec.get(idf, ''))
-            if rid and rid not in flagged:
-                normal_by_cat.setdefault(str(rec.get(cat)) if cat else '_', []).append(rid)
+            if not rid:
+                continue
+            rid_category[rid] = str(rec.get(cat)) if cat else '_'
+            if rid not in flagged_set:
+                normal_by_cat.setdefault(rid_category[rid], []).append(rid)
     rng = random.Random(RANDOM_SEED)
     picked = set()
-    for _c, rids in sorted(normal_by_cat.items()):
-        take = max(2, int(round(len(rids) * 0.05)))
-        picked.update(rng.sample(rids, min(take, len(rids))))
-        if len(picked) >= 20:
-            break
-    result['manual_review_ids'] = sorted(flagged)[:200] + sorted(picked)[:20 - min(len(flagged), 20) if len(flagged) < 20 else 0]
+    for c in sorted(normal_by_cat):
+        rids = normal_by_cat[c]
+        take = min(max(2, int(round(len(rids) * 0.05))), len(rids))
+        if take > 0:
+            picked.update(rng.sample(rids, take))
+    target = min(result['required_manual_sample'], len(seen_id))
+    need = target - len(flagged_set) - len(picked)
+    if need > 0:
+        pool = [rid for c in sorted(normal_by_cat) for rid in normal_by_cat[c] if rid not in picked]
+        rng.shuffle(pool)
+        picked.update(pool[:need])
+    result['manual_review_ids'] = flagged + sorted(picked)
+    result['manual_review_total'] = len(result['manual_review_ids'])
+    result['manual_review_flagged'] = len(flagged_set)
+    result['manual_review_normal'] = len(picked)
+    result['manual_review_categories'] = dict(Counter(
+        rid_category[r] for r in result['manual_review_ids'] if r in rid_category))
     return result, anomalies
 
 
@@ -512,13 +572,21 @@ def write_report(results, anomalies, note, cmd):
     ap('')
     ap('逐条异常明细见 `data/interim/stage4_anomalies.csv`。')
     ap('')
-    ap('## 4. 需人工逐条复核的样本 ID（节选）')
+    ap('## 4. 需人工逐条复核的样本 ID')
+    ap('')
+    ap('清单构成: 全部异常记录 ID + 分层抽样的正常记录 ID（每个类别至少 2 条，'
+       '并补足至 6.3 最低人工抽样量）。完整清单见 `evidence/audit/stage4_audit_summary.json`。')
     ap('')
     for r in results:
         if r['manual_review_ids']:
+            cats = r.get('manual_review_categories', {})
+            cat_desc = ', '.join('%s×%d' % kv for kv in sorted(cats.items())) if cats else '无类别字段'
+            ap('- **%s**: 共 %d 个 ID（异常 %d + 正常抽样 %d）｜类别覆盖: %s' % (
+                r['dataset_id'], r['manual_review_total'], r['manual_review_flagged'],
+                r['manual_review_normal'], cat_desc))
             shown = ', '.join(r['manual_review_ids'][:30])
-            more = '（等共 %d 个）' % len(r['manual_review_ids']) if len(r['manual_review_ids']) > 30 else ''
-            ap('- **%s**: %s%s' % (r['dataset_id'], shown, more))
+            more = '（仅展示前 30）' if r['manual_review_total'] > 30 else ''
+            ap('  - ID: %s%s' % (shown, more))
     ap('')
     ap('## 5. 静默丢失风险清单（Prompt 05-R 要求）')
     ap('')
@@ -547,7 +615,8 @@ def write_report(results, anomalies, note, cmd):
     ap('| ID/记录重复 | 完全相等 | 零容忍 |')
     ap('| 敏感-高危（密钥/令牌/证件号） | 命中即逐条上报 | 泄露后果严重, 零容忍 |')
     ap('| 敏感-低危（邮箱/电话/内网IP/路径） | 计数 + 抽样5条 | 合成研究数据中普遍, 全量上报会淹没高危信号 |')
-    ap('| 人工抽检 | 每数据集每类别 ≥2 条或 5% | 手册 6.3 分层原则 |')
+    ap('| 人工抽检 | 全部异常 + 每类别 ≥2 条 + 补足至 6.3 最低抽样量（seed=42 可复现） | 手册 6.3 分层与最低样本量 |')
+    ap('| 字段类型 | 已配置字段与期望类型不符即上报（bool 视为类型错误） | Prompt 05 字段类型检查 |')
     ap('')
     ap('## 7. 初步结论（AI 草案, 待人工）')
     ap('')
@@ -586,6 +655,9 @@ def main():
     # 安全断言: 输出路径绝不在 raw 下
     for p in (OUT_REPORT, OUT_ANOMALIES, OUT_HASH, OUT_SUMMARY):
         assert not os.path.abspath(p).lower().startswith(RAW_DIR.lower()), '输出路径不得位于 data/raw'
+
+    print('提示: 阶段4 正式审计应在 Gate 3（候选标记）获 Reviewer 批准后执行; '
+          '本次运行将写入 4 个产出文件（Gate 3 批准前请只运行单元测试）')
 
     if args.datasets:
         ds_ids = [s.strip() for s in args.datasets.split(',') if s.strip()]
