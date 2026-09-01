@@ -466,8 +466,8 @@ def write_anomalies_csv(anomalies):
     os.makedirs(os.path.dirname(OUT_ANOMALIES), exist_ok=True)
     cols = ['dataset_id', 'source_file', 'record_index', 'record_id',
             'anomaly_type', 'severity', 'detail']
-    with open(OUT_ANOMALIES, 'w', encoding='utf-8-sig', newline='') as f:
-        w = csv.DictWriter(f, fieldnames=cols)
+    with open(OUT_ANOMALIES, 'w', encoding='utf-8-sig', newline='\n') as f:
+        w = csv.DictWriter(f, fieldnames=cols, lineterminator='\n')
         w.writeheader()
         for a in anomalies:
             w.writerow({c: a.get(c, '') for c in cols})
@@ -485,7 +485,7 @@ def write_hash_file(results):
                 lines.append('%s  %s' % (h, rel))
         else:
             lines.append('（无数据文件）')
-    with open(OUT_HASH, 'w', encoding='utf-8') as f:
+    with open(OUT_HASH, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(lines) + '\n')
 
 
@@ -633,7 +633,7 @@ def write_report(results, anomalies, note, cmd):
     ap('---')
     ap('')
     ap('*本文件由 `scripts/audit/stage4_sample_audit.py` 自动生成; 修改需 B 重跑并留痕。*')
-    with open(OUT_REPORT, 'w', encoding='utf-8') as f:
+    with open(OUT_REPORT, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(lines) + '\n')
 
 
@@ -642,7 +642,7 @@ def write_summary_json(results, anomalies):
     out = {'generated_at': time.strftime('%Y-%m-%d %H:%M:%S'),
            'generated_by': 'DGXD01', 'random_seed': RANDOM_SEED,
            'datasets': results, 'anomaly_count': len(anomalies)}
-    with open(OUT_SUMMARY, 'w', encoding='utf-8') as f:
+    with open(OUT_SUMMARY, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(out, f, ensure_ascii=False, indent=2, default=str)
 
 
