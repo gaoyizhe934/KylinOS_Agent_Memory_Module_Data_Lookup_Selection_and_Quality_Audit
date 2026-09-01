@@ -1,31 +1,39 @@
 # -*- coding: utf-8 -*-
-import sys, io, urllib.request, ssl, json
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
-ua = {'User-Agent': 'Mozilla/5.0'}
+"""阶段 2: 查询 machine-unlearning-bench 数据集详细卡片与 README（HuggingFace API）。"""
+import argparse
 
-# 获取详细卡片信息
-url = 'https://huggingface.co/api/datasets/machine-unlearning-bench/data-unlearning-bench'
-req = urllib.request.Request(url, headers=ua)
-resp = urllib.request.urlopen(req, timeout=20, context=ctx)
-info = json.loads(resp.read().decode('utf-8'))
-card = info.get('cardData', {})
-print('=== 详细卡片信息 ===')
-print(f'  cardData keys: {list(card.keys())}')
-lic = card.get('license', 'N/A')
-print(f'  license: {lic}')
-print(f'  tags: {info.get("tags", [])[:15]}')
+from net_utils import fetch_json, fetch_text, set_proxy, setup_stdout_utf8
 
-# 查看 README
-print()
-print('=== README 前800字 ===')
-url2 = 'https://huggingface.co/datasets/machine-unlearning-bench/data-unlearning-bench/raw/main/README.md'
-req2 = urllib.request.Request(url2, headers=ua)
-resp2 = urllib.request.urlopen(req2, timeout=20, context=ctx)
-readme = resp2.read().decode('utf-8')
-print(readme[:800])
-print()
-print('=== README 总长度 ===')
-print(f'{len(readme)} chars')
+DATASET_API = 'https://huggingface.co/api/datasets/machine-unlearning-bench/data-unlearning-bench'
+README_URL = 'https://huggingface.co/datasets/machine-unlearning-bench/data-unlearning-bench/raw/main/README.md'
+
+
+def main():
+    parser = argparse.ArgumentParser(description='获取 machine-unlearning-bench 详细卡片信息与 README')
+    parser.add_argument('--proxy', default=None,
+                        help='可选代理，如 http://127.0.0.1:7890；未指定时遵循 HTTP(S)_PROXY 环境变量')
+    parser.add_argument('--timeout', type=int, default=20)
+    parser.add_argument('--insecure', action='store_true', help='跳过 TLS 证书校验（仅限调试）')
+    args = parser.parse_args()
+
+    setup_stdout_utf8()
+    set_proxy(args.proxy)
+
+    info = fetch_json(DATASET_API, timeout=args.timeout, insecure=args.insecure)
+    card = info.get('cardData', {})
+    print('=== 详细卡片信息 ===')
+    print(f'  cardData keys: {list(card.keys())}')
+    print(f"  license: {card.get('license', 'N/A')}")
+    print(f'  tags: {info.get("tags", [])[:15]}')
+
+    print()
+    print('=== README 前800字 ===')
+    readme = fetch_text(README_URL, timeout=args.timeout, insecure=args.insecure)
+    print(readme[:800])
+    print()
+    print('=== README 总长度 ===')
+    print(f'{len(readme)} chars')
+
+
+if __name__ == '__main__':
+    main()

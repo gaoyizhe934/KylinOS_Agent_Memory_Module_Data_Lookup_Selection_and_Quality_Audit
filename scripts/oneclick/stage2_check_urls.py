@@ -1,62 +1,65 @@
 # -*- coding: utf-8 -*-
-"""阶段 2: 检查现有数据集 URL 可访问性"""
-import sys, io, csv, os, json, urllib.request, ssl
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+"""阶段 2: 检查登记表数据集 URL 可访问性。
 
-# 使用代理
-proxy = 'http://127.0.0.1:7890'
-proxy_handler = urllib.request.ProxyHandler({'http': proxy, 'https': proxy})
-opener = urllib.request.build_opener(proxy_handler)
-urllib.request.install_opener(opener)
+用法（在仓库根目录执行）:
+    python scripts/oneclick/stage2_check_urls.py
+    python scripts/oneclick/stage2_check_urls.py --proxy http://127.0.0.1:7890
 
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+路径从脚本位置（仓库根目录）自动解析，不依赖绝对路径；
+代理默认遵循 HTTP_PROXY/HTTPS_PROXY 环境变量，可用 --proxy 显式指定。
+"""
+import argparse
+import csv
+import os
 
-base = r'C:\Users\LYF\Desktop\麒麟OS_Agent_记忆模块数据工作包_v1.0_20260807'
-reg_path = os.path.join(base, 'registry', 'dataset_registry.csv')
+from net_utils import check_url, set_proxy, setup_stdout_utf8
 
-rows = []
-with open(reg_path, 'r', encoding='utf-8-sig') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        rows.append(row)
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-def check_url(url, timeout=8):
-    """检查 URL 可访问性，返回 (status, http_code_or_error)"""
-    if not url:
-        return ('EMPTY', '无URL')
-    try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        resp = urllib.request.urlopen(req, timeout=timeout, context=ctx)
-        code = resp.status
-        resp.close()
-        if 200 <= code < 400:
-            return ('OK', str(code))
-        return ('ERROR', f'HTTP {code}')
-    except urllib.error.HTTPError as e:
-        return ('ERROR', f'HTTP {e.code}')
-    except urllib.error.URLError as e:
-        return ('ERROR', f'无法连接: {str(e.reason)[:40]}')
-    except socket.timeout:
-        return ('TIMEOUT', '超时')
-    except Exception as e:
-        return ('ERROR', f'{str(e)[:40]}')
 
-print('========== 现有数据集 URL 可访问性检查 ==========')
-print()
-print(f'| 数据集 | 官方URL | 状态 | 下载URL | 状态 |')
-print(f'| --- | --- | --- | --- | --- |')
-for row in rows:
-    did = row['dataset_id']
-    official = row['official_url']
-    data_url = row['data_url']
-    s1 = check_url(official)
-    s2 = check_url(data_url)
-    status1 = f'{s1[0]}:{s1[1]}'
-    status2 = f'{s2[0]}:{s2[1]}'
-    print(f'| {did} | {official[:50]} | {status1} | {(data_url or "")[:50]} | {status2} |')
+def load_registry(path):
+    with open(path, 'r', encoding='utf-8-sig') as f:
+        return list(csv.DictReader(f))
 
-print()
-print('说明: OK=可访问, EMPTY=无URL, ERROR=不可访问')
-print('注意: 部分站点可能对爬虫有反爬限制，HTTP 403/429 不一定代表数据不可用，需人工确认。')
+
+def main():
+    parser = argparse.ArgumentParser(description='检查 dataset_registry.csv 中各数据集官方/数据 URL 可访问性')
+    parser.add_argument('--registry', default=os.path.join(REPO_ROOT, 'registry', 'dataset_registry.csv'),
+                        help='登记表路径（默认: 仓库根目录下 registry/dataset_registry.csv）')
+    parser.add_argument('--proxy', default=None,
+                        help='可选代理，如 http://127.0.0.1:7890；未指定时遵循 HTTP(S)_PROXY 环境变量')
+    parser.add_argument('--timeout', type=int, default=8, help='单个 URL 超时秒数（默认 8）')
+    parser.add_argument('--insecure', action='store_true', help='跳过 TLS 证书校验（仅限调试）')
+    args = parser.parse_args()
+
+    setup_stdout_utf8()
+    set_proxy(args.proxy)
+    rows = load_registry(args.registry)
+
+    print('========== 现有数据集 URL 可访问性检查 ==========')
+    print(f'登记表: {os.path.relpath(args.registry, REPO_ROOT)}')
+    print(f'数据集总数: {len(rows)}')
+    print()
+    print('| 数据集 | 官方URL | 状态 | 下载URL | 状态 |')
+    print('| --- | --- | --- | --- | --- |')
+    counts = {'OK': 0, 'EMPTY': 0, 'ERROR': 0, 'TIMEOUT': 0}
+    for row in rows:
+        did = row['dataset_id']
+        official = (row.get('official_url') or '').strip()
+        data_url = (row.get('data_url') or '').strip()
+        s1 = check_url(official, timeout=args.timeout, insecure=args.insecure)
+        s2 = check_url(data_url, timeout=args.timeout, insecure=args.insecure)
+        counts[s1[0]] += 1
+        counts[s2[0]] += 1
+        print(f'| {did} | {official[:50]} | {s1[0]}:{s1[1]} | {data_url[:50]} | {s2[0]}:{s2[1]} |')
+
+    total = len(rows)
+    print()
+    print(f'统计（{total} 个数据集 x 官方/下载两列，共 {total * 2} 项）: '
+          f"OK={counts['OK']}  EMPTY={counts['EMPTY']}  ERROR={counts['ERROR']}  TIMEOUT={counts['TIMEOUT']}")
+    print('说明: OK=可访问, EMPTY=登记表未填写该 URL（不代表可访问）, ERROR=不可访问, TIMEOUT=超时')
+    print('注意: 部分站点对自动化请求返回 403/429，不一定代表数据不可用，需人工确认。')
+
+
+if __name__ == '__main__':
+    main()
