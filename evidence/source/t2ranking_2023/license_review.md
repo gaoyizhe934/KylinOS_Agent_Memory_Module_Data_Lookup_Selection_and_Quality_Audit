@@ -1,17 +1,31 @@
-# t2ranking_2023 License 风险摘要
+# t2ranking_2023 License 风险摘要（AI 草稿，供 Reviewer 审批）
 
-License/Terms：Apache-2.0（HF Data Card 已确认，License 原文已存档）
+依据手册附录 C Prompt 04 生成（Annotator B，2026-08-31）；2026-09-01 A 取用并入并复核。
+证据：HF 官方卡片 `cardData.license = apache-2.0`（API 元数据存档，见 `api_snapshot_20260901/`）+ `APACHE_2_0_LICENSE.txt`（标准文本存档）+ `t2ranking_HF_card.py`（官方加载脚本，文件头 Apache-2.0 声明）。
 
-## 用途核对（引用条款原文前不得给出确定法律结论）
+## License/Terms：Apache-2.0（以 HF 官方卡片声明为准）
 
-- 下载：研究、修改、内部演示、公开展示、再分发（以 Apache-2.0 原文为准）
-- 研究：允许
-- 修改：允许
-- 内部演示：允许
-- 公开展示：允许
-- 打包再分发：允许（需保留 Apache-2.0 声明）
-- 商业使用：允许
+- 下载：允许（事实）。
+- 研究：允许（Apache-2.0 无用途限制）。
+- 修改：允许。
+- 内部演示：允许。
+- 比赛提交：允许，附 NOTICE/LICENSE 归属即可。
+- 公开展示：允许（展示引用数据需注明来源与许可）。
+- 打包再分发：允许，须随包分发 Apache-2.0 许可证副本与 NOTICE 声明。
+- 商业使用：允许，同上义务。
 
-结论：核心候选（中文检索）。Apache-2.0 为宽松许可证，允许研究、修改、分发和商业使用。
-证据：HF README 明确声明 "The dataset is licensed under the Apache License 2.0"。
-Reviewer：待批准。
+## 风险点
+
+1. **声明形式缺口**：GitHub 仓库无独立 LICENSE 文件，许可以 HF 卡片字段声明。建议 Reviewer 决定是否要求补充证据（如向 THUIR 发 issue 确认）。
+2. 段落文本来自真实网页，可能含个人信息 → 手册 6.5 敏感扫描仍需执行（阶段 4）。
+3. Apache-2.0 的 NOTICE 条款义务需在交付包中履行（交付清单 05_split_and_seal 里保留许可证副本）。
+
+## 结论（AI 草稿）
+
+核心候选（中文检索）。合规证据链完整度：来源官方（THUIR 双渠道）+ 许可声明形式待 Reviewer 认可。
+未明确事项一律写"需人工/法务确认"，不得由 AI 给出确定法律结论。
+
+## 取用与更新记录（2026-09-01，A = Data Owner）
+
+- 取自 B 移交包（按移交规则择优保留），`t2ranking_HF_card.py` 已一并并入本包。
+- 版本线索见 `version_lock_20260901.md`（HF revision `2a369a430a70`，卡片机读 license 与本次 API 快照一致为 apache-2.0）；结论与 v2.0 登记表一致（核心候选-中文检索）。

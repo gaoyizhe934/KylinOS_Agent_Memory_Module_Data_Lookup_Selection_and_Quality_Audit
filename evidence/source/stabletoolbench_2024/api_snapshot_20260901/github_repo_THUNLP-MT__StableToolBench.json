@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/THUNLP-MT/StableToolBench",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "default_branch": "master",
+  "html_url": "https://github.com/THUNLP-MT/StableToolBench",
+  "pushed_at": "2025-04-15T02:11:08Z",
+  "updated_at": "2026-08-13T03:03:30Z",
+  "license": "Apache-2.0"
+}

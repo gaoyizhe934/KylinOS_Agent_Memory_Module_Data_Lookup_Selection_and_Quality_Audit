@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/PaddlePaddle/RocketQA/commits/main",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "e2bfcfcfa902ac6cef7f0d359606a9da05b795ac",
+  "html_url": "https://github.com/PaddlePaddle/RocketQA/commit/e2bfcfcfa902ac6cef7f0d359606a9da05b795ac",
+  "commit": {
+    "author": {
+      "name": "Jing Liu",
+      "email": "legendarydan@outlook.com",
+      "date": "2022-12-03T15:48:43Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2022-12-03T15:48:43Z"
+    },
+    "message": "add survey paper",
+    "tree": {
+      "sha": "14994617d298341b76e3a6860121e36515852ae2",
+      "url": "https://api.github.com/repos/PaddlePaddle/RocketQA/git/trees/14994617d298341b76e3a6860121e36515852ae2"
+    },
+    "url": "https://api.github.com/repos/PaddlePaddle/RocketQA/git/commits/e2bfcfcfa902ac6cef7f0d359606a9da05b795ac",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJji2/bCRBK7hj4Ov3rIwAAA5oIAHNSONZPCjMprxQlMHZ9tW5A\nIK1S2W8HUxxaN7wMmpasc9twE9USlUllJy5ilhkBqSpEBxJIdxi5ZzTKPcTA/VxA\nlJxp486bEjDZq8avYrelhemzEtPeys0lTYStfjVFXauAdUCLn3REX1KYKGSdcF/Z\nu3kFBmzuV957puEUGB350UiZPIJcQauXTzkcxkeunVR7Uz/zXcGP1+pHNRUVUpP/\ngsB37sFaXI0KeD3xtDqGV1tuy0ojElWMIrJ0hNou6uH/mnC94OOT9Dz4EijrIF7Z\n2MPWrxoJlqyU3SOwiQ7mMlIA2j+TjU6HLdokkpjcnzLrp8lZ63Zqpx//G2276LI=\n=NO3V\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 14994617d298341b76e3a6860121e36515852ae2\nparent 019ad5c1088167e264c5ec799c5f7fd22e39ad27\nauthor Jing Liu <legendarydan@outlook.com> 1670082523 +0800\ncommitter GitHub <noreply@github.com> 1670082523 +0800\n\nadd survey paper",
+      "verified_at": "2024-11-06T18:32:17Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "019ad5c1088167e264c5ec799c5f7fd22e39ad27",
+      "url": "https://api.github.com/repos/PaddlePaddle/RocketQA/commits/019ad5c1088167e264c5ec799c5f7fd22e39ad27",
+      "html_url": "https://github.com/PaddlePaddle/RocketQA/commit/019ad5c1088167e264c5ec799c5f7fd22e39ad27"
+    }
+  ],
+  "stats": {
+    "total": 24,
+    "additions": 18,
+    "deletions": 6
+  },
+  "files_count": 1
+}

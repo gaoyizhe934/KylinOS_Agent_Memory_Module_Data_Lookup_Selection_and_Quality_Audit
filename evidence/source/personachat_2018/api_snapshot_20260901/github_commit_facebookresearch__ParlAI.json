@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/facebookresearch/ParlAI/commits/main",
+    "fetched_at_utc": "2026-09-01T12:43:00Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "a29567f7ce76992fd1f03c51ba9e3b155a37ea51",
+  "html_url": "https://github.com/facebookresearch/ParlAI/commit/a29567f7ce76992fd1f03c51ba9e3b155a37ea51",
+  "commit": {
+    "author": {
+      "name": "Jon Janzen",
+      "email": "jon@jonjanzen.com",
+      "date": "2026-07-30T21:27:01Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-07-30T21:27:01Z"
+    },
+    "message": "Replace jQuery CDN link with jsDelivr version",
+    "tree": {
+      "sha": "c2a75ca0eff13991741719894ed6c196edc02249",
+      "url": "https://api.github.com/repos/facebookresearch/ParlAI/git/trees/c2a75ca0eff13991741719894ed6c196edc02249"
+    },
+    "url": "https://api.github.com/repos/facebookresearch/ParlAI/git/commits/a29567f7ce76992fd1f03c51ba9e3b155a37ea51",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqa8GlCRC1aQ7uu5UhlAAAV4UQABmUbsExoC9CVy7kJmX7rqGt\n1+sjil5SLIcgc0znXn63g+3Zs5EoB8oglt1VeoQ2Vf1Y8KonwiBsmFigxU39NAPw\nfgwAoA2tWE9AsV5G0NF3hkXOj0EzOQcyBshC1QwHXnaUgIB/XGe4wnVnDhxB9MgD\nL7xGtZgKxcwOEEPlfHOohRjDZ4suRrrxpFJjaB/pwppMkOYCxYIy4ypYy8iwCq4x\n7GV9ez3SG1nvO164UYo9B9y2xm8K5u1K/VpbR6olzqrupnEyYTrQRBeTVAbjEBum\nrUp/AxacI5NNklr4d6RiwXQCSdQaI8EZZyIYjOdRjNOnvuqmPTQrw893v0q5GB2S\nYCN7Fkg+sVGLLZFZOdx/XjKqV5vjAe7F9539awZPKsm+BrYFTo+/t5bLB9zYaw39\nrqObickSxczEHNwhuLgzumywYT+ODwxDM+M6GONP33Owdemt9qaUB4fvIOrZN7+1\n92IulFbtlU1wzBSCBgxD5AifHEfG/0DZpMK/FgNM7V+CvpTJn4RMMsazm2EvHdR9\nNd6h/LcgCpii8ewP7Kv7Mcz3HxLstL/838LgE3veYmkbfE4E1l4bYkgdSEHo78UE\njY5IHiLtc9gOes1+MxT5ViGb5vjM+F+gOiEuia4Q7RjLj+MHuN9zutAX64cDxakN\nU906U57XxBDf3oJat5lH\n=9rUK\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree c2a75ca0eff13991741719894ed6c196edc02249\nparent 6c802418e93a51cbb746b011439ab783dd136de8\nauthor Jon Janzen <jon@jonjanzen.com> 1785446821 -0700\ncommitter GitHub <noreply@github.com> 1785446821 -0700\n\nReplace jQuery CDN link with jsDelivr version",
+      "verified_at": "2026-07-30T21:27:02Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "6c802418e93a51cbb746b011439ab783dd136de8",
+      "url": "https://api.github.com/repos/facebookresearch/ParlAI/commits/6c802418e93a51cbb746b011439ab783dd136de8",
+      "html_url": "https://github.com/facebookresearch/ParlAI/commit/6c802418e93a51cbb746b011439ab783dd136de8"
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "additions": 1,
+    "deletions": 1
+  },
+  "files_count": 1
+}

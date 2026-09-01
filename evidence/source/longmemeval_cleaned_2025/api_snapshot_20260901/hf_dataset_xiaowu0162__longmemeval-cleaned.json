@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "api_endpoint": "https://huggingface.co/api/datasets/xiaowu0162/longmemeval-cleaned",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "sha": "98d7416c24c778c2fee6e6f3006e7a073259d48f",
+  "lastModified": "2025-09-19T23:48:16.000Z",
+  "cardData": {
+    "configs": [
+      {
+        "config_name": "default",
+        "data_files": [
+          {
+            "split": "longmemeval_oracle",
+            "path": "longmemeval_oracle.json"
+          },
+          {
+            "split": "longmemeval_s_cleaned",
+            "path": "longmemeval_s_cleaned.json"
+          },
+          {
+            "split": "longmemeval_m_cleaned",
+            "path": "longmemeval_m_cleaned.json"
+          }
+        ]
+      }
+    ],
+    "license": "mit",
+    "language": [
+      "en"
+    ]
+  },
+  "siblings_count": 5,
+  "id": "xiaowu0162/longmemeval-cleaned"
+}

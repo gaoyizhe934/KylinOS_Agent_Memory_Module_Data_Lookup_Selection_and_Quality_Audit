@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "checked_at_utc": "2026-09-01T12:43:00Z",
+    "tool": "scripts/audit/stage3_version_lock.py --fetch"
+  },
+  "checks": [
+    {
+      "url": "http://parl.ai/downloads/personachat/personachat.tgz",
+      "note": "官方 tgz 数据入口",
+      "status": "OK 200"
+    }
+  ]
+}

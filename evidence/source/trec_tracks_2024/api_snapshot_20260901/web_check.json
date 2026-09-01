@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "checked_at_utc": "2026-09-01T12:41:52Z",
+    "tool": "scripts/audit/stage3_version_lock.py --fetch"
+  },
+  "checks": [
+    {
+      "url": "https://trec.nist.gov/data.html",
+      "note": "官方数据门户",
+      "status": "OK 200"
+    }
+  ]
+}
