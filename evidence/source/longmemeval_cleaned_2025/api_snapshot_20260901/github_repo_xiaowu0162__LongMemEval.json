@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/xiaowu0162/LongMemEval",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "default_branch": "main",
+  "html_url": "https://github.com/xiaowu0162/LongMemEval",
+  "pushed_at": "2026-05-11T22:49:24Z",
+  "updated_at": "2026-09-01T11:12:22Z",
+  "license": "MIT"
+}

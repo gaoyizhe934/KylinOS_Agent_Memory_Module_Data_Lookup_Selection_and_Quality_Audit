@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/budzianowski/multiwoz",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "default_branch": "master",
+  "html_url": "https://github.com/budzianowski/multiwoz",
+  "pushed_at": "2026-04-18T02:03:24Z",
+  "updated_at": "2026-08-31T11:28:04Z",
+  "license": "MIT"
+}

@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/THUNLP-MT/StableToolBench/commits/master",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "aa4ed9f4737ad98bd706663f01d63623c3427812",
+  "html_url": "https://github.com/THUNLP-MT/StableToolBench/commit/aa4ed9f4737ad98bd706663f01d63623c3427812",
+  "commit": {
+    "author": {
+      "name": "zhichengg",
+      "email": "zhichengguo823@outlook.com",
+      "date": "2025-04-15T02:11:08Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2025-04-15T02:11:08Z"
+    },
+    "message": "Update README.md",
+    "tree": {
+      "sha": "09c2dd9db4c2854bf959767585ddbbd2fda17632",
+      "url": "https://api.github.com/repos/THUNLP-MT/StableToolBench/git/trees/09c2dd9db4c2854bf959767585ddbbd2fda17632"
+    },
+    "url": "https://api.github.com/repos/THUNLP-MT/StableToolBench/git/commits/aa4ed9f4737ad98bd706663f01d63623c3427812",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJn/cA8CRC1aQ7uu5UhlAAAz7AQADIVScP5FzzrHHGV92E3DEe6\nN2BLt4BJDlo2UGHAtbB9mLshWcrhhwx/NH3GbmAFy8Rpu1GljqUdKDNCGSFfON53\n7tSYitbJcpavXfwPj4KbZjepZaKJ+VWMAgRaGLUTsXpg/Kh2PaG2zcpXuprpJfMg\nKsJk1PbQrcAxm7/EVyKFQaKsH7apbY7d0iUgxCbBJqpCOOPJv2ikLLxwLXVa8kMQ\nzDe6esvoM8sir2Pgg+tJgyo7L3dPMFbtAOAKhmv+VVI6fuwqAzRVWeetA5M5ru3V\np4h8cXuJRzeFsWc3K9mcuSQA3En/k8L6gcQhCSYRgbVuLHQiVLqQd2AhwagaszrN\n9CtOO5g40GdkFedfxjt8WFbCGvamTIzIIfYAx77C+Bdb89m/f6J+DQAwBdpWkL5t\nsyu/67u05yrSP3rM/oYQMxed4be/K2tcgj0D/i3NGpujbNjUJbuzKx4V77Zizp4d\nzLgHljunbyqTngOie9LsimYYwKoR7RCkXAbmT6bXPL737d0XXMVz7tWH4IHJFTOo\n0/AsSkz3o0KquWh3GfClbPxiFmlBDvvl9pWxHTGbV3UCFAQ6bVjD0PT4x6ohZoQs\n2LKFOsWEd9Z0OkyCqecpkGrLQQfMPr3+4n9UK32o8q8pCBbJOLVyhNSQerRW80ky\nQDui86lPHakGBoWXSXAo\n=cSzO\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 09c2dd9db4c2854bf959767585ddbbd2fda17632\nparent a0c62beac5f3e5f31f57a24afb88fad243dc7a10\nauthor zhichengg <zhichengguo823@outlook.com> 1744683068 +0800\ncommitter GitHub <noreply@github.com> 1744683068 +0800\n\nUpdate README.md",
+      "verified_at": "2025-04-15T02:16:09Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "a0c62beac5f3e5f31f57a24afb88fad243dc7a10",
+      "url": "https://api.github.com/repos/THUNLP-MT/StableToolBench/commits/a0c62beac5f3e5f31f57a24afb88fad243dc7a10",
+      "html_url": "https://github.com/THUNLP-MT/StableToolBench/commit/a0c62beac5f3e5f31f57a24afb88fad243dc7a10"
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "additions": 1,
+    "deletions": 1
+  },
+  "files_count": 1
+}

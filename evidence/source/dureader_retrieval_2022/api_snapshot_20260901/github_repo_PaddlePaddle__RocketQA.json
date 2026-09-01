@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/PaddlePaddle/RocketQA",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "default_branch": "main",
+  "html_url": "https://github.com/PaddlePaddle/RocketQA",
+  "pushed_at": "2023-12-19T08:08:35Z",
+  "updated_at": "2026-07-23T02:58:44Z",
+  "license": "Apache-2.0"
+}

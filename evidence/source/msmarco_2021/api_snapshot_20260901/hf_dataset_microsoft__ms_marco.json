@@ -1,0 +1,177 @@
+{
+  "_meta": {
+    "api_endpoint": "https://huggingface.co/api/datasets/microsoft/ms_marco",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "sha": "a47ee7aae8d7d466ba15f9f0bfac3b3681087b3a",
+  "lastModified": "2024-01-04T16:01:29.000Z",
+  "cardData": {
+    "language": [
+      "en"
+    ],
+    "paperswithcode_id": "ms-marco",
+    "pretty_name": "Microsoft Machine Reading Comprehension Dataset",
+    "dataset_info": [
+      {
+        "config_name": "v1.1",
+        "features": [
+          {
+            "name": "answers",
+            "sequence": "string"
+          },
+          {
+            "name": "passages",
+            "sequence": [
+              {
+                "name": "is_selected",
+                "dtype": "int32"
+              },
+              {
+                "name": "passage_text",
+                "dtype": "string"
+              },
+              {
+                "name": "url",
+                "dtype": "string"
+              }
+            ]
+          },
+          {
+            "name": "query",
+            "dtype": "string"
+          },
+          {
+            "name": "query_id",
+            "dtype": "int32"
+          },
+          {
+            "name": "query_type",
+            "dtype": "string"
+          },
+          {
+            "name": "wellFormedAnswers",
+            "sequence": "string"
+          }
+        ],
+        "splits": [
+          {
+            "name": "validation",
+            "num_bytes": 42665198,
+            "num_examples": 10047
+          },
+          {
+            "name": "train",
+            "num_bytes": 350516260,
+            "num_examples": 82326
+          },
+          {
+            "name": "test",
+            "num_bytes": 40977580,
+            "num_examples": 9650
+          }
+        ],
+        "download_size": 217328153,
+        "dataset_size": 434159038
+      },
+      {
+        "config_name": "v2.1",
+        "features": [
+          {
+            "name": "answers",
+            "sequence": "string"
+          },
+          {
+            "name": "passages",
+            "sequence": [
+              {
+                "name": "is_selected",
+                "dtype": "int32"
+              },
+              {
+                "name": "passage_text",
+                "dtype": "string"
+              },
+              {
+                "name": "url",
+                "dtype": "string"
+              }
+            ]
+          },
+          {
+            "name": "query",
+            "dtype": "string"
+          },
+          {
+            "name": "query_id",
+            "dtype": "int32"
+          },
+          {
+            "name": "query_type",
+            "dtype": "string"
+          },
+          {
+            "name": "wellFormedAnswers",
+            "sequence": "string"
+          }
+        ],
+        "splits": [
+          {
+            "name": "validation",
+            "num_bytes": 413765365,
+            "num_examples": 101093
+          },
+          {
+            "name": "train",
+            "num_bytes": 3462807709,
+            "num_examples": 808731
+          },
+          {
+            "name": "test",
+            "num_bytes": 405691932,
+            "num_examples": 101092
+          }
+        ],
+        "download_size": 2105722550,
+        "dataset_size": 4282265006
+      }
+    ],
+    "configs": [
+      {
+        "config_name": "v1.1",
+        "data_files": [
+          {
+            "split": "validation",
+            "path": "v1.1/validation-*"
+          },
+          {
+            "split": "train",
+            "path": "v1.1/train-*"
+          },
+          {
+            "split": "test",
+            "path": "v1.1/test-*"
+          }
+        ]
+      },
+      {
+        "config_name": "v2.1",
+        "data_files": [
+          {
+            "split": "validation",
+            "path": "v2.1/validation-*"
+          },
+          {
+            "split": "train",
+            "path": "v2.1/train-*"
+          },
+          {
+            "split": "test",
+            "path": "v2.1/test-*"
+          }
+        ]
+      }
+    ]
+  },
+  "siblings_count": 14,
+  "id": "microsoft/ms_marco"
+}

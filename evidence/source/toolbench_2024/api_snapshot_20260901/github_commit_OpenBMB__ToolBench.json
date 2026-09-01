@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/OpenBMB/ToolBench/commits/master",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "d56fdd89faf8c91fa135090b212bb9057ee5cfc2",
+  "html_url": "https://github.com/OpenBMB/ToolBench/commit/d56fdd89faf8c91fa135090b212bb9057ee5cfc2",
+  "commit": {
+    "author": {
+      "name": "Yujia Qin",
+      "email": "835571620@qq.com",
+      "date": "2025-05-21T15:46:57Z"
+    },
+    "committer": {
+      "name": "Yujia Qin",
+      "email": "835571620@qq.com",
+      "date": "2025-05-21T15:46:57Z"
+    },
+    "message": "update missing google drive link",
+    "tree": {
+      "sha": "efd32aca9bcbe0fe5e7566dd4723fb6cbf827c56",
+      "url": "https://api.github.com/repos/OpenBMB/ToolBench/git/trees/efd32aca9bcbe0fe5e7566dd4723fb6cbf827c56"
+    },
+    "url": "https://api.github.com/repos/OpenBMB/ToolBench/git/commits/d56fdd89faf8c91fa135090b212bb9057ee5cfc2",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "parents": [
+    {
+      "sha": "9e58fbc2b9a85a48e160edd66a55543849bd526a",
+      "url": "https://api.github.com/repos/OpenBMB/ToolBench/commits/9e58fbc2b9a85a48e160edd66a55543849bd526a",
+      "html_url": "https://github.com/OpenBMB/ToolBench/commit/9e58fbc2b9a85a48e160edd66a55543849bd526a"
+    }
+  ],
+  "stats": {
+    "total": 13,
+    "additions": 6,
+    "deletions": 7
+  },
+  "files_count": 2
+}

@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/xiaowu0162/LongMemEval/commits/main",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+  "html_url": "https://github.com/xiaowu0162/LongMemEval/commit/9e0b455f4ef0e2ab8f2e582289761153549043fc",
+  "commit": {
+    "author": {
+      "name": "Di Wu",
+      "email": "43978113+xiaowu0162@users.noreply.github.com",
+      "date": "2026-05-11T22:49:24Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-05-11T22:49:24Z"
+    },
+    "message": "Update README.md",
+    "tree": {
+      "sha": "f2b63ffd523c37a0139cccab9a936e11dbeb5820",
+      "url": "https://api.github.com/repos/xiaowu0162/LongMemEval/git/trees/f2b63ffd523c37a0139cccab9a936e11dbeb5820"
+    },
+    "url": "https://api.github.com/repos/xiaowu0162/LongMemEval/git/commits/9e0b455f4ef0e2ab8f2e582289761153549043fc",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqAlz0CRC1aQ7uu5UhlAAAUwgQAEgYIGYHYRIbsYjM8Tyk73AW\nHccP8R2M19DanjZAvXg8PzJSUW07TPBze+AagRnA3z8TjrSqPnl30791vCX1OHyp\nu/ZjKw9NZuvF6ywpP+KUy2bZ9qLt/r6WPwO/LK1DFuH3JbT1qarwxR5Y0uH8PBbx\na7HdXXo3sssl+Da9CmzAWPQyRkpjgjhi1a/BZbVdDQHdoktBTfWa6XHMNt0gGfqB\nFNEBBk4kHe421wRW+SVxNp6a/F+kzZJ6lVmMEETtSG3DAgAdx2f5/Aw9kWwORE3t\n+diNX8tXJvYl5GEjIs/kQ8DSZFrAtaHHy13IULz2wqAsTYgk1cnsq/fV5LMyQ/m0\nxj1LW9IUg7UNvZWeerQPpS17Gvd3pm9RZ1eEgx7665gdLeb5UJB1SB4pp+LuDbu5\n2MbEbE7LlodM8VVsgtwQCA0U4e3E3eGYffGibM1TWGuLIntLOsc+91YOkLXGrzK7\nZ4ttIO6tmVnEWuxj9qMDbQ0fa966EyXLf5Bs2L1dNzHrzBmVUAVQAFYobb7z9NOz\nDRNt3ngvUAI+RgFhsYloqT34VrQuP0h1sKdddLZPS4kFRY9IAWWTevJ3F30+/5b/\n3EPTSI1Luw+ZcKrsBYyE0+AuuyUOV0YD0h3b2/ZwKsOfqb43Pc1L9amkyrJAFFIj\nSd+ZFpRYHgPWicemB0+K\n=qTR5\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree f2b63ffd523c37a0139cccab9a936e11dbeb5820\nparent 982fbd7045c9977e9119b5424cab0d7790d19413\nauthor Di Wu <43978113+xiaowu0162@users.noreply.github.com> 1778539764 -0700\ncommitter GitHub <noreply@github.com> 1778539764 -0700\n\nUpdate README.md",
+      "verified_at": "2026-05-11T22:49:25Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "982fbd7045c9977e9119b5424cab0d7790d19413",
+      "url": "https://api.github.com/repos/xiaowu0162/LongMemEval/commits/982fbd7045c9977e9119b5424cab0d7790d19413",
+      "html_url": "https://github.com/xiaowu0162/LongMemEval/commit/982fbd7045c9977e9119b5424cab0d7790d19413"
+    }
+  ],
+  "stats": {
+    "total": 13,
+    "additions": 7,
+    "deletions": 6
+  },
+  "files_count": 1
+}

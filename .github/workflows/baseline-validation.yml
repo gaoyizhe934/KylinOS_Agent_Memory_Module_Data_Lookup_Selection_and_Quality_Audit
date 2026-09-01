@@ -35,3 +35,6 @@ jobs:
 
       - name: 检查数据切分泄漏
         run: python scripts/split/leakage_check.py
+
+      - name: 校验阶段3版本线索存档
+        run: python scripts/audit/stage3_version_lock.py
