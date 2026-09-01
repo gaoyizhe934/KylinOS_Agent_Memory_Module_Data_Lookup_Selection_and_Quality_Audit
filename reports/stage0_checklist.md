@@ -37,10 +37,10 @@
 | 条件 | 状态 |
 | --- | --- |
 | 目录可用 | ✅ 16 个目录已创建 |
-| 负责人明确 | ⚠️ 3 个角色待指定 |
+| 负责人明确 | ✅ 3 个角色已指定（A=lyf-1213、B=DGXD、Reviewer=gaoyizhe，见上表） |
 | raw 目录只读/不直接修改 | ✅ 约定已建立，修改通过 ingest 脚本 |
 | registry 初始化 | ✅ dataset_registry.csv 已填写 11 个数据集 |
 
 ## 结论
 
-**Gate 0 待 Reviewer 批准** — 目录结构就绪，但负责人尚未指定。
+**Gate 0：角色已指定，待 Reviewer 批准** — 目录结构就绪，分工已确认（A=lyf-1213、B=DGXD、Reviewer=gaoyizhe），由 Reviewer 在 PR 中确认后即通过。
