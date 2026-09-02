@@ -210,7 +210,7 @@ def phase9_split(gold_sets):
         for split, items in buckets.items():
             path = os.path.join(PKG_ROOT, f"data/gold/{split}/{task_type}.jsonl")
             os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "w", encoding="utf-8") as fh:
+            with open(path, "w", encoding="utf-8", newline="\n") as fh:
                 for s in items:
                     fh.write(_json.dumps(s, ensure_ascii=False) + "\n")
             h = sha256_text(path)
