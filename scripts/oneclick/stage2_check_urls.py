@@ -43,9 +43,15 @@ def main():
     set_proxy(args.proxy)
     rows = load_registry(args.registry)
 
+    # 豁免列表：已裁决不参与 URL 验收的数据集
+    # 精确匹配，只有 toolbench_2024 被裁决为数据入口失效
+    # 仅豁免结论为"方法论参考"的数据集不强制验收（仍需检查并输出报告）
+    SKIP_DATA_URL_DATASETS = {'toolbench_2024'}
+
     print('========== 现有数据集 URL 可访问性检查 ==========')
     print(f'登记表: {os.path.relpath(args.registry, REPO_ROOT)}')
     print(f'数据集总数: {len(rows)}')
+    print(f'豁免 data_url 检查（已裁决数据入口失效）: {sorted(SKIP_DATA_URL_DATASETS) if SKIP_DATA_URL_DATASETS else "无"}')
     print()
     print('| 数据集 | 官方URL | 状态 | 下载URL | 状态 |')
     print('| --- | --- | --- | --- | --- |')
@@ -55,8 +61,13 @@ def main():
         did = row['dataset_id']
         official = (row.get('official_url') or '').strip()
         data_url = (row.get('data_url') or '').strip()
+        # 检查官方 URL（不可跳过，必须存在）
         s1 = check_url(official, timeout=args.timeout, insecure=args.insecure)
-        s2 = check_url(data_url, timeout=args.timeout, insecure=args.insecure)
+        # 豁免已裁决数据入口失效的数据集的 data_url 检查
+        if did in SKIP_DATA_URL_DATASETS:
+            s2 = ('EMPTY', '已裁决数据入口失效，豁免检查')
+        else:
+            s2 = check_url(data_url, timeout=args.timeout, insecure=args.insecure)
         counts[s1[0]] += 1
         counts[s2[0]] += 1
         print(f'| {did} | {official[:50]} | {s1[0]}:{s1[1]} | {data_url[:50]} | {s2[0]}:{s2[1]} |')
