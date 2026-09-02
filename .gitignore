@@ -7,6 +7,9 @@ data/raw/t2ranking_2023/v0_sample/qrels.retrieval.dev.tsv
 data/raw/t2ranking_2023/v0_sample/t2ranking_qrels_retrieval_dev.tsv
 data/raw/t2ranking_2023/v0_sample/queries.dev.tsv
 data/raw/t2ranking_2023/v0_sample/t2ranking_queries_dev.tsv
+# 阶段6 v0_subset 数据二进制不入库（仅保留 download.log）
+data/raw/*/v0_subset/*
+!data/raw/*/v0_subset/download.log
 
 # 浏览器下载缓存
 *.crdownload
