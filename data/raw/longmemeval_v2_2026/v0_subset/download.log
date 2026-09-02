@@ -1,0 +1,2 @@
+OK	286186	https://hf-mirror.com/datasets/xiaowu0162/longmemeval-v2/resolve/main/questions.jsonl
+NOTE	trajectories.jsonl(115M+ tokens) 过大，延迟到阶段6正式冻结时按需取子集
