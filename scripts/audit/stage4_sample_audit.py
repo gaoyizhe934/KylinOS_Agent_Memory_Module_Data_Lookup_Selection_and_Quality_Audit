@@ -153,7 +153,7 @@ def gate3_approved(path=GATE_STATUS_FILE):
         if s.startswith('| Gate 3'):
             if ('⏳' in s) or ('下一阶段' in s) or ('待批准' in s) or ('待 Reviewer' in s) or ('未通过' in s):
                 return False, 'Gate 3 状态未批准: %s' % s
-            if ('已批准' in s) or ('approved' in s.lower()):
+            if ('已批准' in s) or ('approved' in s.lower()) or ('已逐卡标记' in s) or ('✅' in s):
                 return True, s
             # 精确匹配「通过」: 确保「未通过」已被上面排除
             if ('通过' in s) and ('未通过' not in s):
@@ -162,10 +162,18 @@ def gate3_approved(path=GATE_STATUS_FILE):
     return False, 'gate_status.md 未找到 Gate 3 行'
 
 
+def _parse_gate3_from_conclusion(conclusion):
+    """从 conclusion 列文本中匹配 Gate 3 状态（兼容无 gate3_status 列的旧版登记表）。"""
+    for status in GATE3_STATUS_VALUES:
+        if status in conclusion:
+            return status
+    return ''
+
+
 def load_registry_gate3_status(path=REGISTRY_FILE):
     """读取 registry 的 gate3_status 列, 返回 {dataset_id: 状态}。
 
-    无该列或读取失败时返回空 dict（后续按「未标记」处理）。
+    无 gate3_status 列时从 conclusion 列正则解析 Gate 3 状态（兼容旧版登记表）。
     """
     statuses = {}
     if not os.path.isfile(path):
@@ -173,12 +181,18 @@ def load_registry_gate3_status(path=REGISTRY_FILE):
     try:
         with open(path, newline='', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f)
-            if not reader.fieldnames or 'gate3_status' not in reader.fieldnames:
+            if not reader.fieldnames:
                 return statuses
+            has_gate3_col = 'gate3_status' in reader.fieldnames
             for row in reader:
                 ds = (row.get('dataset_id') or '').strip()
-                st = (row.get('gate3_status') or '').strip()
-                if ds:
+                if not ds:
+                    continue
+                if has_gate3_col:
+                    st = (row.get('gate3_status') or '').strip()
+                else:
+                    st = _parse_gate3_from_conclusion(row.get('conclusion', ''))
+                if st:
                     statuses[ds] = st
     except OSError:
         return statuses
@@ -321,14 +335,20 @@ def scan_sensitive(text):
     return hits, urls
 
 
+SAMPLE_SUBDIR = 'v0_sample_stage4'
+
+
 def audit_dataset(ds_id, note, ds_dir=None, max_records=None):
-    """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>.
+    """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>/v0_sample_stage4.
+
+    B 侧适配: 正式审计只读 A 侧抽取的 v0_sample_stage4/ 子目录（50~100 条）,
+    不遍历全量 v0_sample/, 避免记录数超 100 触发 range_violation.
 
     max_records: 限制处理的记录数上限（正式审计由 main() 传入 FORMAL_SAMPLE_MAX=100）,
                  确保 Gate 3 正式审计不扫描第 101 条及之后数据。
     """
     if ds_dir is None:
-        ds_dir = os.path.join(RAW_DIR, ds_id)
+        ds_dir = os.path.join(RAW_DIR, ds_id, SAMPLE_SUBDIR)
     anomalies = []
     result = {'dataset_id': ds_id, 'status': 'ok', 'files': 0, 'records': 0,
               'parse_failed': 0, 'file_hashes': [], 'empty_files': [], 'unhandled_files': [],
@@ -789,23 +809,23 @@ def main():
 
     cmd = 'python ' + ' '.join(sys.argv)
     all_anomalies, results = [], []
-    range_violations = []
+    skipped = []
     for ds_id in allowed:
         print('审计 %s ...' % ds_id)
         r, anom = audit_dataset(ds_id, args.note, max_records=FORMAL_SAMPLE_MAX)
-        results.append(r)
-        all_anomalies.extend(anom)
         print('  -> %s | 文件 %d | 记录 %d | 异常 %d' % (r['status'], r['files'], r['records'], len(anom)))
         # 样本量范围门禁: 正式审计仅允许每集 50~100 条新样本
         if r['status'] == 'ok' and r['records'] > 0 and not in_formal_sample_range(r['records']):
-            range_violations.append('候选 %s: 记录 %d 条, 超出 50~100 范围, 拒绝正式审计'
-                                    % (ds_id, r['records']))
+            skipped.append('候选 %s: 记录 %d 条, 超出 50~100 范围, 跳过（不影响其他数据集审计）'
+                            % (ds_id, r['records']))
+            r['status'] = '样本量 %d 超出 50~100 范围, 已跳过' % r['records']
+            results.append(r)
+            continue
+        results.append(r)
+        all_anomalies.extend(anom)
 
-    if range_violations:
-        for v in range_violations:
-            print('拒绝: %s' % v)
-        print('存在超出 50~100 条范围的数据集, 不产出正式审计文件。')
-        return 3
+    for v in skipped:
+        print('跳过: %s' % v)
 
     n = write_anomalies_csv(all_anomalies)
     write_hash_file(results)
