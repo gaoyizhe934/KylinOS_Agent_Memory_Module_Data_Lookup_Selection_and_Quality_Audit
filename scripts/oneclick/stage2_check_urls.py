@@ -21,6 +21,12 @@ from net_utils import check_url, set_proxy, setup_stdout_utf8
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Reviewer 裁决（PR#1 审批第四节第4条 + PR#14 交接文档第7项口径）:
+# 仅 toolbench_2024 的数据入口（Google Drive）已失效 404 并被裁决降级为「方法论参考」,
+# 故仅精确豁免该候选的 data_url 验收；其余方法论参考候选（msmarco/trec）数据入口可访问,
+# 须正常验收。不要用 conclusion 前缀宽泛豁免，避免口径漂移。
+EXEMPT_METHODOLOGY_DATA_URL = frozenset({'toolbench_2024'})
+
 
 def load_registry(path):
     with open(path, 'r', encoding='utf-8-sig') as f:
@@ -46,8 +52,8 @@ def main():
     print('========== 现有数据集 URL 可访问性检查 ==========')
     print(f'登记表: {os.path.relpath(args.registry, REPO_ROOT)}')
     print(f'数据集总数: {len(rows)}')
-    print('验收范围: 全部数据集的 official_url（来源核验必备）; data_url 仅验收正式候选,')
-    print('          conclusion 标记「方法论参考」的数据集不要求数据可获取（Reviewer PR#1 裁决语义）')
+    print('验收范围: 全部数据集的 official_url（来源核验必备）; data_url 验收全部候选,')
+    print('          仅 toolbench_2024 因其数据入口失效(404)已被裁决降级, data_url 不验收（PR#14 第7项口径）')
     print()
     print('| 数据集 | 官方URL | 状态 | 下载URL | 状态 |')
     print('| --- | --- | --- | --- | --- |')
@@ -58,13 +64,12 @@ def main():
         did = row['dataset_id']
         official = (row.get('official_url') or '').strip()
         data_url = (row.get('data_url') or '').strip()
-        conclusion = (row.get('conclusion') or '').strip()
         s1 = check_url(official, timeout=args.timeout, insecure=args.insecure)
         counts[s1[0]] += 1
-        if conclusion.startswith('方法论参考'):
-            # Reviewer 裁决（PR#1 审批第四节第4条）: 方法论参考不进首版封存,
-            # 不求数据可获取; data_url 仅作登记留痕, 标记 SKIPPED 不计入验收
-            s2 = ('SKIPPED', '方法论参考, 数据入口不验收')
+        if did in EXEMPT_METHODOLOGY_DATA_URL:
+            # Reviewer 裁决（PR#1 审批第四节第4条）: 仅 toolbench_2024 官方数据入口失效,
+            # 不求其数据可获取; data_url 仅作登记留痕, 标记 SKIPPED 不计入验收
+            s2 = ('SKIPPED', 'toolbench_2024 数据入口失效(404), 已裁决降级, 数据入口不验收')
             skipped_data.append(did)
         else:
             s2 = check_url(data_url, timeout=args.timeout, insecure=args.insecure)
@@ -80,9 +85,9 @@ def main():
           f"OK={counts['OK']}  EMPTY={counts['EMPTY']}  ERROR={counts['ERROR']}  TIMEOUT={counts['TIMEOUT']}"
           f"  SKIPPED={len(skipped_data)}")
     print('说明: OK=可访问, EMPTY=登记表未填写该 URL, ERROR=不可访问, TIMEOUT=超时, '
-          'SKIPPED=方法论参考候选的 data_url 不验收')
+          'SKIPPED=toolbench_2024 数据入口不验收（已裁决降级）')
     if skipped_data:
-        print(f'不验收 data_url 的方法论参考候选: {", ".join(skipped_data)}')
+        print(f'不验收 data_url 的候选: {", ".join(skipped_data)}')
 
     if failures:
         print()
