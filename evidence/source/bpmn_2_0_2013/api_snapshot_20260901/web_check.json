@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "checked_at_utc": "2026-09-01T12:41:52Z",
+    "tool": "scripts/audit/stage3_version_lock.py --fetch"
+  },
+  "checks": [
+    {
+      "url": "https://www.omg.org/spec/BPMN/2.0/PDF",
+      "note": "官方规范 PDF 入口",
+      "status": "OK 200"
+    }
+  ]
+}

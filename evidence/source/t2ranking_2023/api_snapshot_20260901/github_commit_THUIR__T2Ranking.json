@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/THUIR/T2Ranking/commits/main",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "3ab0a0de72dd50bf84d852a985f6188334781403",
+  "html_url": "https://github.com/THUIR/T2Ranking/commit/3ab0a0de72dd50bf84d852a985f6188334781403",
+  "commit": {
+    "author": {
+      "name": "Qian Dong",
+      "email": "471607065@qq.com",
+      "date": "2023-07-03T08:47:00Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2023-07-03T08:47:00Z"
+    },
+    "message": "Update README.md",
+    "tree": {
+      "sha": "42fd3b00e5034324e181940c7025edc68b4a71a8",
+      "url": "https://api.github.com/repos/THUIR/T2Ranking/git/trees/42fd3b00e5034324e181940c7025edc68b4a71a8"
+    },
+    "url": "https://api.github.com/repos/THUIR/T2Ranking/git/commits/3ab0a0de72dd50bf84d852a985f6188334781403",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJkoosECRBK7hj4Ov3rIwAAW28IAJN5tOFhlvnrN/3JWiP4pvMo\n+ejuVAT9YergpXjjpKWil+DXqFgk2d8qAd52DJPkY8S/NoWVWrL5WxA2ZaPYvXpK\nYk3GRsNSf8gWU7pN3iwquQ0eLI8Nj6tMccNBW01sqJwsk/LQOrxwhDcB5uIJeji/\n3OGEsd6un1I5ml/zEtjYiKggYg3bnz4oOUCP0/gsVCKZXhooFOxhpf+hyWzsBm2h\nQ2Yz0ybDXSGb09o8UKvFWROA9UXnXBvQBkl/MwA/kqs0tNQzHVEI93dDSIL0rJWe\n8BMnr7PYvYSz++kirVd2L7seJFrViPOoRhq9RLbDhiXjkIz6P9HJz5aQfIjBRqA=\n=rum1\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 42fd3b00e5034324e181940c7025edc68b4a71a8\nparent d28af5182c6d767306c2839fa27ce6cd360feb03\nauthor Qian Dong <471607065@qq.com> 1688374020 +0800\ncommitter GitHub <noreply@github.com> 1688374020 +0800\n\nUpdate README.md",
+      "verified_at": "2024-01-16T19:59:59Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "d28af5182c6d767306c2839fa27ce6cd360feb03",
+      "url": "https://api.github.com/repos/THUIR/T2Ranking/commits/d28af5182c6d767306c2839fa27ce6cd360feb03",
+      "html_url": "https://github.com/THUIR/T2Ranking/commit/d28af5182c6d767306c2839fa27ce6cd360feb03"
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "additions": 1,
+    "deletions": 1
+  },
+  "files_count": 1
+}

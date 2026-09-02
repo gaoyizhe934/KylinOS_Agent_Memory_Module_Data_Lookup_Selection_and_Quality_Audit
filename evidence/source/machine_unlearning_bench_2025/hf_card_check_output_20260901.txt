@@ -1,0 +1,28 @@
+﻿=== 详细卡片信息 ===
+  cardData keys: ['license', 'size_categories']
+  license: mit
+  tags: ['license:mit', 'size_categories:10K<n<100K', 'arxiv:2410.23232', 'region:us']
+
+=== README 前800字 ===
+---
+license: mit
+size_categories:
+- 10K<n<100K
+---
+Dataset for the evaluation of data-unlearning techniques using KLOM (KL-divergence of Margins).
+
+# How KLOM works:
+KLOM works by:
+1. training N models (original models)
+2. Training N fully-retrained models (oracles) on forget set F
+3. unlearning forget set F from the original models
+4. Comparing the outputs of the unlearned models from the retrained models on different points
+  (specifically, computing the KL divergence between the distribution of _margins_ of oracle models and distribution of _margins_ of the unlearned models)
+
+Originally proposed in the work Attribute-to-Delete: Machine Unlearning via Datamodel Matching (https://arxiv.org/abs/2410.23232), described in detail in E.1.
+
+**Outline of how KLOM works:**
+![Image 5-4-25 at 9.21 
+
+=== README 总长度 ===
+2303 chars

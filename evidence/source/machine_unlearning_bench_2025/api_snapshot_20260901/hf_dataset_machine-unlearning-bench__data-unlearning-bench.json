@@ -1,0 +1,16 @@
+{
+  "_meta": {
+    "api_endpoint": "https://huggingface.co/api/datasets/machine-unlearning-bench/data-unlearning-bench",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "sha": "86afcc8b5737bc3b8f437e1c5ffccde3ecf7df75",
+  "lastModified": "2025-05-20T16:10:52.000Z",
+  "cardData": {
+    "license": "mit",
+    "size_categories": [
+      "10K<n<100K"
+    ]
+  },
+  "siblings_count": 32881,
+  "id": "machine-unlearning-bench/data-unlearning-bench"
+}

@@ -1,0 +1,53 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/budzianowski/multiwoz/commits/master",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "fe0c8e65cfcd8462bd33c86e35f21addc84ca82b",
+  "html_url": "https://github.com/budzianowski/multiwoz/commit/fe0c8e65cfcd8462bd33c86e35f21addc84ca82b",
+  "commit": {
+    "author": {
+      "name": "Paweł Budzianowski",
+      "email": "budzianowski@gmail.com",
+      "date": "2025-01-14T17:45:22Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2025-01-14T17:45:22Z"
+    },
+    "message": "Merge pull request #135 from dlwlgus53/patch-1\n\nUpdate README.md (Add performance results from our Interspeech 2022 p…",
+    "tree": {
+      "sha": "2f5c0eb41655b9c4207b584b88ded777170925ce",
+      "url": "https://api.github.com/repos/budzianowski/multiwoz/git/trees/2f5c0eb41655b9c4207b584b88ded777170925ce"
+    },
+    "url": "https://api.github.com/repos/budzianowski/multiwoz/git/commits/fe0c8e65cfcd8462bd33c86e35f21addc84ca82b",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJnhqKzCRC1aQ7uu5UhlAAAQX8QAG2J6342JdXT9LtOCTkFcNZi\ngpBVLTZCzUvIVGlACpJA/HWnSko7A9PmXHg1/JmGMsxYpvfWVt8r+2QFMAEVvWlg\nkCB2+dRBhHobVbFJMYU9oou//u/kOJhGW0DNprLPWhRG0tlJ+xJAL2VflKczUjrb\nKixMWI147jwygG/OQiMi2HHAeHM9p9MUYKiVVkZQoX7GrxgAaUbBCQAhh/8EfjGc\nyi/7KcxMGPoxUzjvJtsw6Kn/VM/YcEuxxIeZdaFlSRfqFPuHKRQR1RjpezsAKDgh\nB4Mgsuc/NcFrzNlwmdsEtGeJawJc6yK3VJhx92e9Cc6xjIXV7VjrZ3NdBT1ePavW\n2JLb4Y+LmBkslAf8Pb3O2SeoRFDAuveNTKik+HyRUc/nhDRESq7YKjh0TzcI/lYX\niqsE41yIrGGXka40zDDG5EguIKBYDxb/jUT2Pb4ccOhFUV7meY7nSDBohNKo+upb\nA2L12u83x11kRP/B2U1/GjPQ25mpqUzAyY9nEDjuVXc3YfmYLg5/HED/cMFmnQil\nTCaMHnl31/6ZjuTUvaVMJvXoad72E92IIFWezIYk39miEceqcFmRVuqmDheTJf2N\nQYay1S25ajl1kkbws2XGOY3o5CRSq7lEMzo1jVn5Egb6fJyPp/Oj0q3AQR0Ad3py\nizUnWn9iS2TfTuHsznmR\n=0bVL\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 2f5c0eb41655b9c4207b584b88ded777170925ce\nparent 9e56cfc6119f9490154e36bb0a419b80bacf9059\nparent 6af624e94a304a951c12db4675f5426976740686\nauthor Paweł Budzianowski <budzianowski@gmail.com> 1736876722 -0800\ncommitter GitHub <noreply@github.com> 1736876722 -0800\n\nMerge pull request #135 from dlwlgus53/patch-1\n\nUpdate README.md (Add performance results from our Interspeech 2022 p…",
+      "verified_at": "2025-01-14T17:54:54Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "9e56cfc6119f9490154e36bb0a419b80bacf9059",
+      "url": "https://api.github.com/repos/budzianowski/multiwoz/commits/9e56cfc6119f9490154e36bb0a419b80bacf9059",
+      "html_url": "https://github.com/budzianowski/multiwoz/commit/9e56cfc6119f9490154e36bb0a419b80bacf9059"
+    },
+    {
+      "sha": "6af624e94a304a951c12db4675f5426976740686",
+      "url": "https://api.github.com/repos/budzianowski/multiwoz/commits/6af624e94a304a951c12db4675f5426976740686",
+      "html_url": "https://github.com/budzianowski/multiwoz/commit/6af624e94a304a951c12db4675f5426976740686"
+    }
+  ],
+  "stats": {
+    "total": 1,
+    "additions": 1,
+    "deletions": 0
+  },
+  "files_count": 1
+}

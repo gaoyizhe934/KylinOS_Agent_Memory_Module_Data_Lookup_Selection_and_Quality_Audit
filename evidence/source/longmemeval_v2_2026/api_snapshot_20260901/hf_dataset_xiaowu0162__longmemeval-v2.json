@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "api_endpoint": "https://huggingface.co/api/datasets/xiaowu0162/longmemeval-v2",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "sha": "f152293e235517d504809563c833d7190b8c713b",
+  "lastModified": "2026-05-17T02:59:48.000Z",
+  "cardData": {
+    "language": [
+      "en"
+    ],
+    "license": "apache-2.0",
+    "pretty_name": "LongMemEval-V2",
+    "task_categories": [
+      "image-text-to-text"
+    ],
+    "tags": [
+      "benchmark",
+      "agents",
+      "memory",
+      "retrieval",
+      "question-answering",
+      "web-agents",
+      "enterprise-agents"
+    ]
+  },
+  "siblings_count": 41,
+  "id": "xiaowu0162/longmemeval-v2"
+}

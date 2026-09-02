@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "api_endpoint": "https://huggingface.co/api/datasets/THUIR/T2Ranking",
+    "fetched_at_utc": "2026-09-01T12:41:52Z"
+  },
+  "sha": "2a369a430a70979223f1b9a41b1919774d46b432",
+  "lastModified": "2025-03-06T09:34:07.000Z",
+  "cardData": {
+    "license": "apache-2.0",
+    "task_categories": [
+      "text-retrieval",
+      "text-classification",
+      "sentence-similarity"
+    ],
+    "language": [
+      "zh"
+    ],
+    "size_categories": [
+      "1M<n<10M"
+    ]
+  },
+  "siblings_count": 19,
+  "id": "THUIR/T2Ranking"
+}

@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/baidu/DuReader/commits/master",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "c625076b06da8f56d59f19c41c73bd580a98a347",
+  "html_url": "https://github.com/baidu/DuReader/commit/c625076b06da8f56d59f19c41c73bd580a98a347",
+  "commit": {
+    "author": {
+      "name": "DecstionBack",
+      "email": "lvshangwen1011@163.com",
+      "date": "2022-05-26T09:30:46Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2022-05-26T09:30:46Z"
+    },
+    "message": "Update README.md",
+    "tree": {
+      "sha": "d30609057bea483cd599c22ecbf6c63691dbbd54",
+      "url": "https://api.github.com/repos/baidu/DuReader/git/trees/d30609057bea483cd599c22ecbf6c63691dbbd54"
+    },
+    "url": "https://api.github.com/repos/baidu/DuReader/git/commits/c625076b06da8f56d59f19c41c73bd580a98a347",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJij0jGCRBK7hj4Ov3rIwAAGM4IAFUv5jAJpmNcbVsHY5dtJPKE\n/ulwX1q6EM7vMF3q5Ag/kD7gnBr41Ht2UUVaTuElN7VHcp3pzrhyk8GbXK/hweDF\nEwP6AUEPwq1Ux9pUMMbXFZcT04J60BusojekS4OFTIhIlh5UjYiqUVOSbI/gkxYW\ndUb51TSLAVKH0GTVB0YptSXgGfzwfd4+HzRzbnHzXNS94/7prmW+V26/gKaaHodm\npW0VellSQWu3YoPGm+fxkS/q3jttzj5Ud1M7PTq/cUB2lCuIHdnhFmFR65/hvzWq\np1spm6E59D/T9TuvLSr3NxRNt51tVcbzdw+cv6xXTtH98a8A2lpBhyz9I/+X2SY=\n=MklL\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree d30609057bea483cd599c22ecbf6c63691dbbd54\nparent f5aab91fabbc839a479dbf0a0740e8b57c2da68f\nauthor DecstionBack <lvshangwen1011@163.com> 1653557446 +0800\ncommitter GitHub <noreply@github.com> 1653557446 +0800\n\nUpdate README.md",
+      "verified_at": "2024-11-06T15:57:20Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "f5aab91fabbc839a479dbf0a0740e8b57c2da68f",
+      "url": "https://api.github.com/repos/baidu/DuReader/commits/f5aab91fabbc839a479dbf0a0740e8b57c2da68f",
+      "html_url": "https://github.com/baidu/DuReader/commit/f5aab91fabbc839a479dbf0a0740e8b57c2da68f"
+    }
+  ],
+  "stats": {
+    "total": 2,
+    "additions": 1,
+    "deletions": 1
+  },
+  "files_count": 1
+}

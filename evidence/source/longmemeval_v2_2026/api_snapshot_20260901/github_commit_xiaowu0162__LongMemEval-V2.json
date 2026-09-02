@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "api_endpoint": "https://api.github.com/repos/xiaowu0162/LongMemEval-V2/commits/main",
+    "fetched_at_utc": "2026-09-01T12:41:52Z",
+    "note": "关键字段提取存档（files[].patch 等大字段已裁剪）；复现: GET api_endpoint"
+  },
+  "sha": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+  "html_url": "https://github.com/xiaowu0162/LongMemEval-V2/commit/2cc8c540bdb87fe6761629b585e727e1c4704520",
+  "commit": {
+    "author": {
+      "name": "Di Wu",
+      "email": "43978113+xiaowu0162@users.noreply.github.com",
+      "date": "2026-08-09T22:31:22Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-08-09T22:31:22Z"
+    },
+    "message": "Add news section to README with latest updates\n\nAdded news section with update on AgentRunbook-C V2.",
+    "tree": {
+      "sha": "a1c4c7dd7ff7de593b930380c0682be7f0785c23",
+      "url": "https://api.github.com/repos/xiaowu0162/LongMemEval-V2/git/trees/a1c4c7dd7ff7de593b930380c0682be7f0785c23"
+    },
+    "url": "https://api.github.com/repos/xiaowu0162/LongMemEval-V2/git/commits/2cc8c540bdb87fe6761629b585e727e1c4704520",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqeP+6CRC1aQ7uu5UhlAAAzh0QACJEdt72LdjU2y3R2AV3BFLL\nSdP6V7fJhdT8jAVdrTl/fuXkqRlsX11uFG4auqDdprCHMQzoVg7kHRkwZaXTXyDY\nbcU/axNcWMMWdyNUZrerZheV4G6S6pjrSwOGo8SQUpfMI0C2E4u6Y6JTgKORsip6\nAQwVrF0q4PrG9ychnuPSyIaKR8JQKUUet9aeACj3Ls3riEf5iRLlWemJ/PRTXZ/y\nFXUc7zqYoz56yMz4n3EB7t3grWlF+e493jb7qu7cpwGar5b7cBZqh/HvWlgG0hXc\nct+rdIQ4pBdWfSG3uQT+pxRmXXEnofHuIb9aIbIrY6NCY/tvleLSg2SdGN75Sy2G\ncXRLLiX/hgB2XZ/IicozvK5VjXYTnMlkl+yBZa4iUG9s2dpP/stfErSBdYXqgmW0\nLsiq61IWGL+4QZbECl/yOW8ejhHUgrvUzxSML6IMGe1VhJJA8Q/QnKKHwPc/h4Pv\n2L9gP75IhMsQOJSclDBNRMjP+XYG0Yo8yWWFm3PGvSPeETINyOrQ8BR6WDf/R8SF\nq3iRyk77Kd+BvN2Lpu8MQMDpLCWj+YIH9Ck5TO2f0jPMsloFQmMXmXMepzA6pwI2\nWchzee79l6ypel7MzsnDa+xiTWxARY39/BOywyUpx+yHx9qHh7mIDirf1Qwri3g4\noqLhLCtxJ22IW5ZNDMtA\n=ktIg\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree a1c4c7dd7ff7de593b930380c0682be7f0785c23\nparent ef67f10aacd9080c75aeb2dd527a0af25dc26f1b\nauthor Di Wu <43978113+xiaowu0162@users.noreply.github.com> 1786314682 -0700\ncommitter GitHub <noreply@github.com> 1786314682 -0700\n\nAdd news section to README with latest updates\n\nAdded news section with update on AgentRunbook-C V2.",
+      "verified_at": "2026-08-10T00:47:10Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "ef67f10aacd9080c75aeb2dd527a0af25dc26f1b",
+      "url": "https://api.github.com/repos/xiaowu0162/LongMemEval-V2/commits/ef67f10aacd9080c75aeb2dd527a0af25dc26f1b",
+      "html_url": "https://github.com/xiaowu0162/LongMemEval-V2/commit/ef67f10aacd9080c75aeb2dd527a0af25dc26f1b"
+    }
+  ],
+  "stats": {
+    "total": 3,
+    "additions": 3,
+    "deletions": 0
+  },
+  "files_count": 1
+}
