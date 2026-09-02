@@ -187,7 +187,7 @@ def load_registry_gate3_status(path=REGISTRY_FILE):
 
 def validate_registry_statuses(statuses):
     """校验 gate3_status 值是否在受控枚举集内, 返回无效项列表 [(dataset_id, 非法值), ...]。
-    
+
     防止拼写漂移（如"允许试朋"静默绕过"允许试用"门禁）。
     """
     invalids = []
@@ -323,7 +323,7 @@ def scan_sensitive(text):
 
 def audit_dataset(ds_id, note, ds_dir=None, max_records=None):
     """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>.
-    
+
     max_records: 限制处理的记录数上限（正式审计由 main() 传入 FORMAL_SAMPLE_MAX=100）,
                  确保 Gate 3 正式审计不扫描第 101 条及之后数据。
     """
