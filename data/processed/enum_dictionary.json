@@ -1,0 +1,87 @@
+{
+  "generated_at": "2026-09-02T21:59:26",
+  "enum": {
+    "task_type": [
+      "auxiliary_dialogue",
+      "conflict_resolution",
+      "end_to_end_session",
+      "knowledge_retrieval",
+      "precise_forgetting",
+      "preference_extraction"
+    ],
+    "source": [
+      "public_derived",
+      "team_authored"
+    ],
+    "template_family": [
+      "conflict_knowledge_version_v1",
+      "conflict_safety_v1",
+      "conflict_scope_v1",
+      "conflict_source_v1",
+      "conflict_time_update_v1",
+      "forget_person_v1",
+      "forget_revoke_v1",
+      "forget_scoped_v1",
+      "forget_time_v1",
+      "kylin_e2e_workflow_v1",
+      "multiwoz_2_2_dev_v1",
+      "multiwoz_dialogue_v1",
+      "os_knowledge_retrieval_v1",
+      "output_style_length_v1",
+      "scope_app_v1",
+      "sensitive_no_store_v1",
+      "t2ranking_retrieval_v1",
+      "temp_instruction_v1",
+      "tool_choice_confirm_v1",
+      "update_revoke_v1"
+    ],
+    "preference_type": [
+      "app",
+      "output_style",
+      "safety",
+      "tool_choice"
+    ],
+    "conflict_type": [
+      "knowledge_version",
+      "safety",
+      "scope",
+      "source",
+      "time_update"
+    ],
+    "scope": [
+      "app",
+      "global",
+      "session"
+    ],
+    "operation": [
+      "create",
+      "no_op",
+      "update"
+    ],
+    "review_status": [
+      "candidate_only"
+    ]
+  },
+  "template_family_distribution": {
+    "t2ranking_retrieval_v1": 200,
+    "multiwoz_dialogue_v1": 200,
+    "multiwoz_2_2_dev_v1": 100,
+    "os_knowledge_retrieval_v1": 60,
+    "kylin_e2e_workflow_v1": 15,
+    "forget_scoped_v1": 10,
+    "forget_time_v1": 10,
+    "forget_person_v1": 10,
+    "forget_revoke_v1": 10,
+    "output_style_length_v1": 10,
+    "tool_choice_confirm_v1": 10,
+    "temp_instruction_v1": 10,
+    "update_revoke_v1": 10,
+    "scope_app_v1": 10,
+    "sensitive_no_store_v1": 10,
+    "conflict_time_update_v1": 8,
+    "conflict_scope_v1": 8,
+    "conflict_source_v1": 8,
+    "conflict_knowledge_version_v1": 8,
+    "conflict_safety_v1": 8
+  }
+}
