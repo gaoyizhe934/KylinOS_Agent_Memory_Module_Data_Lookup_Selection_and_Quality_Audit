@@ -18,10 +18,12 @@ bpmn_2_0_2013、machine_unlearning_bench_2025。
 """
 
 import argparse
+import hashlib
 import os
 import ssl
 import sys
 import urllib.request
+from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/../oneclick")
 try:
@@ -94,22 +96,39 @@ def mirror_candidates(url):
     return list(dict.fromkeys(cands))
 
 
-def fetch(url, out, timeout=90):
+def fetch(url, out, timeout=90, insecure=False):
+    # P0-1: 默认开启证书校验（CERT_REQUIRED），仅当显式 --insecure 才放宽（调试用，不用于正式冻结）。
     ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    if insecure:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     last = None
     for cand in mirror_candidates(url):
         for _ in range(2):
+            part = out + ".part"
             try:
                 req = urllib.request.Request(cand, headers=UA)
+                sha = hashlib.sha256()
+                total = 0
+                # P2-1: 流式分块写入，避免 277MB/3.6GB 文件 OOM。
                 with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
-                    data = resp.read()
-                with open(out, "wb") as fh:
-                    fh.write(data)
-                return cand, len(data)
+                    with open(part, "wb") as fh:
+                        while True:
+                            chunk = resp.read(8192)
+                            if not chunk:
+                                break
+                            fh.write(chunk)
+                            sha.update(chunk)
+                            total += len(chunk)
+                os.replace(part, out)
+                # P2-3: 下载后立即计算 SHA256（配合 B 侧 manifest/哈希交叉验证）。
+                return cand, total, sha.hexdigest()
             except Exception as e:
                 last = e
+                try:
+                    os.remove(part)
+                except OSError:
+                    pass
     raise last
 
 
@@ -118,6 +137,7 @@ def main():
     ap.add_argument("--dataset", default=None)
     ap.add_argument("--out", default="data/raw")
     ap.add_argument("--proxy", default=None)
+    ap.add_argument("--insecure", action="store_true", help="禁用SSL证书校验（仅调试，不用于正式冻结）")
     args = ap.parse_args()
 
     if args.proxy and set_proxy:
@@ -132,16 +152,16 @@ def main():
         sub = os.path.join(args.out, t["dataset_id"], t["subset"])
         os.makedirs(sub, exist_ok=True)
         log_path = os.path.join(sub, "download.log")
-        with open(log_path, "w", encoding="utf-8") as log:
-            log.write(f"dataset_id={t['dataset_id']}\n")
-            log.write(f"subset={t['subset']}\n")
+        # P1-3/P1-4: 追加模式 + 分隔行，保留历史与人工 NOTE 记录，避免覆盖 B 侧交叉验证痕迹。
+        with open(log_path, "a", encoding="utf-8") as log:
+            log.write(f"[run {datetime.now().isoformat(timespec='seconds')}] dataset_id={t['dataset_id']} subset={t['subset']}\n")
             for url in t["urls"]:
                 fname = os.path.basename(url.split("?")[0]) or "sample"
                 out = os.path.join(sub, fname)
                 try:
-                    used, n = fetch(url, out)
-                    line = f"OK\t{n}\t{used}\t{url}"
-                    print("  OK", fname, n, "bytes via", used)
+                    used, n, sha = fetch(url, out, insecure=args.insecure)
+                    line = f"OK\t{n}\t{sha[:16]}\t{used}\t{url}"
+                    print("  OK", fname, n, "bytes via", used, "sha", sha[:16])
                 except Exception as e:
                     line = f"FAIL\t{url}\t{str(e)[:120]}"
                     print("  FAIL", url, str(e)[:120])
