@@ -19,7 +19,7 @@ def main():
         for split in ("dev", "regression", "sealed_test"):
             items = [r for r in rows if bucket(r["template_family"]) == split]
             path = os.path.join(ROOT, "data/gold", split, name.replace("gold_candidates_", ""))
-            with open(path, "w", encoding="utf-8") as fh:
+            with open(path, "w", encoding="utf-8", newline="\n") as fh:
                 for r in items:
                     fh.write(json.dumps(r, ensure_ascii=False) + "\n")
             counts[split] = counts.get(split, 0) + len(items)

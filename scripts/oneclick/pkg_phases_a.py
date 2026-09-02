@@ -24,7 +24,7 @@ from pkg_config import (
 def write(path, text):
     full = os.path.join(PKG_ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
-    with open(full, "w", encoding="utf-8") as fh:
+    with open(full, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(text)
     return full
 
@@ -313,7 +313,7 @@ def phase3_audit(gold_sets):
     stats = []
     for task_type, samples in gold_sets.items():
         path = os.path.join(PKG_ROOT, f"data/interim/gold_candidates_{task_type}.jsonl")
-        with open(path, "w", encoding="utf-8") as fh:
+        with open(path, "w", encoding="utf-8", newline="\n") as fh:
             for s in samples:
                 fh.write(_json.dumps(s, ensure_ascii=False) + "\n")
         ids = [s.get("sample_id") for s in samples]
@@ -477,7 +477,7 @@ def phase6_convert(gold_sets):
             out.append(row)
         converted[task_type] = out
         path = os.path.join(PKG_ROOT, f"data/processed/{task_type}.jsonl")
-        with open(path, "w", encoding="utf-8") as fh:
+        with open(path, "w", encoding="utf-8", newline="\n") as fh:
             for row in out:
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
     total = sum(len(v) for v in converted.values())
