@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""阶段 6 B 侧校验：SHA256 + manifest + 只读 + 版本复检
+"""阶段 6 B 侧校验：SHA256 + manifest + 只读冻结 + 版本复检 + URL 交叉校验
 
 用法: python scripts/audit/stage6_b_verify.py
 """
 import hashlib
 import json
 import os
+import platform
 import stat
+import subprocess
 import sys
 import io
 from datetime import datetime, timezone
@@ -26,6 +28,15 @@ DATASETS = [
     'multiwoz_2_2_2020',
 ]
 
+# 下载脚本 URL 列表中预期的文件（用于交叉校验，P1-2 修复）
+EXPECTED_FILES = {
+    'longmemeval_cleaned_2025': ['longmemeval_oracle.json', 'longmemeval_s_cleaned.json'],
+    'longmemeval_v2_2026': ['questions.jsonl', 'trajectories.jsonl', 'SCHEMA.md', 'LICENSE'],
+    't2ranking_2023': ['queries.dev.tsv', 'qrels.retrieval.dev.tsv', 'collection.tsv'],
+    'stabletoolbench_2024': ['G1_instruction.json'],
+    'multiwoz_2_2_2020': ['dialogues_001.json'],
+}
+
 
 def sha256_file(path):
     h = hashlib.sha256()
@@ -38,6 +49,16 @@ def sha256_file(path):
 def check_readonly(path):
     st = os.stat(path)
     return not (st.st_mode & stat.S_IWUSR), oct(st.st_mode & 0o777)
+
+
+def set_readonly(path):
+    """设置文件为只读（P2-2 修复：补全 os.chmod 调用）。
+
+    Windows 下额外通过 attrib +R 设置 DOS 只读属性（P3-1 修复）。
+    """
+    os.chmod(path, 0o444)
+    if platform.system() == 'Windows':
+        subprocess.run(['attrib', '+R', path], check=False, capture_output=True)
 
 
 def main():
@@ -72,12 +93,28 @@ def main():
             all_ok = False
             continue
 
-        ds_manifest = {'status': 'ok', 'files': []}
+        # P1-2 修复：与下载脚本 URL 列表交叉校验
+        expected = EXPECTED_FILES.get(ds_id, [])
+        missing = [f for f in expected if f not in files]
+        unexpected = [f for f in files if f not in expected]
+
+        ds_manifest = {
+            'status': 'ok',
+            'expected_files': expected,
+            'missing_files': missing,
+            'unexpected_files': unexpected,
+            'files': []
+        }
         for fname in files:
             fpath = os.path.join(subset_dir, fname)
             fsize = os.path.getsize(fpath)
             fhash = sha256_file(fpath)
             ro, mode = check_readonly(fpath)
+
+            # P2-2 修复：若文件可写，自动设为只读
+            if not ro:
+                set_readonly(fpath)
+                ro, mode = check_readonly(fpath)
 
             entry = {
                 'filename': fname,
@@ -90,6 +127,12 @@ def main():
 
             ro_mark = '✅' if ro else '⚠️'
             print(f'  {fname}: {fsize} bytes, SHA256={fhash[:16]}..., {ro_mark} readonly={ro}')
+
+        # P1-2 修复：报告缺失/意外文件
+        if missing:
+            print(f'  ⚠️ 预期但缺失: {missing}')
+        if unexpected:
+            print(f'  ⚠️ 意外文件（不在脚本 URL 列表）: {unexpected}')
 
         manifest['datasets'][ds_id] = ds_manifest
         print()
@@ -173,7 +216,26 @@ def main():
                 print(f'  ⚠️ {ds_id}/{fname}: 字节数 {fsize} 在 download.log 中未找到')
     print()
 
-    print(f'结论: {"✅ 全部通过" if all_ok and readonly_ok else "⚠️ 存在需关注项"}')
+    # P1-2 修复：URL 列表交叉校验汇总
+    print('--- URL 列表交叉校验（P1-2） ---')
+    cross_ref_ok = True
+    for ds_id in DATASETS:
+        ds = manifest['datasets'].get(ds_id, {})
+        if ds.get('status') != 'ok':
+            continue
+        missing = ds.get('missing_files', [])
+        unexpected = ds.get('unexpected_files', [])
+        if missing:
+            print(f'  ⚠️ {ds_id}: 预期但缺失 {missing}')
+            cross_ref_ok = False
+        if unexpected:
+            print(f'  ⚠️ {ds_id}: 意外文件 {unexpected}')
+            cross_ref_ok = False
+        if not missing and not unexpected:
+            print(f'  ✅ {ds_id}: 文件列表与脚本 URL 一致')
+    print()
+
+    print(f'结论: {"✅ 全部通过" if all_ok and readonly_ok and cross_ref_ok else "⚠️ 存在需关注项"}')
 
 
 if __name__ == '__main__':
