@@ -2,11 +2,11 @@
 
 > **性质声明**: 本报告由脚本自动生成, 仅覆盖结构与可机械检查项; 标签语义可推导性、困难样本覆盖等语义项需人工抽检后才能得出结论。Gate 4 是否通过由 Reviewer 决定。
 >
-> **运行备注**: B 侧修复后重跑（ID_FIELD_HINT + DATASET_CONFIGS 修正）
+> **运行备注**: A复跑: 同步PR#17(ID修复)后重新审计
 
-- 运行时间: 2026-09-02 18:08:18
-- 运行命令: `python scripts/audit/stage4_sample_audit.py --note B 侧修复后重跑（ID_FIELD_HINT + DATASET_CONFIGS 修正）`
-- Python: 3.10.11 / 平台: win32
+- 运行时间: 2026-09-02 19:10:50
+- 运行命令: `python scripts/audit/stage4_sample_audit.py --note A复跑: 同步PR#17(ID修复)后重新审计`
+- Python: 3.11.9 / 平台: win32
 - 审计执行: Annotator B (DGXD01)
 
 ## 1. 审计概览
