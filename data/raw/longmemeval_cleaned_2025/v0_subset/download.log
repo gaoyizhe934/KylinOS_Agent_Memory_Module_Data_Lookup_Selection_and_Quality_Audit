@@ -1,2 +1,4 @@
 OK	15388478	https://hf-mirror.com/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_oracle.json
-NOTE	s_cleaned.json(277MB) 过大，延迟到阶段6正式冻结时按需取子集
+OK	277383467	https://hf-mirror.com/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json
+NOTE	修正记录：初稿曾标注 s_cleaned.json(277MB) 延迟取子集；后续确认该文件已在本地 v0_subset 就位（B 侧复检 hash d6f21ea9…、只读冻结）。本日志据此对齐实际磁盘状态。
+NOTE	M 全量未取，仅取 oracle + S cleaned 固定子集。
