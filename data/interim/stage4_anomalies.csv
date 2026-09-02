@@ -1,0 +1,4 @@
+﻿dataset_id,source_file,record_index,record_id,anomaly_type,severity,detail
+longmemeval_cleaned_2025,longmemeval_oracle_sample.jsonl,58,031748ae,sensitive_hit,low,"低危敏感模式抽样（共命中见统计, 判定合成/真实由人工）: {'email': 2}"
+longmemeval_cleaned_2025,longmemeval_oracle_sample.jsonl,65,031748ae_abs,sensitive_hit,low,"低危敏感模式抽样（共命中见统计, 判定合成/真实由人工）: {'email': 2}"
+longmemeval_v2_2026,questions_sample.jsonl,63,499488a6,null_string,low,"字段 answer 值为字符串 ""none""（疑似 null 字符串化）"

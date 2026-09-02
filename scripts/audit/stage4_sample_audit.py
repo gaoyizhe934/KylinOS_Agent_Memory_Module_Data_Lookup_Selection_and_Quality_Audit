@@ -98,7 +98,7 @@ DATASET_CONFIGS = {
         'evidence_fields': ['haystack_sessions', 'answer_session_ids'],
         'text_fields': ['question', 'answer'], 'category_field': 'question_type',
         'ref_check': 'longmemeval_oracle',
-        'field_types': {'question_id': str, 'answer': str, 'question': str,
+        'field_types': {'question_id': str, 'answer': (str, int), 'question': str,
                         'question_type': str, 'haystack_sessions': list,
                         'answer_session_ids': list, 'haystack_session_ids': list},
     },
@@ -116,9 +116,22 @@ DATASET_CONFIGS = {
         'field_types': {'query_id': str, 'query': str,
                         'relevant APIs': list, 'api_list': list},
     },
+    't2ranking_2023': {
+        'id_field': 'qid', 'label_field': None,
+        'evidence_fields': [],
+        'text_fields': ['text'], 'category_field': None,
+        'field_types': {'qid': (str, int), 'text': str},
+    },
+    'multiwoz_2_2_2020': {
+        'id_field': 'dialogue_id', 'label_field': None,
+        'evidence_fields': [],
+        'text_fields': [], 'category_field': 'services',
+        'ref_check': None,
+        'field_types': {'dialogue_id': str, 'services': list, 'turns': list},
+    },
 }
 
-ID_FIELD_HINT = re.compile(r'(^|_)(id|question_id|query_id|sample_id|uid)$', re.I)
+ID_FIELD_HINT = re.compile(r'(^|_)(id|question_id|query_id|qid|sample_id|uid|dialogue_id)$', re.I)
 LABEL_FIELD_HINT = re.compile(r'^(answer|label|gold|relevant APIs|relevant_apis|target|output)$', re.I)
 CATEGORY_FIELD_HINT = re.compile(r'^(task_type|question_type|category|type|domain|intent)$', re.I)
 

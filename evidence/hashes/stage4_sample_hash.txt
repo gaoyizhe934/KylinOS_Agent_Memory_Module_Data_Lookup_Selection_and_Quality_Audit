@@ -1,0 +1,16 @@
+# 阶段4 抽样哈希（SHA256, 由 stage4_sample_audit.py 生成）
+
+## longmemeval_cleaned_2025
+abb9c833425bcae3b355b9677e9781a1dd12e09078eec60d0f8af44dbce7a548  longmemeval_oracle_sample.jsonl
+
+## longmemeval_v2_2026
+dd0da12722395f9efb1b5b3692a9c3fbfe6bf9cf865f3fe0d496fdb886c627da  questions_sample.jsonl
+
+## multiwoz_2_2_2020
+07a6b10a2c609816117b30405f40cf34eeb4e55c53e63aa51f1593878c38a4b1  dialogues_sample.jsonl
+
+## stabletoolbench_2024
+（无数据文件）
+
+## t2ranking_2023
+3a7ce5d3d5dcccf754b7959ddd1a4b887d59e0db9aa0ec528b3d4056a61cc5be  queries_sample.tsv
