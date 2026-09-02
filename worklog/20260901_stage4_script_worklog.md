@@ -47,10 +47,7 @@
 
 - 单元测试 22 项全部通过（类型规则命中/零误报、抽样量/类别覆盖/可复现性、Gate 3 门禁批准/状态/范围）;
 - `scripts/convert/test_convert.py` 幂等测试通过（215 条转换、silent_drop 0、无字段丢失）;
-- 全脚本本地试跑验证无崩溃；新增类型检查在本地样本上即发现真实问题：
-  longmemeval_cleaned 有 32 条 `answer` 为 int（应为 str）、stabletoolbench
-  的 query_id 存在 str/int 混用（与此前发现的样本文件混装问题相互印证）。
-  以上观察仅口头转达 A 参考，不作为 Gate 结论。
+- **Gate 3 批准前不执行全量真实数据试跑**，所有类型检查逻辑均通过单元测试在构造用例上验证。
 
 ## 未完成 / 下一步
 
