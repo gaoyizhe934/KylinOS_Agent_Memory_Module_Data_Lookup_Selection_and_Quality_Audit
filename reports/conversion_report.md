@@ -109,6 +109,7 @@
 1. **t2ranking hard_negative_ids / expected_answer_points 为空**：公开集不提供困难负样本和答案点，属后续任务，不影响 Gate 7 可溯源性要求；
 2. **tool_result.jsonl 已删除**：v1.0 拟留文件无法溯源（interim 源 gold_candidates_tool_result.jsonl 从未提交），违反红线 5（processed 全部可溯源 raw_id）。A 侧已删除并在诚实披露中记录，tool_result gold 候选将在阶段 8.2 产出；
 3. **公开子集固定规模**：t2ranking 200/24,831、multiwoz 200/512，按手册「只取固定小规模子集」执行，全量保留在 data/raw；
+4. **team_authored 215 条为候选草稿（Medium-1）**：user_id 为 `u_synthetic_*`、review_status=`candidate_only`，系模板生成候选草稿转换，**不冒充最终金标**。阶段 8 双标验证后转正为 gold；
 
 ## Gate 7 建议
 
@@ -119,7 +120,8 @@
 | timestamp 合法 | ✅ 0 非法 |
 | 无静默丢失 | ✅ 输入=输出 |
 | 幂等性 | ✅ 重复转换一致 |
-| **综合** | **建议通过 Gate 7** |
+| 前置 Gate 6 已收口 | ✅ PR #22 已合并，Gate 6 = ✅（4/5 冻结基线确认） |
+| **综合** | **建议通过 Gate 7**（前置 Gate 6 已由 PR #22 收口，stabletoolbench 条件待补不影响已冻结的 4/5 数据集转换） |
 
 ## 诚实披露
 
