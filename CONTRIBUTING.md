@@ -126,7 +126,7 @@ PR 的状态按以下顺序推进：
 ### 适用范围
 
 - **受保护分支（禁止直推，必须 PR + 审查）**：`master`、`clean-branch`、`stage4-audit` 等集成分支，以及所有不以工作者前缀命名的分支。
-- **工作者功能分支（可自由推送、评论、反复调整）**：`feat/*`、`fix/*`、`docs/*`、`test/*`、`review/*`、`codex/*`。在这些分支上可随时 `git push`、发 comment、调整内容，然后等待 Reviewer 检查，无需逐次申请。
+- **工作者功能分支（可自由推送、评论、反复调整）**：`feat/*`、`fix/*`、`docs/*`、`test/*`、`review/*`。在这些分支上可随时 `git push`、发 comment、调整内容，然后等待 Reviewer 检查（ruleset 层面不要求每次推送都走 PR 审批，但 commit/push/创建 PR/合并 PR 仍须按项目授权门禁分别获得人工明确指令）。
 
 ### 合并门槛
 
