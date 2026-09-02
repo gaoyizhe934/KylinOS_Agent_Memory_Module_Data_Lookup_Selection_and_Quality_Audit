@@ -1,0 +1,4 @@
+# 阶段4 审计样本: 强制 LF, 使文件内容哈希与 manifest 一致
+data/raw/*/v0_sample_stage4/*.jsonl  text eol=lf
+data/raw/*/v0_sample_stage4/*.tsv    text eol=lf
+evidence/audit/stage4_a_sample_manifest.json  text eol=lf

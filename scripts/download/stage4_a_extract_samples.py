@@ -5,6 +5,12 @@
 - 只读 data/raw/<ds_id>/v0_sample/ 全量, 抽取后写入 data/raw/<ds_id>/v0_sample_stage4/
 - seed=42 保证可复现
 - 不修改/删除全量原始文件 (红线: raw 只读)
+- v0_sample_stage4/ 为脚本派生的审计子样本, 属 raw 内"新增", 不改动任何原始文件
+
+修复记录 (Reviewer 复审):
+- High-1: 所有写出统一 newline="\\n"(LF), 使 SHA 与 git 提交 blob(LF) 一致
+- High-2: manifest 改用仓库相对路径, 注明源数据来自 v1.0 外部工作包(不在仓库内)
+- Low-1: 删除未使用的空函数 extract()
 """
 import json, os, sys, io, hashlib, random
 
@@ -14,6 +20,7 @@ RAW = os.path.join(REPO, 'data', 'raw')
 SAMPLE_N = 100
 SEED = 42
 
+
 def sha256(path):
     h = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -21,16 +28,29 @@ def sha256(path):
             h.update(c)
     return h.hexdigest()
 
+
 def write_jsonl(records, out_path):
+    """写入 JSONL, 强制 LF(newline='\\n'), 使文件哈希与 git 提交 blob 一致."""
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    with open(out_path, 'w', encoding='utf-8') as f:
+    with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
         for r in records:
             f.write(json.dumps(r, ensure_ascii=False) + '\n')
     return sha256(out_path)
 
-def extract(source_path, out_name, pick):
-    """从 source 读取记录, 用 pick(records)->list 返回要抽取的条目. 返回 (out_records, n)"""
-    return None
+
+def write_tsv(header, rows, out_path):
+    """写入 TSV, 强制 LF."""
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(header + '\n')
+        f.write('\n'.join(rows) + '\n')
+    return sha256(out_path)
+
+
+def rel(path):
+    """仓库相对路径, 用正斜杠, 保证可移植(不在 manifest 写死他机绝对路径)."""
+    return os.path.relpath(path, REPO).replace('\\', '/')
+
 
 # --- 各数据集抽取 ---
 report = []
@@ -43,7 +63,7 @@ with open(src, encoding='utf-8') as f:
 rnd = random.Random(SEED)
 chosen = rnd.sample(recs, SAMPLE_N)
 digest = write_jsonl(chosen, out)
-report.append(('longmemeval_cleaned_2025', len(chosen), digest, src, out))
+report.append(('longmemeval_cleaned_2025', len(chosen), digest, rel(src), rel(out)))
 
 # 2. longmemeval_v2: questions.jsonl (451条)
 src = os.path.join(RAW, 'longmemeval_v2_2026', 'v0_sample', 'questions.jsonl')
@@ -52,7 +72,7 @@ recs = [json.loads(l) for l in open(src, encoding='utf-8') if l.strip()]
 rnd = random.Random(SEED)
 chosen = rnd.sample(recs, SAMPLE_N)
 digest = write_jsonl(chosen, out)
-report.append(('longmemeval_v2_2026', len(chosen), digest, src, out))
+report.append(('longmemeval_v2_2026', len(chosen), digest, rel(src), rel(out)))
 
 # 3. t2ranking: queries.dev.tsv (24831条, qid+text)
 src = os.path.join(RAW, 't2ranking_2023', 'v0_sample', 'queries.dev.tsv')
@@ -62,12 +82,8 @@ header = lines[0]
 data = lines[1:]
 rnd = random.Random(SEED)
 chosen_lines = rnd.sample(data, SAMPLE_N)
-os.makedirs(os.path.dirname(out), exist_ok=True)
-with open(out, 'w', encoding='utf-8') as f:
-    f.write(header + '\n')
-    f.write('\n'.join(chosen_lines) + '\n')
-digest = sha256(out)
-report.append(('t2ranking_2023', len(chosen_lines), digest, src, out))
+digest = write_tsv(header, chosen_lines, out)
+report.append(('t2ranking_2023', len(chosen_lines), digest, rel(src), rel(out)))
 
 # 4. multiwoz: dialogues_001.json (512段)
 src = os.path.join(RAW, 'multiwoz_2_2_2020', 'v0_sample', 'dialogues_001.json')
@@ -76,19 +92,28 @@ recs = json.load(open(src, encoding='utf-8'))
 rnd = random.Random(SEED)
 chosen = rnd.sample(recs, SAMPLE_N)
 digest = write_jsonl(chosen, out)
-report.append(('multiwoz_2_2_2020', len(chosen), digest, src, out))
+report.append(('multiwoz_2_2_2020', len(chosen), digest, rel(src), rel(out)))
 
 print('=== 阶段4 A侧样本抽取结果 ===')
 for ds, n, dg, s, o in report:
-    print(f'[{ds}] 抽取 {n} 条 -> {os.path.relpath(o, REPO)}')
-    print(f'      来源: {os.path.relpath(s, REPO)}')
+    print(f'[{ds}] 抽取 {n} 条 -> {o}')
+    print(f'      来源: {s}')
     print(f'      SHA256: {dg}')
     print()
 
-# 输出一个清单文件
-manifest = [{'dataset_id': d, 'sample_count': n, 'sha256': dg, 'source_file': s, 'out_file': o} for d, n, dg, s, o in report]
+# 输出清单文件 (仓库相对路径)
+manifest = [{
+    'dataset_id': d,
+    'sample_count': n,
+    'sha256': dg,
+    'source_file': s,
+    'out_file': o,
+} for d, n, dg, s, o in report]
 mout = os.path.join(REPO, 'evidence', 'audit', 'stage4_a_sample_manifest.json')
 os.makedirs(os.path.dirname(mout), exist_ok=True)
-with open(mout, 'w', encoding='utf-8') as f:
+with open(mout, 'w', encoding='utf-8', newline='\n') as f:
     json.dump(manifest, f, ensure_ascii=False, indent=2)
-print(f'清单已写: {os.path.relpath(mout, REPO)}')
+print(f'清单已写: {rel(mout)}')
+print()
+print('注: 源数据来自 v1.0 外部工作包 (data/raw/v0_sample 全量, gitignore 大文件, 不在仓库内);')
+print('    v0_sample_stage4/ 为脚本派生审计子样本, 不改动任何原始文件.')
