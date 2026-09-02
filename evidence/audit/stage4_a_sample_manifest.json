@@ -1,0 +1,30 @@
+[
+  {
+    "dataset_id": "longmemeval_cleaned_2025",
+    "sample_count": 100,
+    "sha256": "fd5dbed464a9eee3775a81ea1d7887d90173a3db18f8f3a6fafa2092df172518",
+    "source_file": "data/raw/longmemeval_cleaned_2025/v0_sample/longmemeval_oracle.json",
+    "out_file": "data/raw/longmemeval_cleaned_2025/v0_sample_stage4/longmemeval_oracle_sample.jsonl"
+  },
+  {
+    "dataset_id": "longmemeval_v2_2026",
+    "sample_count": 100,
+    "sha256": "6db9a6bb48c2c478da5ae05e0654073aaa6a6f59df67394fba9a5b675e7eb526",
+    "source_file": "data/raw/longmemeval_v2_2026/v0_sample/questions.jsonl",
+    "out_file": "data/raw/longmemeval_v2_2026/v0_sample_stage4/questions_sample.jsonl"
+  },
+  {
+    "dataset_id": "t2ranking_2023",
+    "sample_count": 100,
+    "sha256": "7eeee02974c776a3819c855882cff3f93a54841ddb49f83c05a46dee52caf2f4",
+    "source_file": "data/raw/t2ranking_2023/v0_sample/queries.dev.tsv",
+    "out_file": "data/raw/t2ranking_2023/v0_sample_stage4/queries_sample.tsv"
+  },
+  {
+    "dataset_id": "multiwoz_2_2_2020",
+    "sample_count": 100,
+    "sha256": "d9629a7dd09c58d928cd51779f0af938c28e21b630b1414f3fd9301b3148a658",
+    "source_file": "data/raw/multiwoz_2_2_2020/v0_sample/dialogues_001.json",
+    "out_file": "data/raw/multiwoz_2_2_2020/v0_sample_stage4/dialogues_sample.jsonl"
+  }
+]
