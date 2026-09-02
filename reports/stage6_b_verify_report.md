@@ -81,9 +81,10 @@
 
 ## 已知问题
 
-1. **download.log 覆盖**：B 侧重下脚本覆盖了 longmemeval_v2 的 download.log（0 bytes），建议 A 侧在 PR 中恢复原始日志；
-2. **longmemeval_s_cleaned.json (277MB)**：A 侧 download.log 标注"过大，延迟到阶段6正式冻结时按需取子集"，但 B 侧重下时该文件已存在（可能是 A 侧后续下载），B 侧已计算哈希并设只读；
-3. **.gitignore 排除数据文件**：v0_subset 数据文件被 .gitignore 排除，B 侧无法直接从 git 获取文件，需重新下载验证；
+1. **download.log 覆盖**：B 侧重下脚本覆盖了 longmemeval_v2 的 download.log（0 bytes）。原始日志内容为 `OK 286186 https://hf-mirror.com/datasets/xiaowu0162/longmemeval-v2/resolve/main/questions.jsonl`，字节数与实际文件一致（286,186 bytes）。建议 A 侧恢复原始日志；
+2. **longmemeval_s_cleaned.json (277MB) 记录矛盾**：A 侧 download.log 标注"s_cleaned.json(277MB) 过大，延迟到阶段6正式冻结时按需取子集"（即未下载），但 B 侧重下时该文件已存在于 `v0_subset/` 目录中（277,383,467 bytes）。该文件可能是 A 侧在 PR 提交后又补充下载的，但未更新 download.log。B 侧已计算哈希并设只读，但建议 A 侧澄清该文件的下载时序和用途；
+3. **.gitignore 排除数据文件**：v0_subset 数据文件被 .gitignore 排除，B 侧无法直接从 git 获取文件，需重新下载验证。**冻结基线说明**：当前阶段以 manifest（SHA256 + 版本锁定）为基线依据，正式封存时通过 frozen 分支或外部存储固化二进制文件，确保仓库可独立复现 Gate 6 校验；
+4. **stabletoolbench 阶段 4 缺口未闭合**：stabletoolbench_2024 在阶段 4 审计中仅有 3 条样例（不足 50 条下限），Gate 4 按 4/5 通过（stabletoolbench 待补）。阶段 6 下载的 G1_instruction.json（26KB）不能替代阶段 4 样本审计缺口。**建议**：stabletoolbench 的 Gate 6 校验标记为"条件通过"，待阶段 4 样本缺口闭合后正式冻结；
 
 ## Gate 6 建议
 
@@ -94,11 +95,13 @@
 | 只读冻结 | ✅ 7/7 |
 | 版本复检 | ✅ 5/5 |
 | 下载日志交叉验证 | ✅ 6/7（1 个 log 被覆盖，字节数仍一致） |
-| **综合** | **建议通过 Gate 6** |
+| **综合** | **条件通过 Gate 6**（需 Reviewer 先批准 Gate 5，且 stabletoolbench 阶段 4 缺口闭合后正式冻结） |
 
 ## 诚实披露
 
 1. B 侧重新下载了全部 7 个文件进行独立验证，非直接使用 A 侧本地文件；
 2. B 侧下载使用的镜像与 A 侧一致（hf-mirror.com / gh-proxy.com）；
 3. B 侧无法验证 A 侧本地文件与 B 侧重下文件是否字节完全一致（因 A 侧文件未入库），但字节数全部匹配；
-4. 本报告为 B 独立校验，**未经 Reviewer 确认**，最终 Gate 6 批准由 Reviewer 出具。
+4. **冻结基线**：当前阶段以 manifest（SHA256 + 版本锁定）为基线依据，正式封存时通过 frozen 分支或外部存储固化二进制文件；
+5. **前置依赖**：Gate 6 的正式通过以 Gate 5（Reviewer 签发 `dataset_selection_decision_v2.md`）为前置条件，当前 Gate 5 状态为 `⏳ 下一阶段`；
+6. 本报告为 B 独立校验，**未经 Reviewer 确认**，最终 Gate 6 批准由 Reviewer 出具。
