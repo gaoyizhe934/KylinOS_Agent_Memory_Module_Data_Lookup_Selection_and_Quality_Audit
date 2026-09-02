@@ -12,7 +12,11 @@
 import json
 import os
 import csv
+import io
 import sys
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SUMMARY_PATH = os.path.join(REPO_ROOT, 'evidence', 'audit', 'stage4_audit_summary.json')
