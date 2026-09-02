@@ -149,9 +149,12 @@ def gate3_approved(path=GATE_STATUS_FILE):
     for ln in lines:
         s = ln.strip()
         if s.startswith('| Gate 3'):
-            if ('⏳' in s) or ('下一阶段' in s) or ('待批准' in s) or ('待 Reviewer' in s):
+            if ('⏳' in s) or ('下一阶段' in s) or ('待批准' in s) or ('待 Reviewer' in s) or ('未通过' in s):
                 return False, 'Gate 3 状态未批准: %s' % s
-            if ('通过' in s) or ('已批准' in s) or ('approved' in s.lower()):
+            if ('已批准' in s) or ('approved' in s.lower()):
+                return True, s
+            # 精确匹配「通过」: 确保「未通过」已被上面排除
+            if ('通过' in s) and ('未通过' not in s):
                 return True, s
             return False, '无法判定 Gate 3 状态: %s' % s
     return False, 'gate_status.md 未找到 Gate 3 行'
@@ -304,8 +307,12 @@ def scan_sensitive(text):
     return hits, urls
 
 
-def audit_dataset(ds_id, note, ds_dir=None):
-    """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>."""
+def audit_dataset(ds_id, note, ds_dir=None, max_records=None):
+    """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>.
+    
+    max_records: 限制处理的记录数上限（正式审计由 main() 传入 FORMAL_SAMPLE_MAX=100）,
+                 确保 Gate 3 正式审计不扫描第 101 条及之后数据。
+    """
     if ds_dir is None:
         ds_dir = os.path.join(RAW_DIR, ds_id)
     anomalies = []
@@ -344,6 +351,13 @@ def audit_dataset(ds_id, note, ds_dir=None):
     if not all_records:
         result['status'] = '数据文件存在但无有效记录'
         return result, anomalies
+
+    # 正式审计限制记录上限：确保 Gate 3 不扫描第 101 条及之后数据
+    if max_records is not None and len(all_records) > max_records:
+        all_records = all_records[:max_records]
+        rec_sources = rec_sources[:max_records]
+
+    result['limited_records'] = len(all_records)
 
     cfg = detect_config(ds_id, all_records)
     idf, lab, cat = cfg['id_field'], cfg['label_field'], cfg['category_field']
@@ -755,7 +769,7 @@ def main():
     range_violations = []
     for ds_id in allowed:
         print('审计 %s ...' % ds_id)
-        r, anom = audit_dataset(ds_id, args.note)
+        r, anom = audit_dataset(ds_id, args.note, max_records=FORMAL_SAMPLE_MAX)
         results.append(r)
         all_anomalies.extend(anom)
         print('  -> %s | 文件 %d | 记录 %d | 异常 %d' % (r['status'], r['files'], r['records'], len(anom)))

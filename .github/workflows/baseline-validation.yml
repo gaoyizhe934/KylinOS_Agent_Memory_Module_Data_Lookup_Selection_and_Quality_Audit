@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - clean-branch
+      - stage4-audit
   workflow_dispatch:
 
 permissions:

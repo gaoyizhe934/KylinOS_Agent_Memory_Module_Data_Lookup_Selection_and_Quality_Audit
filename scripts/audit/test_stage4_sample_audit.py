@@ -189,6 +189,36 @@ def test_gate3_enforcement():
         check('P1-2 范围: 50 允许', audit.in_formal_sample_range(50) is True)
         check('P1-2 范围: 100 允许', audit.in_formal_sample_range(100) is True)
         check('P1-2 范围: 101 拒绝', audit.in_formal_sample_range(101) is False)
+
+        # 新增: "❌ 未通过" 必须返回 False（P1-3 精确匹配修复）
+        not_pass = os.path.join(tmp, 'gate_not_pass.md')
+        with open(not_pass, 'w', encoding='utf-8') as f:
+            f.write('| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ❌ 未通过 |\n')
+        ok, _ = audit.gate3_approved(not_pass)
+        check('P1-3 Gate3 "未通过" -> 返回 False', ok is False)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def test_max_records_limit():
+    """max_records=100 确保不扫描第 101 条及之后数据."""
+    rows = [{'sample_id': 'r%03d' % i, 'answer': 'a', 'task_type': 't', 'body': 'x'}
+            for i in range(200)]
+    tmp = tempfile.mkdtemp(prefix='stage4_maxrec_')
+    try:
+        ds_dir = os.path.join(tmp, 'unit_test_maxrec')
+        os.makedirs(ds_dir)
+        with open(os.path.join(ds_dir, 'data.jsonl'), 'w', encoding='utf-8') as f:
+            for r in rows:
+                f.write(json.dumps(r, ensure_ascii=False) + '\n')
+        result, _ = audit.audit_dataset('unit_test_maxrec', '', ds_dir=ds_dir,
+                                        max_records=100)
+        check('P1-3 max_records=100: limited_records <= 100',
+              result.get('limited_records', 0) <= 100,
+              '实际 %d' % result.get('limited_records', 0))
+        check('P1-3 max_records=100: 原始 records 为 200',
+              result['records'] == 200,
+              '实际 %d' % result['records'])
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -204,6 +234,7 @@ def main():
     test_manual_sampling_small_dataset()
     test_flagged_all_included_and_deterministic()
     test_gate3_enforcement()
+    test_max_records_limit()
     print('-' * 60)
     if FAILED:
         print('失败 %d 项: %s' % (len(FAILED), ', '.join(FAILED)))
