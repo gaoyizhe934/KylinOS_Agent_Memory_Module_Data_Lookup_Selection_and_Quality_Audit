@@ -223,6 +223,25 @@ def test_max_records_limit():
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+def test_registry_status_validation():
+    """技术债: validate_registry_statuses() 检测无效 gate3_status 值."""
+    # 有效状态不应报告
+    valid = {'a': '允许试用', 'b': '需确认', 'c': '淘汰'}
+    check('技术债: 有效状态无无效项', audit.validate_registry_statuses(valid) == [])
+
+    # 拼写漂移应被检出
+    typo = {'d': '允许试朋', 'e': '需确任', 'f': 'taotai', 'g': ''}
+    invalids = audit.validate_registry_statuses(typo)
+    check('技术债: 拼写漂移 3 项被检出', len(invalids) == 3,
+          '实际 %d: %s' % (len(invalids), invalids))
+    ds_set = {ds for ds, _ in invalids}
+    check('技术债: 检出项 dataset_id 正确', ds_set == {'d', 'e', 'f'}, str(ds_set))
+    check('技术债: 空字符串不视为无效', all(ds != 'g' for ds, _ in invalids))
+
+    # 空 dict 应返回空列表
+    check('技术债: 空 dict 返回空列表', audit.validate_registry_statuses({}) == [])
+
+
 def main():
     print('=' * 60)
     print('阶段4 审计脚本单元测试（PR #3 P1-2 / P1-3 修复验证）')
@@ -235,6 +254,7 @@ def main():
     test_flagged_all_included_and_deterministic()
     test_gate3_enforcement()
     test_max_records_limit()
+    test_registry_status_validation()
     print('-' * 60)
     if FAILED:
         print('失败 %d 项: %s' % (len(FAILED), ', '.join(FAILED)))

@@ -67,6 +67,8 @@ REGISTRY_FILE = os.path.join(REPO_ROOT, 'registry', 'dataset_registry.csv')
 ALLOWED_GATE3_STATUS = '允许试用'
 FORMAL_SAMPLE_MIN = 50
 FORMAL_SAMPLE_MAX = 100
+# Gate 3 状态受控枚举集（防止拼写漂移/静默绕行）
+GATE3_STATUS_VALUES = {'允许试用', '需确认', '淘汰'}
 
 # 敏感信息模式（命中只标记, 由人工判断真伪; 研究数据里的合成内容可能误报）
 # 高危模式逐条上报; 低危模式在合成研究数据中普遍存在, 只计数并抽样上报, 避免淹没高危信号
@@ -181,6 +183,18 @@ def load_registry_gate3_status(path=REGISTRY_FILE):
     except OSError:
         return statuses
     return statuses
+
+
+def validate_registry_statuses(statuses):
+    """校验 gate3_status 值是否在受控枚举集内, 返回无效项列表 [(dataset_id, 非法值), ...]。
+    
+    防止拼写漂移（如"允许试朋"静默绕过"允许试用"门禁）。
+    """
+    invalids = []
+    for ds, st in statuses.items():
+        if st and st not in GATE3_STATUS_VALUES:
+            invalids.append((ds, st))
+    return invalids
 
 
 def in_formal_sample_range(n):
@@ -750,6 +764,15 @@ def main():
 
     # 候选状态门禁: 拒绝非「允许试用」候选（含 --datasets 传入的任意目录）
     gate3_map = load_registry_gate3_status()
+    # 登记表状态校验: 防止拼写漂移静默绕行门禁
+    invalid_statuses = validate_registry_statuses(gate3_map)
+    if invalid_statuses:
+        print('错误: dataset_registry.csv 中存在无效的 gate3_status 值:')
+        for ds, st in invalid_statuses:
+            print('  %s: %r（不在受控枚举集 %s 中）' % (ds, st, sorted(GATE3_STATUS_VALUES)))
+        print('请 Reviewer 修正后重试。')
+        return 4
+
     allowed, rejected = [], []
     for ds_id in ds_ids:
         st = gate3_map.get(ds_id, '')
