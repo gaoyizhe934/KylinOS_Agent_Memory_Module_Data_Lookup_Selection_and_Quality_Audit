@@ -10,7 +10,7 @@
 | Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ✅ Reviewer 已逐卡标记（2026-09-02）：允许试用 5 / 需确认 3 / 淘汰 4（不下载）；详见 registry conclusion 列 | registry/dataset_registry.csv（12 候选 Gate 3 标记）, reports/stage3_evidence_report.md |
 | Gate 4 | 阶段 4 | 样本可解析，标签定义可理解，人工抽检通过 | ✅ Reviewer 已批准（2026-09-02，PR#17）：4/5 通过（longmemeval_cleaned / longmemeval_v2 / multiwoz / t2ranking）；stabletoolbench 条件待补 | reports/stage4_sample_audit_report.md, reports/stage4_manual_inspection_report.md, reports/stage4_manual_spotcheck_A.md |
 | Gate 5 | 阶段 5 | 核心候选 >= 80 分；补充候选 >= 65 分 | ✅ Reviewer 已批准（2026-09-02）：签发 dataset_selection_decision_v2.md（核心 3 + 补充 2，其余条件/不采用） | reports/dataset_selection_decision_v2.md, reports/stage5_scoring_A.md, reports/stage5_scoring_B.md |
-| Gate 6 | 阶段 6 | 再次下载可得到同一版本；文件数量和哈希完整 | 🔶 预下载证据已入库（PR#19，B 侧条件结论）；正式冻结待 stabletoolbench 阶段4 补齐后执行 | data/raw/*/v0_subset/download.log, evidence/hashes/stage6_manifest.json, reports/stage6_b_verify_report.md |
+| Gate 6 | 阶段 6 | 再次下载可得到同一版本；文件数量和哈希完整 | ✅ Reviewer 已确认冻结基线（2026-09-02）：4/5 通过（manifest + 版本锁定）；stabletoolbench 条件待补 | reports/stage6_freeze_baseline.md, evidence/hashes/stage6_manifest.json, reports/stage6_b_verify_report.md |
 | Gate 7 | 阶段 7 | 每条 processed 样本可追溯到 raw_id | ⏳ 下一阶段 |
 | Gate 8 | 阶段 8 | Kappa >= 0.70，分歧有裁决，所有标签有 evidence | ⏳ 下一阶段 |
 | Gate 9 | 阶段 9 | 无用户/会话/模板泄漏；封存集哈希固定 | ⏳ 下一阶段 |
@@ -25,7 +25,8 @@
 - [x] 阶段 3：来源、版本与 License 核验 — Reviewer 已逐卡标记（2026-09-02：允许试用 5 / 需确认 3 / 淘汰 4），Gate 3 通过
 - [x] 阶段 4：小样本审计与人工抽检 — Reviewer 已批准（4/5，PR#17），stabletoolbench 条件待补
 - [x] 阶段 5：候选选型与评分 — Reviewer 已签发 dataset_selection_decision_v2.md（Gate 5 通过）
-- [ ] 阶段 6~11：待后续推进（正式冻结在 stabletoolbench 补齐后执行）
+- [x] 阶段 6：正式下载与冻结基线 — Reviewer 已确认（4/5，PR#19 证据 + stage6_freeze_baseline.md），stabletoolbench 条件待补
+- [ ] 阶段 7~11：待后续推进
 
 ## Gate 3 待办清偿记录（2026-09-01，B = DGXD01，feat/B-stage3-prep 分支）
 
