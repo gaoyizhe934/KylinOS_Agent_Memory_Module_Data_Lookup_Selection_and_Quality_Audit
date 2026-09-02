@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - clean-branch
+      - stage4-audit
   workflow_dispatch:
 
 permissions:
@@ -35,3 +36,6 @@ jobs:
 
       - name: 检查数据切分泄漏
         run: python scripts/split/leakage_check.py
+
+      - name: 阶段4审计脚本单元测试
+        run: python scripts/audit/test_stage4_sample_audit.py

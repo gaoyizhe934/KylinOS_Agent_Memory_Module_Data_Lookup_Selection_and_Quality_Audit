@@ -11,6 +11,8 @@
 - P1-3 人工复核清单: 总量 >= min(6.3 最低抽样量, 唯一ID数); 每个类别
   至少 2 条（类别记录不足 2 条则全取）; 覆盖全部类别; 全部异常 ID 入选;
   seed 固定可复现
+- Gate 3 门禁: 未获 Reviewer 批准返回 False; registry gate3_status 列读取;
+  50~100 条样本量范围校验
 
 运行: python scripts/audit/test_stage4_sample_audit.py
 退出码: 全部通过 0, 任一失败 1; 本测试不读 data/raw, 不写任何产物文件
@@ -150,93 +152,99 @@ def test_flagged_all_included_and_deterministic():
           result['manual_review_total'] >= 50, '总量 %d' % result['manual_review_total'])
 
 
-def test_gate3_approved_no_file():
-    """gate_status.md 不存在时返回 False."""
-    check('Gate3 文件不存在返回 False', audit.gate3_approved() is False)
-
-
-def test_gate3_approved_not_yet():
-    """Gate 3 状态为"⏳ 下一阶段"时返回 False."""
-    tmp = tempfile.mkdtemp(prefix='stage4_test_')
+def test_gate3_enforcement():
+    """P1-2 Gate 3 门禁: 批准状态判定 / 候选状态读取 / 50~100 样本量范围."""
+    tmp = tempfile.mkdtemp(prefix='stage4_gate3_')
     try:
-        orig = audit.REPO_ROOT
-        audit.REPO_ROOT = tmp
-        os.makedirs(os.path.join(tmp, 'reports'), exist_ok=True)
-        with open(os.path.join(tmp, 'reports', 'gate_status.md'), 'w', encoding='utf-8') as f:
-            f.write('| Gate 3 | 阶段 3 | Reviewer 标记 | ⏳ 下一阶段 |\n')
-        check('Gate3 未批准返回 False', audit.gate3_approved() is False)
-        audit.REPO_ROOT = orig
-    finally:
-        shutil.rmtree(tmp, ignore_errors=True)
+        not_approved = os.path.join(tmp, 'gate_not.md')
+        with open(not_approved, 'w', encoding='utf-8') as f:
+            f.write('| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ⏳ 下一阶段 |\n')
+        ok, _ = audit.gate3_approved(not_approved)
+        check('P1-2 Gate3 未批准 -> 返回 False', ok is False)
 
+        approved = os.path.join(tmp, 'gate_ok.md')
+        with open(approved, 'w', encoding='utf-8') as f:
+            f.write('| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ✅ 通过 |\n')
+        ok, _ = audit.gate3_approved(approved)
+        check('P1-2 Gate3 已批准 -> 返回 True', ok is True)
 
-def test_gate3_approved_yes():
-    """Gate 3 状态含"批准"时返回 True."""
-    tmp = tempfile.mkdtemp(prefix='stage4_test_')
-    try:
-        orig = audit.REPO_ROOT
-        audit.REPO_ROOT = tmp
-        os.makedirs(os.path.join(tmp, 'reports'), exist_ok=True)
-        with open(os.path.join(tmp, 'reports', 'gate_status.md'), 'w', encoding='utf-8') as f:
-            f.write('| Gate 3 | 阶段 3 | Reviewer 标记 | ✅ 已批准 |\n')
-        check('Gate3 已批准返回 True', audit.gate3_approved() is True)
-        audit.REPO_ROOT = orig
-    finally:
-        shutil.rmtree(tmp, ignore_errors=True)
+        reg = os.path.join(tmp, 'registry.csv')
+        with open(reg, 'w', encoding='utf-8-sig', newline='') as f:
+            f.write('dataset_id,gate3_status\n')
+            f.write('a,允许试用\n')
+            f.write('b,需确认\n')
+            f.write('c,淘汰\n')
+        m = audit.load_registry_gate3_status(reg)
+        check('P1-2 registry gate3_status 映射正确',
+              m == {'a': '允许试用', 'b': '需确认', 'c': '淘汰'}, str(m))
 
-
-def test_gate3_registry_empty():
-    """registry 无 gate3_status 列时返回空字典."""
-    tmp = tempfile.mkdtemp(prefix='stage4_test_')
-    try:
-        orig = audit.REPO_ROOT
-        audit.REPO_ROOT = tmp
-        os.makedirs(os.path.join(tmp, 'registry'), exist_ok=True)
-        with open(os.path.join(tmp, 'registry', 'dataset_registry.csv'), 'w', encoding='utf-8-sig') as f:
+        reg2 = os.path.join(tmp, 'registry_nocol.csv')
+        with open(reg2, 'w', encoding='utf-8-sig', newline='') as f:
             f.write('dataset_id,conclusion\n')
-            f.write('ds1,核心候选\n')
-        result = audit.load_registry_gate3_status()
-        check('Registry 无 gate3_status 列返回空字典', result == {})
-        audit.REPO_ROOT = orig
+            f.write('a,核心候选\n')
+        check('P1-2 registry 无 gate3_status 列 -> 空 dict',
+              audit.load_registry_gate3_status(reg2) == {})
+
+        check('P1-2 范围: 49 拒绝', audit.in_formal_sample_range(49) is False)
+        check('P1-2 范围: 50 允许', audit.in_formal_sample_range(50) is True)
+        check('P1-2 范围: 100 允许', audit.in_formal_sample_range(100) is True)
+        check('P1-2 范围: 101 拒绝', audit.in_formal_sample_range(101) is False)
+
+        # 新增: "❌ 未通过" 必须返回 False（P1-3 精确匹配修复）
+        not_pass = os.path.join(tmp, 'gate_not_pass.md')
+        with open(not_pass, 'w', encoding='utf-8') as f:
+            f.write('| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ❌ 未通过 |\n')
+        ok, _ = audit.gate3_approved(not_pass)
+        check('P1-3 Gate3 "未通过" -> 返回 False', ok is False)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-def test_gate3_registry_with_status():
-    """registry 有 gate3_status 列时正确解析."""
-    tmp = tempfile.mkdtemp(prefix='stage4_test_')
+def test_max_records_limit():
+    """max_records=100 确保不扫描第 101 条及之后数据."""
+    rows = [{'sample_id': 'r%03d' % i, 'answer': 'a', 'task_type': 't', 'body': 'x'}
+            for i in range(200)]
+    tmp = tempfile.mkdtemp(prefix='stage4_maxrec_')
     try:
-        orig = audit.REPO_ROOT
-        audit.REPO_ROOT = tmp
-        os.makedirs(os.path.join(tmp, 'registry'), exist_ok=True)
-        with open(os.path.join(tmp, 'registry', 'dataset_registry.csv'), 'w', encoding='utf-8-sig') as f:
-            f.write('dataset_id,conclusion,gate3_status\n')
-            f.write('ds1,核心候选,允许试用\n')
-            f.write('ds2,补充候选,需确认\n')
-            f.write('ds3,淘汰,淘汰\n')
-        result = audit.load_registry_gate3_status()
-        check('Gate3 解析: ds1=允许试用', result.get('ds1') == '允许试用')
-        check('Gate3 解析: ds2=需确认', result.get('ds2') == '需确认')
-        check('Gate3 解析: ds3=淘汰', result.get('ds3') == '淘汰')
-        check('Gate3 解析: 共 3 条', len(result) == 3)
-        audit.REPO_ROOT = orig
+        ds_dir = os.path.join(tmp, 'unit_test_maxrec')
+        os.makedirs(ds_dir)
+        with open(os.path.join(ds_dir, 'data.jsonl'), 'w', encoding='utf-8') as f:
+            for r in rows:
+                f.write(json.dumps(r, ensure_ascii=False) + '\n')
+        result, _ = audit.audit_dataset('unit_test_maxrec', '', ds_dir=ds_dir,
+                                        max_records=100)
+        check('P1-3 max_records=100: limited_records <= 100',
+              result.get('limited_records', 0) <= 100,
+              '实际 %d' % result.get('limited_records', 0))
+        check('P1-3 max_records=100: 原始 records 为 200',
+              result['records'] == 200,
+              '实际 %d' % result['records'])
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-def test_in_formal_sample_range():
-    """样本量范围校验: 50~100 条在范围内, 之外不在."""
-    check('范围校验: 50 条在范围内', audit.in_formal_sample_range(50) is True)
-    check('范围校验: 75 条在范围内', audit.in_formal_sample_range(75) is True)
-    check('范围校验: 100 条在范围内', audit.in_formal_sample_range(100) is True)
-    check('范围校验: 49 条不在范围内', audit.in_formal_sample_range(49) is False)
-    check('范围校验: 101 条不在范围内', audit.in_formal_sample_range(101) is False)
-    check('范围校验: 0 条不在范围内', audit.in_formal_sample_range(0) is False)
+def test_registry_status_validation():
+    """技术债: validate_registry_statuses() 检测无效 gate3_status 值."""
+    # 有效状态不应报告
+    valid = {'a': '允许试用', 'b': '需确认', 'c': '淘汰'}
+    check('技术债: 有效状态无无效项', audit.validate_registry_statuses(valid) == [])
+
+    # 拼写漂移应被检出
+    typo = {'d': '允许试朋', 'e': '需确任', 'f': 'taotai', 'g': ''}
+    invalids = audit.validate_registry_statuses(typo)
+    check('技术债: 拼写漂移 3 项被检出', len(invalids) == 3,
+          '实际 %d: %s' % (len(invalids), invalids))
+    ds_set = {ds for ds, _ in invalids}
+    check('技术债: 检出项 dataset_id 正确', ds_set == {'d', 'e', 'f'}, str(ds_set))
+    check('技术债: 空字符串不视为无效', all(ds != 'g' for ds, _ in invalids))
+
+    # 空 dict 应返回空列表
+    check('技术债: 空 dict 返回空列表', audit.validate_registry_statuses({}) == [])
 
 
 def main():
     print('=' * 60)
-    print('阶段4 审计脚本单元测试（PR #3 全部审查意见修复验证）')
+    print('阶段4 审计脚本单元测试（PR #3 P1-2 / P1-3 修复验证）')
     print('=' * 60)
     test_configured_type_rules()
     test_generic_type_rules()
@@ -244,12 +252,9 @@ def main():
     test_manual_sampling_topup_large()
     test_manual_sampling_small_dataset()
     test_flagged_all_included_and_deterministic()
-    test_gate3_approved_no_file()
-    test_gate3_approved_not_yet()
-    test_gate3_approved_yes()
-    test_gate3_registry_empty()
-    test_gate3_registry_with_status()
-    test_in_formal_sample_range()
+    test_gate3_enforcement()
+    test_max_records_limit()
+    test_registry_status_validation()
     print('-' * 60)
     if FAILED:
         print('失败 %d 项: %s' % (len(FAILED), ', '.join(FAILED)))

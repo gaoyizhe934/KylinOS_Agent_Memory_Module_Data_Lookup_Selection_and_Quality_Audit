@@ -60,6 +60,16 @@ META_FILENAMES = {'download.log', 'manifest.json', 'sha256sum.txt', 'checksums.s
                   'readme.md', 'schema.md', 'license', 'license.txt'}
 RANDOM_SEED = 42
 
+# --- Gate 3 门禁（正式审计前置校验, PR#3 P1-2）---
+# 手册 6.3 + 阶段4: 仅对 Reviewer 标记为「允许试用」的候选、每集 50~100 条新样本执行正式审计
+GATE_STATUS_FILE = os.path.join(REPO_ROOT, 'reports', 'gate_status.md')
+REGISTRY_FILE = os.path.join(REPO_ROOT, 'registry', 'dataset_registry.csv')
+ALLOWED_GATE3_STATUS = '允许试用'
+FORMAL_SAMPLE_MIN = 50
+FORMAL_SAMPLE_MAX = 100
+# Gate 3 状态受控枚举集（防止拼写漂移/静默绕行）
+GATE3_STATUS_VALUES = {'允许试用', '需确认', '淘汰'}
+
 # 敏感信息模式（命中只标记, 由人工判断真伪; 研究数据里的合成内容可能误报）
 # 高危模式逐条上报; 低危模式在合成研究数据中普遍存在, 只计数并抽样上报, 避免淹没高危信号
 SENSITIVE_PATTERNS = [
@@ -113,43 +123,6 @@ LABEL_FIELD_HINT = re.compile(r'^(answer|label|gold|relevant APIs|relevant_apis|
 CATEGORY_FIELD_HINT = re.compile(r'^(task_type|question_type|category|type|domain|intent)$', re.I)
 
 
-def gate3_approved():
-    """检查 Gate 3 是否已获 Reviewer 批准（读取 reports/gate_status.md）"""
-    gate_status_path = os.path.join(REPO_ROOT, 'reports', 'gate_status.md')
-    if not os.path.exists(gate_status_path):
-        return False
-    with open(gate_status_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    # 查找 Gate 3 行，检查状态是否包含"批准"或"✓"或"✅"
-    for line in content.split('\n'):
-        if 'Gate 3' in line and ('批准' in line or '✓' in line or '✅' in line or '完成' in line):
-            return True
-    return False
-
-
-def load_registry_gate3_status():
-    """从 registry/dataset_registry.csv 读取每个数据集的 gate3_status（允许试用/需确认/淘汰）"""
-    registry_path = os.path.join(REPO_ROOT, 'registry', 'dataset_registry.csv')
-    gate3_status = {}
-    if not os.path.exists(registry_path):
-        return gate3_status
-    with open(registry_path, 'r', encoding='utf-8-sig') as f:
-        reader = csv.DictReader(f)
-        if 'gate3_status' not in (reader.fieldnames or []):
-            return gate3_status
-        for row in reader:
-            ds_id = row.get('dataset_id', '').strip()
-            g3 = row.get('gate3_status', '').strip()
-            if ds_id and g3:
-                gate3_status[ds_id] = g3
-    return gate3_status
-
-
-def in_formal_sample_range(total_records):
-    """检查样本量是否在 50~100 条的正式审计范围要求内"""
-    return 50 <= total_records <= 100
-
-
 def sha256_file(path):
     h = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -161,6 +134,72 @@ def sha256_file(path):
 def canonical_record_hash(record):
     return hashlib.sha256(json.dumps(record, ensure_ascii=False, sort_keys=True,
                                      default=str).encode('utf-8')).hexdigest()
+
+
+def gate3_approved(path=GATE_STATUS_FILE):
+    """判断 Gate 3 是否已获 Reviewer 批准（读取 gate_status.md 的 Gate 3 行）。
+
+    返回 (bool, str): 通过与否 + 该行原文/失败原因。单元测试可注入临时 path。
+    """
+    if not os.path.isfile(path):
+        return False, '缺少 %s' % os.path.relpath(path, REPO_ROOT)
+    try:
+        with open(path, encoding='utf-8') as f:
+            lines = f.read().splitlines()
+    except OSError as e:
+        return False, '读取 gate_status.md 失败: %s' % e
+    for ln in lines:
+        s = ln.strip()
+        if s.startswith('| Gate 3'):
+            if ('⏳' in s) or ('下一阶段' in s) or ('待批准' in s) or ('待 Reviewer' in s) or ('未通过' in s):
+                return False, 'Gate 3 状态未批准: %s' % s
+            if ('已批准' in s) or ('approved' in s.lower()):
+                return True, s
+            # 精确匹配「通过」: 确保「未通过」已被上面排除
+            if ('通过' in s) and ('未通过' not in s):
+                return True, s
+            return False, '无法判定 Gate 3 状态: %s' % s
+    return False, 'gate_status.md 未找到 Gate 3 行'
+
+
+def load_registry_gate3_status(path=REGISTRY_FILE):
+    """读取 registry 的 gate3_status 列, 返回 {dataset_id: 状态}。
+
+    无该列或读取失败时返回空 dict（后续按「未标记」处理）。
+    """
+    statuses = {}
+    if not os.path.isfile(path):
+        return statuses
+    try:
+        with open(path, newline='', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            if not reader.fieldnames or 'gate3_status' not in reader.fieldnames:
+                return statuses
+            for row in reader:
+                ds = (row.get('dataset_id') or '').strip()
+                st = (row.get('gate3_status') or '').strip()
+                if ds:
+                    statuses[ds] = st
+    except OSError:
+        return statuses
+    return statuses
+
+
+def validate_registry_statuses(statuses):
+    """校验 gate3_status 值是否在受控枚举集内, 返回无效项列表 [(dataset_id, 非法值), ...]。
+    
+    防止拼写漂移（如"允许试朋"静默绕过"允许试用"门禁）。
+    """
+    invalids = []
+    for ds, st in statuses.items():
+        if st and st not in GATE3_STATUS_VALUES:
+            invalids.append((ds, st))
+    return invalids
+
+
+def in_formal_sample_range(n):
+    """正式审计样本量范围校验: 每集 50~100 条新样本（手册 6.3 / 阶段4）。"""
+    return FORMAL_SAMPLE_MIN <= n <= FORMAL_SAMPLE_MAX
 
 
 def iter_data_files(ds_dir):
@@ -282,8 +321,12 @@ def scan_sensitive(text):
     return hits, urls
 
 
-def audit_dataset(ds_id, note, ds_dir=None):
-    """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>."""
+def audit_dataset(ds_id, note, ds_dir=None, max_records=None):
+    """审计单个数据集; ds_dir 供单元测试注入临时目录, 默认 data/raw/<ds_id>.
+    
+    max_records: 限制处理的记录数上限（正式审计由 main() 传入 FORMAL_SAMPLE_MAX=100）,
+                 确保 Gate 3 正式审计不扫描第 101 条及之后数据。
+    """
     if ds_dir is None:
         ds_dir = os.path.join(RAW_DIR, ds_id)
     anomalies = []
@@ -322,6 +365,13 @@ def audit_dataset(ds_id, note, ds_dir=None):
     if not all_records:
         result['status'] = '数据文件存在但无有效记录'
         return result, anomalies
+
+    # 正式审计限制记录上限：确保 Gate 3 不扫描第 101 条及之后数据
+    if max_records is not None and len(all_records) > max_records:
+        all_records = all_records[:max_records]
+        rec_sources = rec_sources[:max_records]
+
+    result['limited_records'] = len(all_records)
 
     cfg = detect_config(ds_id, all_records)
     idf, lab, cat = cfg['id_field'], cfg['label_field'], cfg['category_field']
@@ -503,8 +553,8 @@ def write_anomalies_csv(anomalies):
     os.makedirs(os.path.dirname(OUT_ANOMALIES), exist_ok=True)
     cols = ['dataset_id', 'source_file', 'record_index', 'record_id',
             'anomaly_type', 'severity', 'detail']
-    with open(OUT_ANOMALIES, 'w', encoding='utf-8-sig', newline='') as f:
-        w = csv.DictWriter(f, fieldnames=cols)
+    with open(OUT_ANOMALIES, 'w', encoding='utf-8-sig', newline='\n') as f:
+        w = csv.DictWriter(f, fieldnames=cols, lineterminator='\n')
         w.writeheader()
         for a in anomalies:
             w.writerow({c: a.get(c, '') for c in cols})
@@ -522,7 +572,7 @@ def write_hash_file(results):
                 lines.append('%s  %s' % (h, rel))
         else:
             lines.append('（无数据文件）')
-    with open(OUT_HASH, 'w', encoding='utf-8') as f:
+    with open(OUT_HASH, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(lines) + '\n')
 
 
@@ -670,7 +720,7 @@ def write_report(results, anomalies, note, cmd):
     ap('---')
     ap('')
     ap('*本文件由 `scripts/audit/stage4_sample_audit.py` 自动生成; 修改需 B 重跑并留痕。*')
-    with open(OUT_REPORT, 'w', encoding='utf-8') as f:
+    with open(OUT_REPORT, 'w', encoding='utf-8', newline='\n') as f:
         f.write('\n'.join(lines) + '\n')
 
 
@@ -679,7 +729,7 @@ def write_summary_json(results, anomalies):
     out = {'generated_at': time.strftime('%Y-%m-%d %H:%M:%S'),
            'generated_by': 'DGXD01', 'random_seed': RANDOM_SEED,
            'datasets': results, 'anomaly_count': len(anomalies)}
-    with open(OUT_SUMMARY, 'w', encoding='utf-8') as f:
+    with open(OUT_SUMMARY, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(out, f, ensure_ascii=False, indent=2, default=str)
 
 
@@ -693,17 +743,14 @@ def main():
     for p in (OUT_REPORT, OUT_ANOMALIES, OUT_HASH, OUT_SUMMARY):
         assert not os.path.abspath(p).lower().startswith(RAW_DIR.lower()), '输出路径不得位于 data/raw'
 
-    # === Gate 3 前置条件校验 ===
-    if not gate3_approved():
-        print('错误: Gate 3 尚未获 Reviewer 批准（reports/gate_status.md 中 Gate 3 状态非"已批准"）')
-        print('阶段4 正式审计必须在 Gate 3 批准后执行。退出码 1')
-        return 1
-
-    gate3_status_map = load_registry_gate3_status()
-    allowed_candidates = {ds_id for ds_id, status in gate3_status_map.items()
-                          if status == '允许试用'}
-    rejected_candidates = {ds_id for ds_id, status in gate3_status_map.items()
-                           if status == '淘汰'}
+    # Gate 3 门禁: 未获 Reviewer 批准必须非零退出, 且不产出任何正式文件
+    gate_ok, gate_msg = gate3_approved()
+    if not gate_ok:
+        print('错误: Gate 3 尚未获 Reviewer 批准, 禁止执行正式审计。')
+        print('  %s' % gate_msg)
+        print('  请等待 Reviewer 在 reports/gate_status.md 将 Gate 3 标记为「通过」后重试; '
+              'Gate 3 批准前仅允许运行单元测试 test_stage4_sample_audit.py。')
+        return 2
 
     if args.datasets:
         ds_ids = [s.strip() for s in args.datasets.split(',') if s.strip()]
@@ -715,33 +762,50 @@ def main():
         print('data/raw 下没有数据集目录, 无可审计对象')
         return 1
 
-    # 检查数据集是否在"允许试用"候选名单中
-    if gate3_status_map:
-        for ds_id in ds_ids:
-            if ds_id in rejected_candidates:
-                print('错误: 数据集 %s 已被 Reviewer 标记为"淘汰"，不可进行阶段4审计' % ds_id)
-                return 1
-            if ds_id in gate3_status_map and ds_id not in allowed_candidates and gate3_status_map[ds_id]:
-                print('错误: 数据集 %s 当前状态为"%s"，仅"允许试用"候选可进行阶段4审计' %
-                      (ds_id, gate3_status_map[ds_id]))
-                return 1
+    # 候选状态门禁: 拒绝非「允许试用」候选（含 --datasets 传入的任意目录）
+    gate3_map = load_registry_gate3_status()
+    # 登记表状态校验: 防止拼写漂移静默绕行门禁
+    invalid_statuses = validate_registry_statuses(gate3_map)
+    if invalid_statuses:
+        print('错误: dataset_registry.csv 中存在无效的 gate3_status 值:')
+        for ds, st in invalid_statuses:
+            print('  %s: %r（不在受控枚举集 %s 中）' % (ds, st, sorted(GATE3_STATUS_VALUES)))
+        print('请 Reviewer 修正后重试。')
+        return 4
 
-    print('Gate 3 已批准，继续阶段4审计...')
+    allowed, rejected = [], []
+    for ds_id in ds_ids:
+        st = gate3_map.get(ds_id, '')
+        if st != ALLOWED_GATE3_STATUS:
+            rejected.append('候选 %s: gate3_status=%r（非「%s」，拒绝正式审计）'
+                            % (ds_id, st or '未标记', ALLOWED_GATE3_STATUS))
+        else:
+            allowed.append(ds_id)
+    for v in rejected:
+        print('拒绝: %s' % v)
+    if not allowed:
+        print('没有符合「%s」的候选, 不执行正式审计。' % ALLOWED_GATE3_STATUS)
+        return 3 if rejected else 1
 
     cmd = 'python ' + ' '.join(sys.argv)
     all_anomalies, results = [], []
-    for ds_id in ds_ids:
+    range_violations = []
+    for ds_id in allowed:
         print('审计 %s ...' % ds_id)
-        r, anom = audit_dataset(ds_id, args.note)
+        r, anom = audit_dataset(ds_id, args.note, max_records=FORMAL_SAMPLE_MAX)
         results.append(r)
         all_anomalies.extend(anom)
         print('  -> %s | 文件 %d | 记录 %d | 异常 %d' % (r['status'], r['files'], r['records'], len(anom)))
+        # 样本量范围门禁: 正式审计仅允许每集 50~100 条新样本
+        if r['status'] == 'ok' and r['records'] > 0 and not in_formal_sample_range(r['records']):
+            range_violations.append('候选 %s: 记录 %d 条, 超出 50~100 范围, 拒绝正式审计'
+                                    % (ds_id, r['records']))
 
-    # 检查样本量是否在正式审计范围（50~100 条）
-    for r in results:
-        if r['records'] > 0 and not in_formal_sample_range(r['records']):
-            print('警告: 数据集 %s 记录数 %d 不在 50~100 条范围内，请确认是否属于正式审计所需的新样本' %
-                  (r['dataset_id'], r['records']))
+    if range_violations:
+        for v in range_violations:
+            print('拒绝: %s' % v)
+        print('存在超出 50~100 条范围的数据集, 不产出正式审计文件。')
+        return 3
 
     n = write_anomalies_csv(all_anomalies)
     write_hash_file(results)
