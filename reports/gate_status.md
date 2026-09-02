@@ -7,7 +7,7 @@
 | Gate 0 | 阶段 0 | 目录可用，负责人明确，raw 目录只读/不直接修改 | ✅ Reviewer 已批准（PR#1，2026-09-01） | worklog/owners.md, reports/stage0_checklist.md, 目录骨架 |
 | Gate 1 | 阶段 1 | 每项要求至少对应一个子集和一个可计算指标 | ✅ Reviewer 已批准（PR#1，2026-09-01） | reports/requirement_data_mapping_v2.md |
 | Gate 2 | 阶段 2 | 所有候选有正式名称、版本线索、官方来源和任务说明 | ✅ Reviewer 已批准（PR#1，2026-09-01，含 5 项裁决） | registry/dataset_registry.csv, reports/stage2_coverage_report.md |
-| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | 🔶 主体工作完成，待 Reviewer 裁决（见 reports/stage3_evidence_report.md 五项遗留） | evidence/source/*（12 候选证据包 + version_lock_20260901） |
+| Gate 3 | 阶段 3 | Reviewer 明确标记允许试用/需确认/淘汰 | ✅ Reviewer 已逐卡标记（2026-09-02）：允许试用 5 / 需确认 3 / 淘汰 4（不下载）；详见 registry conclusion 列 | registry/dataset_registry.csv（12 候选 Gate 3 标记）, reports/stage3_evidence_report.md |
 | Gate 4 | 阶段 4 | 样本可解析，标签定义可理解，人工抽检通过 | ⏳ 下一阶段 |
 | Gate 5 | 阶段 5 | 核心候选 >= 80 分；补充候选 >= 65 分 | ⏳ 下一阶段 |
 | Gate 6 | 阶段 6 | 再次下载可得到同一版本；文件数量和哈希完整 | ⏳ 下一阶段 |
@@ -22,7 +22,7 @@
 - [x] 阶段 0：工作区初始化 — 目录验证 + 分工表更新
 - [x] 阶段 1：需求—数据映射 — v2.0 六项指标映射完成
 - [x] 阶段 2：候选查找与登记 — 12 个数据集登记，六类任务候选覆盖检查通过（每类 ≥2 正式候选，方法论/结构参考不计入；复查命令 `python scripts/oneclick/stage2_coverage_check.py`，退出码 0，登记完整性五项字段全部齐备）。URL 体检 2026-09-01 第二轮复测：官方 URL 12/12 可访问，数据 URL 11/12 已登记且可访问，toolbench_2024 官方 Drive 数据入口失效（404，核验记录见 evidence/audit/stage2_url_check_output_20260901.md，待 Reviewer 裁决处置）；`stage2_check_urls.py` 严格模式退出码 1 如实反映该项失败（详见 reports/stage2_coverage_report.md）
-- [ ] 阶段 3：来源、版本与 License 核验 — 主体工作完成，待 Reviewer 裁决（feat/B-stage3-prep 分支，PR#7）
+- [x] 阶段 3：来源、版本与 License 核验 — Reviewer 已逐卡标记（2026-09-02：允许试用 5 / 需确认 3 / 淘汰 4），Gate 3 通过
 - [ ] 阶段 4~11：待后续分支推进
 
 ## Gate 3 待办清偿记录（2026-09-01，B = DGXD01，feat/B-stage3-prep 分支）
@@ -47,7 +47,7 @@ PR#1 审批意见（第四节）遗留三项待办，本分支逐一清偿：
 | 2 | B 移交包取用 | 5 个已登记候选证据择优并入 evidence/source/（新增 8 个原始文件 + 10 个 review 合并版）；2 个未登记候选（dailydialog/locomo）暂存 evidence/source_unregistered/；移交目录按规则删除 |
 | 3 | 登记表更新 | version 字段 12 行、license 字段 5 行更新为证据支撑描述 |
 
-**待 Reviewer 裁决 5 项**（阶段 3 收口条件）：dureader License 缺失（建议需确认）/ t2ranking 卡片声明形式 / machine_unlearning_bench 发布者身份（B 复核建议从严）/ locomo 是否补登记启用 / A+B 双角色独立性（Gate 3 必须由 Reviewer 独立复核，不接受 A/B 角色互批）。
+**Gate 3 裁决记录（2026-09-02，Reviewer = gaoyizhe）**：dureader=需确认（License 缺失）；t2ranking=允许试用（接受 HF 官方 THUIR 卡片）；machine_unlearning_bench=需确认（社区发布者，仅方法参考）；locomo=不启用（未登记，启用须先补阶段 2 登记卡）；A+B 独立性=Reviewer 独立复核确认。逐卡标记已写入 registry conclusion 列。
 
 ## 说明
 
