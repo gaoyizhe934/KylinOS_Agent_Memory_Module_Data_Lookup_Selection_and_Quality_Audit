@@ -1,9 +1,9 @@
-# 麒麟 OS Memory Gold 标注手册 v1.2（Annotator A 起草版，B 审阅 P1/P2 闭环）
+# 麒麟 OS Memory Gold 标注手册 v1.3（Annotator A 起草版，B 审阅 P1/P2 闭环，Reviewer Low-1 引用核验）
 
 - 角色：Annotator A（lyf-1213）· 阶段 8「如何进行数据标注」
 - 分支：`feat/A-stage8-annotation`
-- 日期：2026-09-02（v1.1 起草）；2026-09-03（v1.2 按 B 审阅 P1×3/P2×5 修订）
-- 依据：手册第 7 章「自建麒麟 OS Memory Gold 规范」、附录 B、v2.0 重建计划五条红线、现有 `data/interim/gold_candidates_*.jsonl` 候选草稿、B 审阅意见 `worklog/20260903_stage8_B_review_PR24.md`
+- 日期：2026-09-02（v1.1 起草）；2026-09-03（v1.2 按 B 审阅 P1×3/P2×5 修订；v1.3 按 Reviewer Low-1 核验引用）
+- 依据：指导手册 v1.0（`02_麒麟OS_Agent_记忆模块数据查找选型与质量审计指导手册_v1.0_20260729.docx`，附录 B 100 分质量评分表）、v2.0 重建计划五条红线、`data/processed/schema.json`、现有 `data/interim/gold_candidates_*.jsonl` 候选草稿、B 审阅意见 `worklog/20260903_stage8_B_review_PR24.md`
 - 说明：本文为 A 侧起草的**标注执行手册**，说明六类任务各自的标注字段、判定规则、证据要求与质量检查。**试标结果/Kappa/裁决由 B 与 Reviewer 完成**，A 不越权。
 
 ---
@@ -63,7 +63,7 @@
 
 ## 2. 偏好提取（preference_extraction）
 
-### 字段与枚举（手册表 34）
+### 字段与枚举
 
 | 字段 | 枚举/规则 |
 | --- | --- |
@@ -83,14 +83,14 @@
 - **撤销偏好**："之前的不要了" → `operation=revoke`。
 - **作用域**：仅某应用生效 → `scope=app`；全局 → `scope=global`。
 - **敏感内容**：密码/支付/凭证等 → `should_store=false`, 属 safety。
-- **边界**：普通问答/闲聊 ≠ 长期偏好；角色设定 ≠ 动态偏好（手册表 31）。
+- **边界**：普通问答/闲聊 ≠ 长期偏好；角色设定 ≠ 动态偏好。
 - **与冲突处理的边界（P2-5）**：同一偏好"先详细→后简短"且能明确判定新旧版本、单条偏好线内演化 → 标 `preference_extraction`（`operation=update/revoke`，保留 old_value 可回溯）；**只有**当矛盾涉及多对象取舍（保留哪个/移除哪个）、或需按来源/作用域/版本/安全策略裁决 → 标 `conflict_resolution`。分流口诀：**一条偏好自己变了 → preference；两条以上要选边 → conflict**。
 
 ---
 
 ## 3. 知识检索（knowledge_retrieval）
 
-### 字段（手册表 P179）
+### 字段
 
 | 字段 | 规则 |
 | --- | --- |
@@ -119,7 +119,7 @@
 | resolution_reason | 写明依据（时间/作用域/来源/版本/安全） |
 | keep_ids / remove_ids | 保留与移除的对象 id，均须可解析 |
 
-### 判定规则（手册表 35）
+### 判定规则
 
 | 冲突类型 | Gold 决策依据 |
 | --- | --- |
@@ -129,14 +129,14 @@
 | 知识版本 | 按系统版本、有效期、可信来源选择 |
 | 安全冲突 | 安全策略优先，记录拒绝/降级 |
 
-- 禁止"无时间/来源/作用域信息却决定新旧"（手册表 31 冲突可判定检查）。
+- 禁止"无时间/来源/作用域信息却决定新旧"（冲突可判定检查）。
 - **与偏好提取的边界（P2-5）**：见 §2 分流口诀——单条偏好演化用 preference（update/revoke），多对象取舍或需来源/作用域/版本/安全裁决才用 conflict。
 
 ---
 
 ## 5. 精准遗忘（precise_forgetting）
 
-### 字段（手册表 P185）
+### 字段
 
 | 字段 | 规则 |
 | --- | --- |
@@ -148,7 +148,7 @@
 
 ### 判定规则
 
-- **删对 + 不误删**：target 必须删、must_keep 必须留；两者同时明确（手册表 31 遗忘可验证）。
+- **删对 + 不误删**：target 必须删、must_keep 必须留；两者同时明确（遗忘可验证）。
 - 所有样本至少含一次即时查询；关键样本含重启与全量重建后的残留检查。
 - `expected_residual_count`：目标删除后期望残留 = 0；误删保护对象不得列入 expected_deleted。
 
@@ -156,7 +156,7 @@
 
 ## 6. Tool Result（tool_result）
 
-### 字段（手册表 36）
+### 字段
 
 | 字段 | 枚举/规则 |
 | --- | --- |
@@ -218,7 +218,7 @@
    - **一致判定字段集**：以每类任务的 **gold 主字段集** 判定一致——偏好取 `preference_type+scope+should_store+operation`（value 允许语义等价，单独标记不一致但不算整体不一致）；检索取 `relevant_ids+hard_negative_ids`（集合相等）；冲突取 `conflict_type+winner`；遗忘取 `expected_deleted+must_keep`（集合相等）；Tool 取 `status+persist_policy`；端到端取 `expected_response` 语义等价。
    - **达标线**：总体 Kappa ≥ 0.70 为进入量产的唯一门槛；单任务 < 0.70 时对应任务批次退回修订并回溯，不阻塞其他任务。
    - **A/B 标签文件约定**：均输出 JSONL，字段为 `sample_id, task_type, gold, evidence`；文件列名固定 `sample_id` / `task_type` / `gold` / `evidence`；A 侧文件名 `labels_A_trial.jsonl`，B 侧 `labels_B_trial.jsonl`；`gold` 为 JSON 对象，`evidence` 为数组。
-4. 修订规则后必须**回溯**受影响样本，不得只对新数据用新口径（手册 7.7）。
+4. 修订规则后必须**回溯**受影响样本，不得只对新数据用新口径（指导手册 v1.0 §7.7）。
 
 ## 8.1 试标语料口径（禁 mock 澄清，P1-3）
 
@@ -234,7 +234,7 @@
    - `disagreement_log.csv` 列：`sample_id, task_type, field, disagreement_type, label_a, label_b, reviewer_decision, final_label, decision_reason, status`。
    - `gold_draft.jsonl`：完整样本对象（统一骨架），`gold` 为 Reviewer 裁决后的 `final_label`，`review_status=approved`（裁决通过）或 `rejected`（裁决剔除）。
 
-## 10. 质量检查清单（手册表 31，标注者自检）
+## 10. 质量检查清单（标注者自检）
 
 - [ ] 任务一致性：这条数据真的能验证目标能力吗？（普通问答≠偏好；角色设定≠动态偏好）
 - [ ] 证据完整性：Gold 能从原始文本/事件直接证明？（答案正确但无证据 = 不通过）
@@ -263,7 +263,9 @@ data/gold/gold_draft.jsonl + data/gold/disagreement_log.csv
 
 | 产出 | 归属 |
 | --- | --- |
-| 本标注手册（v1.1 起草 → v1.2 修订，P1/P2 闭环） | A ✅ |
+| 本标注手册（v1.1 起草 → v1.2 P1/P2 闭环 → v1.3 Low-1 引用核验） | A ✅ |
 | 试标标签（A 独立） | A（试标时提交） |
 | Kappa 计算、一致性报告、enum 校验 | B |
 | final_label、disagreement_log、Gate 8 批准 | Reviewer |
+
+> **引用核验说明（v1.3）**：原稿标注的「手册表 31/34/35/36、P179/P185、手册第 7 章『自建麒麟 OS Memory Gold 规范』」经 B 侧 2026-09-03 对照仓库内指导手册 v1.0 全文提取核验**均无法定位**（手册无对应表号/页码/章节，仅附录 B 存在），疑引自外部或旧版手册。为避免不可核验锚点在试标中误导标注，v1.3 已移除上述括号引用；各任务字段定义以本文档正文为准。核验过程见 worklog/20260903_stage8_B_manual_ref_check.md。
