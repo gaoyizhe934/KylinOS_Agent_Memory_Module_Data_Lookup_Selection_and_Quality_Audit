@@ -27,6 +27,47 @@ SCHEMA_REQUIRED = [
     "annotator_b", "review_status",
 ]
 
+# KMA Canonical Business Schema v1.0 对齐（参考 KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md）
+# 说明：gold 业务字段必须对齐 KMA；当前 KMA 状态 FREEZE_PROPOSAL，本映射为参考层，
+# 全量重转 processed 待 KMA FROZEN 后执行（避免破坏进行中的阶段 8）。
+KMA_ENUMS = {
+    "preference_scope": ["global", "topic", "tool", "session", "time_window"],
+    "expression_type": ["explicit", "implicit"],
+    "memory_status": ["active", "superseded", "deprecated", "expired", "removed", "candidate"],
+    "knowledge_type": ["workflow", "case", "template", "fact", "constraint", "failure_experience"],
+    "conflict_type": ["contradiction", "temporal_inconsistency", "source_conflict", "preference_conflict", "scope_ambiguity"],
+    "resolution_status": ["detected", "analyzing", "resolved_auto", "resolved_manual", "deferred", "unresolvable"],
+    "forget_mode": ["single_item", "session", "topic", "time_window", "full_reset"],
+    "target_type": ["knowledge", "preference", "event", "all"],
+    "forget_plan_status": ["pending", "previewing", "awaiting_confirmation", "executing", "completed", "failed", "rolled_back"],
+    "source_business_status": ["raw", "completed", "success", "partial", "failed", "cancelled", "timeout", "ignored"],
+    "knowledge_forbidden_recall": ["superseded", "expired", "removed_or_forgotten", "candidate", "unresolved_conflict", "cross_user", "sensitive_recall_prohibited", "deprecated"],
+}
+
+# 旧字段 → KMA 映射（数据包 gold → canonical）
+KMA_LEGACY_MAP = {
+    "preference": {
+        "preference_type": "preference_key + expression_type",
+        "scope": "preference_scope",
+        "confidence": "confidence_score (float 0..1)",
+        "should_store": "should_persist + is_temporary",
+        "operation": "version + previous_version_id + memory_status",
+    },
+    "conflict": {
+        "conflict_type": "conflict_type (KMA 枚举)",
+        "winner": "resolution_status + resolution_strategy",
+        "keep_ids/remove_ids": "left_knowledge_id/right_knowledge_id/involved_knowledge_ids",
+    },
+    "forgetting": {
+        "target_ids": "target_type + resolved_target_ids",
+        "checkpoints": "forget_plan status 阶段",
+    },
+    "tool": {
+        "status": "source_business_status",
+        "persist_policy": "requires_embedding / has_structured_payload",
+    },
+}
+
 # 公开子集固定规模（手册：全量过大，只取固定小规模子集）
 PUBLIC_LIMITS = {"t2ranking": 200, "multiwoz_dialogues": 200}
 
@@ -283,6 +324,41 @@ def audit_processed():
     return total, issues
 
 
+def kma_audit_processed():
+    """KMA 对齐审计（参考层，不重转）：检查 processed gold 是否使用了 KMA 已冻结的枚举字段名。
+
+    KMA 状态 FREEZE_PROPOSAL，本审计仅报告旧字段存在情况与映射建议，不做破坏性重转。
+    """
+    legacy_hits = {"preference": [], "conflict": [], "forgetting": [], "tool": []}
+    total = 0
+    for path in glob.glob(os.path.join(PROCESSED, "*.jsonl")):
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                r = json.loads(line)
+                task = r.get("task_type")
+                g = r.get("gold") or {}
+                total += 1
+                sid = r.get("sample_id", path)
+                if task == "preference_extraction":
+                    for k in ("preference_type", "scope", "confidence", "should_store", "operation"):
+                        if k in g:
+                            legacy_hits["preference"].append(f"{sid}:{k}→{KMA_LEGACY_MAP['preference'].get(k,'')}")
+                elif task == "conflict_resolution":
+                    for k in ("conflict_type", "winner"):
+                        if k in g:
+                            legacy_hits["conflict"].append(f"{sid}:{k}→{KMA_LEGACY_MAP['conflict'].get(k,'')}")
+                elif task == "precise_forgetting":
+                    if "checkpoints" in g:
+                        legacy_hits["forgetting"].append(f"{sid}:checkpoints→{KMA_LEGACY_MAP['forgetting'].get('checkpoints','')}")
+                elif task == "tool_result":
+                    if "status" in g:
+                        legacy_hits["tool"].append(f"{sid}:status→{KMA_LEGACY_MAP['tool'].get('status','')}")
+    return total, legacy_hits
+
+
 def main():
     s1 = convert_team_authored()
     s2 = convert_multiwoz_public_sample()
@@ -291,6 +367,7 @@ def main():
     s5 = handle_stale_tool_result()
     build_enum_dictionary()
     total, issues = audit_processed()
+    kma_total, kma_hits = kma_audit_processed()
 
     print("== 转换对账 ==")
     print("[team_authored] files:", s1["files"])
@@ -301,6 +378,12 @@ def main():
     print("[multiwoz_dialogues] input=", s4["input_rows"], "output=", s4["output_rows"], "drop=", s4["silent_drop"], s4.get("note", ""))
     print("[stale_tool_result]", s5)
     print("[audit] total=", total, "issues=", issues)
+    print("[kma_audit] total=", kma_total,
+          "legacy_hits=", {k: len(v) for k, v in kma_hits.items()})
+    for cat, hits in kma_hits.items():
+        if hits:
+            print("  KMA 旧字段示例 (", cat, "):", hits[:3])
+    print("  note: KMA=FREEZE_PROPOSAL，gold 业务字段待 FROZEN 后重转对齐（参考层映射见 KMA_LEGACY_MAP）")
     print("== done ==")
     sys.exit(0 if not any(issues.values()) else 1)
 
