@@ -15,3 +15,6 @@
 | 8 | 全量重转 processed gold + 重建阶段8标注枚举/骨架/试标 | A/B（FROZEN 后） | ⬜ |
 
 FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环后在状态列更新为 ✅ 并附证据位置。
+
+## 进度更新
+- 2026-09-03（PR #27）：#5 工具复用已落地——自 #25 分支移植 `scripts/audit/stage8_kappa.py`（新增 `--format legacy|kma` 与 `--fields-json` 覆盖；KMA_FIELD_SETS 为 canonical 草案）、`stage8_trial_sample.py`、`test_stage8_kappa.py` 至 `feat/B-stage8-kma`；测试 7/7 PASS。enum_check 的 --kma 适配留待 labels 骨架定稿后随 #27 引入（避免跨 PR 重复文件）。
