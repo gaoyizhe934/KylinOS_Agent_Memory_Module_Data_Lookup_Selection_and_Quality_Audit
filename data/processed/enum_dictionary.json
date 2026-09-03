@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T17:21:42",
+  "generated_at": "2026-09-03T17:28:55",
   "enum": {
     "task_type": [
       "auxiliary_dialogue",
@@ -60,6 +60,34 @@
     ],
     "review_status": [
       "candidate_only"
+    ],
+    "status": [
+      "success",
+      "failed",
+      "cancelled",
+      "timeout",
+      "partial_success"
+    ],
+    "persist_policy": [
+      "yes",
+      "no"
+    ],
+    "checkpoints": [
+      "immediate_query",
+      "after_restart",
+      "after_full_reindex"
+    ],
+    "confidence": [
+      "high",
+      "medium",
+      "low"
+    ],
+    "winner": [
+      "keep_new",
+      "app_priority",
+      "explicit_config",
+      "new_version",
+      "safety_priority"
     ]
   },
   "template_family_distribution": {
