@@ -220,7 +220,75 @@ Recall@K = |检索前 K 条 ∩ Gold 相关| / |Gold 相关|
 
 ---
 
-## 三、通用评测纪律（手册硬性要求）
+## 三、KMA 统一格式对齐（对齐 KMA-DATA-SCHEMA-001 v1.0）
+
+> 本数据包评测样本层（sample_id/input/evidence/annotator/template_family）为评测专用，KMA 不冻结；
+> 但 **gold 业务字段必须对齐 KMA Canonical Business Schema v1.0**（`KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md`），
+> 否则评测"正确答案"与运行时系统行为不一致。当前 KMA 状态 FREEZE_PROPOSAL，全量重转待 FROZEN 后执行。
+
+### 1. 偏好提取 → Preference
+
+| 数据包 gold 字段（旧） | KMA 对齐 | 说明 |
+|---|---|---|
+| preference_type（output_style/tool_choice/safety/app/workflow/other） | `preference_key`（string）+ `expression_type`（explicit/implicit） | 类型改为开放 key + 显式/隐式来源；不用枚举模拟类型 |
+| scope（global/app/task/session） | `preference_scope`（global/topic/tool/session/time_window） | app→tool；task→topic；无 time_window 需补 |
+| confidence（high/medium/low） | `confidence_score`（float [0,1]） | 类型改为数值 |
+| should_store（bool） | `should_persist` + `is_temporary` | 拆为两个布尔 |
+| operation（create/update/revoke/no_op） | `version` + `previous_version_id` + `memory_status` | 版本模型替代操作枚举 |
+| — | `preference_id` / `user_id` / `evidence_event_ids` / `created_at` / `updated_at` | 统一 ID/时间 |
+
+### 2. 知识检索 → Knowledge
+
+| 数据包 gold 字段（旧） | KMA 对齐 | 说明 |
+|---|---|---|
+| relevant_ids（doc id） | `knowledge_id`（+ `superseded_by_id`） | 版本级引用 |
+| relevance（1..4） | `confidence_score`（float [0,1]） | 相关度对齐置信度数值 |
+| hard_negative_ids | 禁止召回 8 类：`memory_status`（superseded/expired/removed/deprecated/candidate）+ `user_id` 隔离 | D9 检索集口径 |
+| — | `knowledge_type`（workflow/case/template/fact/constraint/failure_experience） | 新增必填 |
+
+### 3. 冲突处理 → Conflict
+
+| 数据包 gold 字段（旧） | KMA 对齐 | 说明 |
+|---|---|---|
+| conflict_type（time_update/scope/source/knowledge_version/safety） | `conflict_type`（contradiction/temporal_inconsistency/source_conflict/preference_conflict/scope_ambiguity） | 枚举重定义 |
+| winner（keep_new/app_priority/...） | `resolution_status`（detected/analyzing/resolved_auto/resolved_manual/deferred/unresolvable）+ `resolution_strategy` | 状态化 |
+| keep_ids / remove_ids | `left_knowledge_id` / `right_knowledge_id` / `involved_knowledge_ids` | 对象化 |
+
+### 4. 精准遗忘 → ForgetPlan
+
+| 数据包 gold 字段（旧） | KMA 对齐 | 说明 |
+|---|---|---|
+| target_ids | `target_type`（knowledge/preference/event/all）+ `resolved_target_ids` | 对象化 |
+| must_keep | `resolved_target_ids` 之外的受保护对象 | 语义保留 |
+| checkpoints | `status`（pending/.../completed/failed/rolled_back）+ 预览/执行阶段 | 状态化 |
+| expected_residual_count | 残留 = `affected_count` 校验 + 执行后核验 | 计数对齐 |
+
+### 5. Tool Result → MemorySourceEvent.source_business_status
+
+| 数据包 gold 字段（旧） | KMA 对齐 | 说明 |
+|---|---|---|
+| status（success/failed/cancelled/timeout/partial_success） | `source_business_status`（raw/completed/success/partial/failed/cancelled/timeout/ignored） | 补 raw/completed/ignored |
+| persist_policy | `requires_embedding` / `has_structured_payload`（派生） | 沉淀策略走派生字段 |
+| side_effect | `content_summary`（敏感过滤后） | 摘要化 |
+| failure_reason | `source_business_status=failed` + `source_reference` | 状态+引用 |
+
+### 6. 端到端会话 → MemorySourceEvent 链
+
+| 数据包 gold 字段（旧） | KMA 对齐 | 说明 |
+|---|---|---|
+| expected_memory | `memory_status`（active/superseded/deprecated/expired/removed/candidate）+ `memory_type` | 生命周期对齐 |
+| expected_response | 端到端评测层，KMA 不冻结 | 保留评测层 |
+
+### 7. 跨字段真值统一（KMA §7）
+
+- 生命周期：统一 `memory_status`，不再用 `review_status` 表达业务生命周期（评测层的 review_status 仅表示标签审阅状态）。
+- 用户隔离：所有对象直接携带 `user_id`，禁止从正文/LLM 推断。
+- 时间：canonical 时间用 UTC 毫秒 `YYYY-MM-DDTHH:MM:SS.sssZ`，禁止无时区。
+- ID：`*_id` 为 opaque string，禁止依赖前缀解析业务含义。
+
+---
+
+## 四、通用评测纪律（手册硬性要求）
 
 1. **判分优先用规则/集合比对**，LLM Judge 仅用于自由文本等价性判断，且必须归档 Judge Prompt、模型版本、温度和多次运行结果
 2. **公开数据集的原始指标不得直接算本项目成绩**——必须经统一 Schema 转换后走本系统完整管线
@@ -229,7 +297,7 @@ Recall@K = |检索前 K 条 ∩ Gold 相关| / |Gold 相关|
 
 ---
 
-## 四、当前进度 vs 目标
+## 五、当前进度 vs 目标
 
 | 指标 | 当前候选 | 目标 | 还差多少 | 最大难点 |
 | --- | --- | --- | --- | --- |
@@ -240,7 +308,7 @@ Recall@K = |检索前 K 条 ∩ Gold 相关| / |Gold 相关|
 | Tool Result | **0 条** | 200~300 | **200~300** | 需要麒麟虚拟机执行 |
 | 端到端会话 | 15 条 | 50~80 | 35~65 | 需要麒麟虚拟机执行 |
 
-## 五、下一步优先做什么
+## 六、下一步优先做什么
 
 1. **最紧急**：Tool Result 数据为 0，需要麒麟 VM 到手后立刻执行
 2. **最耗时**：知识库搭建（600~1000 条），需要麒麟 OS 技术文档
