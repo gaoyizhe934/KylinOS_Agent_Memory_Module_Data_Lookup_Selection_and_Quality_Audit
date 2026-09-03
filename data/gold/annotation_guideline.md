@@ -94,9 +94,9 @@
 
 | 字段 | 规则 |
 | --- | --- |
-| relevant_ids | **≥1 个相关文档 id（硬性）**，必须可解析到知识库 |
+| relevant_ids | **≥1 个相关文档 id（硬性）**，必须可解析到知识库；按 D9 版本级引用区分 current 当前版 |
 | relevance | `{doc_id: 1..4}` 相关度分级 |
-| hard_negative_ids | **≥1 个困难负样本 id（硬性，P1-1）**；词汇相似但语义不满足 |
+| hard_negative_ids | **≥1 个困难负样本 id（硬性，P1-1）**；按 D9 `forbidden_refs` 8 类细分（见下） |
 | expected_answer_points | 期望答案要点（字符串数组） |
 
 ### 标注判定规则
@@ -105,6 +105,14 @@
 - **困难负样本为硬性要求**：每个查询必须标注 **≥1 个** `hard_negative_ids`，以支撑 Recall@K / 困难负样本指标（B 侧 Kappa 与校验以该字段非空为合格线）。困难负样本必须在**词汇上相似**（含同义关键词）但**语义不满足**；禁止把完全不相关文档当困难负样本。
 - `expected_answer_points` 从检索结果/知识文档证据中提取，禁止无来源编造。
 - **公开集回填规则（保留）**：公开集（t2ranking 等）转换的 `hard_negative_ids`/`expected_answer_points` 为空属已知限制，需在后续知识库构建后回填；该部分样本以 `review_status=candidate_only` 标记，**不进入本阶段封存**，不计入 Kappa 合格线。
+
+### 版本级引用与禁止召回细分（参照 D9 检索集，B 轨 PR#88 裁决）
+
+- **版本级引用**：相关文档用 `{memory_id, version_id}` 结构（如 `{"memory_id":"d9c-001","version_id":"d9c-001-v1"}`）；正解只指向同用户 **active 当前版本**；旧版（superseded、is_current=false）归禁止召回；当前版语义近似作 `semantic_near_miss`（不计 guardrail violation）。
+- **禁止召回 8 类**（`hard_negative_ids` 细分，写依据时注明类别）：
+  `superseded`（旧版被替代）/ `expired`（过期）/ `removed_or_forgotten`（已遗忘）/ `candidate`（未人工复核）/ `unresolved_conflict`（未裁决冲突）/ `cross_user`（跨用户隔离 S-08）/ `sensitive_recall_prohibited`（敏感禁止 S-01/S-07）/ `deprecated`（废弃，仅显式 history/audit 可访问）。
+- **evaluation_role**：`positive_retrieval`（有正解）/ `negative_guardrail`（无正解，只验证禁止召回）。
+- **rationale**：每条标注写一句依据说明（如"跨用户对用户B 业务禁止""superseded 旧版仅审计用途"），支撑标签可解释红线。
 
 ---
 
