@@ -2,7 +2,7 @@
 
 - 角色：Annotator A（lyf-1213）
 - 分支：`feat/A-schema-kma-align`
-- 依据：`KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md`（KMA-DATA-SCHEMA-001 v1.0，FREEZE_PROPOSAL）、`D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl`（B 轨 PR#88 检索集）
+- 依据：`evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md`（KMA-DATA-SCHEMA-001 v1.0，FREEZE_PROPOSAL）、`evidence/source/d9_retrieval_queryset/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl`（B 轨 PR#88 检索集）
 
 ## 一、背景
 

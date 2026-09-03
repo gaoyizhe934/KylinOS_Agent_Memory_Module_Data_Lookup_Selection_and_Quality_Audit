@@ -2,7 +2,7 @@
   "schema_name": "kylin_memory_gold",
   "schema_version": "v1.0",
   "kma_alignment": {
-    "reference": "KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md",
+    "reference": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md",
     "doc_id": "KMA-DATA-SCHEMA-001",
     "status": "FREEZE_PROPOSAL",
     "note": "gold 业务字段必须对齐 KMA Canonical Business Schema v1.0；评测样本层字段（sample_id/input/evidence/annotator/template_family）为评测专用，KMA 不冻结",
