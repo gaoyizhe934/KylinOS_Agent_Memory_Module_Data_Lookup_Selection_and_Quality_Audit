@@ -27,3 +27,12 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 
 ## P0 进度（2026-09-04）
 - B：canonical labels_A/B 骨架设计已起草 → reports/stage8_v2_labels_skeleton_design.md（FROZEN 前只出方案，未生成正式 labels/未改数据）。
+
+## High-1 处理（2026-09-04，响应 D/E 复审 CHANGES_REQUESTED）
+- 主仓库权威 CANDIDATE 版入库：evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_CANDIDATE_main.md（main@889b7553，2026-09-03）；source_provenance.md 修订（两版关系 + 基线引用纠正）。
+- 核心枚举核对（R-2 expression_type / R-3 memory_status / R-4 source_business_status）：与仓库编码一致 ✅。
+- 新增待办：
+  #9 preference_scope/conflict_type 等值域来源确认（候选 L1 未逐值展开，依 D3 L2/不裁定清单）→ E/D；
+  #10 D 轨物理映射确认（gold 字段 → SQLite/Vector 命名，Medium-1）→ D（另案登记）；
+  #11 E 轨“评测 gold ↔ canonical 映射签名”确认（Low-1）→ E；
+  #12 schema.json kma_alignment 状态/引用切换至权威候选版后复核。
