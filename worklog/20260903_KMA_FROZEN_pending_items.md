@@ -5,12 +5,12 @@
 
 | # | 事项 | 责任 | 状态 |
 | --- | --- | --- | --- |
-| 1 | preference_key 取值策略（模板族约束开放字符串，勿再造枚举） | A/B 定稿 + Reviewer 裁定 | ⬜ |
-| 2 | 旧 scope app/task 语义落点（不机械映射 app→tool、task→topic） | Reviewer 裁定 | ⬜ |
-| 3 | confidence 高/中/低 → confidence_score [0,1] 固定换算口径 | A/B 定稿 | ⬜ |
-| 4 | forgetting checkpoints 定位：保留为评测层验证时点，不进业务状态 | Reviewer 裁定 | ⬜ |
-| 5 | KMA_LEGACY_MAP 与 B 校验脚本核对（无冲突，需在 #25 合并后补齐 enum_check --kma） | B | ⬜ |
-| 6 | D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl 补档入 evidence/source/kma_unified_data_format_FREEZE_V1/ | B 轨 PR#88 / A 提供 | ⬜ |
+| 1 | preference_key 取值策略（模板族约束开放字符串，勿再造枚举） | A/B 定稿 + Reviewer 裁定 | 🟡 A 建议稿已出（worklog/20260904_KMA_FROZEN_1_3_A_recommendation.md），待 B 复核 + Reviewer 裁定 |
+| 2 | 旧 scope app/task 语义落点（不机械映射 app→tool、task→topic） | Reviewer 裁定 | 🟡 A 样例已出（worklog/20260903_KMA_confidence_scope_samples_A.md），待裁定 |
+| 3 | confidence 高/中/低 → confidence_score [0,1] 固定换算口径 | A/B 定稿 | 🟡 A 定稿建议已出（同 #1 文件，三档主表 0.95/0.70/0.40），待 B 复核 + Reviewer 裁定 |
+| 4 | forgetting checkpoints 定位：保留为评测层验证时点，不进业务状态 | Reviewer 裁定 | ⬜ 待裁定 |
+| 5 | KMA_LEGACY_MAP 与 B 校验脚本核对（无冲突，需在 #25 合并后补齐 enum_check --kma） | B | ✅ 工具已移植适配至 #27（2026-09-03 进度更新） |
+| 6 | D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl 补档入 evidence/source/kma_unified_data_format_FREEZE_V1/ | B 轨 PR#88 / A 提供 | ✅ A 已补档（2026-09-04，证据：evidence/source/kma_unified_data_format_FREEZE_V1/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl） |
 | 7 | KMA 转 FROZEN（签署 + 合并 main） | D/E Reviewer | ⬜ |
 | 8 | 全量重转 processed gold + 重建阶段8标注枚举/骨架/试标 | A/B（FROZEN 后） | ⬜ |
 
@@ -27,6 +27,8 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 
 ## P0 进度（2026-09-04）
 - B：canonical labels_A/B 骨架设计已起草 → reports/stage8_v2_labels_skeleton_design.md（FROZEN 前只出方案，未生成正式 labels/未改数据）。
+
+- A：D9 补档 #6 闭环（复制至 kma_unified_data_format_FREEZE_V1/）；#1/#3 定稿建议稿 → worklog/20260904_KMA_FROZEN_1_3_A_recommendation.md。
 
 ## High-1 处理（2026-09-04，响应 D/E 复审 CHANGES_REQUESTED）
 - 主仓库权威 CANDIDATE 版入库：evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_CANDIDATE_main.md（main@889b7553，2026-09-03）；source_provenance.md 修订（两版关系 + 基线引用纠正）。
