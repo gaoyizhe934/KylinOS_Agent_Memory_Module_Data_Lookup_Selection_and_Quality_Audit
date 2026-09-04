@@ -61,7 +61,7 @@
 
 ### 标注判定
 - 相关正解：同用户 **active 当前版本**
-- 旧版（superseded/is_current=false）→ 禁止召回
+- 旧版（`memory_status=superseded`，非当前版本）→ 禁止召回（用 memory_status+version 表达，不引入 is_current 字段，KMA §7）
 - 语义近似当前版 → `semantic_near_miss`（不计 guardrail violation）
 - `evaluation_role`：`positive_retrieval` / `negative_guardrail`
 - 每条带 `rationale`（依据可解释）
@@ -84,7 +84,7 @@
 - 时间更新冲突 → `temporal_inconsistency` + `resolution_status=resolved_manual`（或 auto 规则）
 - 作用域冲突 → `scope_ambiguity` + 应用级在该应用内优先
 - 来源冲突 → `source_conflict` + 显式配置优先
-- 版本冲突 → `temporal_inconsistency` 或 `contradiction`（按版本语义）→ 裁定项
+- 版本冲突 → `temporal_inconsistency` 或 `contradiction`（按版本语义）→ **开放待 Reviewer 裁定**（与 FROZEN 清单 #4 一并裁定，草案不擅自定）
 - 安全冲突 → 安全策略优先，`resolved_manual`
 
 ---
