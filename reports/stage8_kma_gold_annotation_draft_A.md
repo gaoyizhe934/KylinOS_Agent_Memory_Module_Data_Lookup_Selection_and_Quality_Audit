@@ -3,8 +3,8 @@
 - 角色：Annotator A（lyf-1213）
 - 分支：`feat/B-stage8-kma`（PR #27）
 - 日期：2026-09-03
-- 依据：`reports/stage8_kma_rebaseline.md`（B 侧重基线，§二 目标 gold 对象）、`data/processed/schema.json`（gold_enum_alignment）、KMA 标准 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md`、D9 检索集
-- 性质：**草案（先行对齐口径）**，KMA 仍 FREEZE_PROPOSAL，不做破坏性重转、不打断试标；FROZEN 后据此重建阶段8标注产物（手册 v2 / labels 骨架 / 试标 / Kappa）
+- 依据：`reports/stage8_kma_rebaseline.md`（B 侧重基线，§二 目标 gold 对象）、`data/processed/schema.json`（gold_enum_alignment）、KMA 权威候选 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md`、D9 检索集、Reviewer 裁定 `worklog/20260904_KMA_FROZEN_adjudications_1_4_R.md`
+- 性质：**历史口径草案（推导依据）**——六类 canonical gold 标注口径曾为草案，现 #1–#4 已由 Reviewer 裁定并落入执行基准 `data/gold/annotation_guideline_v2.md`（裁定落点版）；本文保留作映射推导参考，不再作为标注执行基准。KMA=FREEZE_PROPOSAL 未 FROZEN，FROZEN 前不重转/不试标。
 
 ---
 
@@ -141,12 +141,15 @@
 
 ---
 
-## 7. 争议/待裁定提示（本草案不擅自定）
+## 7. 裁定状态（2026-09-04 更新）
 
-1. `preference_key` 取值策略（开放字符串 vs 受控词表）→ FROZEN 清单#1
-2. 旧 `scope` 的 app/task 语义落点（不机械映射）→ FROZEN 清单#2
-3. confidence 高/中/低 → [0,1] 固定换算口径 → FROZEN 清单#3
-4. forgetting `checkpoints` 保留评测层 → FROZEN 清单#4
+原“争议/待裁定”四项已由 Reviewer 裁定（`worklog/20260904_KMA_FROZEN_adjudications_1_4_R.md`）并落入 `annotation_guideline_v2.md`（裁定落点版）：
+1. `preference_key`：✅ 受控开放字符串 `prefix[:object]`（#1）
+2. 旧 `scope` app/task：✅ 语义映射对照表（#2）
+3. confidence：✅ 三档主表 0.95/0.70/0.40（#3）
+4. `checkpoints`：✅ 评测层验证时点，不进业务状态（#4.1）；版本冲突/检索 D9 一并裁定（#4.2/#4.3）
+
+P0 定义层裁定闭环；数据包内无未决定义项。剩余 #7（KMA→FROZEN，主仓库）→ #8（P1 重转）待 FROZEN 信号。
 
 ## 8. 后续（FROZEN 后）
 - 手册 v2（本文稿定稿）→ labels_A/B 骨架（canonical）→ 试标/Kappa（B 侧一致字段集适配）→ 全量重转 processed
