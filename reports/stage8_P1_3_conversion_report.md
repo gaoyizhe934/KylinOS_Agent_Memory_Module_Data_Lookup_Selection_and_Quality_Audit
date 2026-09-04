@@ -39,6 +39,12 @@ python scripts/convert/kma_convert.py        # 再跑 → already=415，SHA 一�
 # schema 校验 / schema_drift_check（B 侧执行）
 ```
 
+## 三点五、时间戳归一修正（2026-09-04，响应 B 对账）
+
+- **问题**：415 条 canonical gold 时间戳为 `2026-07-20T10:00:00+08:00`（带时区、无毫秒/Z），不符合 KMA §3.6。
+- **修正**：`kma_convert.py` 新增 `normalize_timestamp_utc()`——带时区时间转 UTC + 补毫秒 `.000` + `Z`（`2026-07-20T10:00:00+08:00` → `2026-07-20T02:00:00.000Z`）。
+- **验证**：715 条时间戳全部 UTC ms Z（`ts_UTC_ms=715`）；幂等（再跑 `ts_fixed=0`、SHA 一致）；行数 415 非 aux / 715 gold 非空 / 500 public_derived raw_id 不变。
+
 ## 四、诚实披露
 
 1. **convert_to_schema.py（旧脚本）与 kma_convert.py 冲突**：两者都写 data/processed/*.jsonl。P1-3 后 **canonical 为金标准**，`convert_to_schema.py` 仅用于生成（会还原旧格式）；建议 B 侧校验以 canonical 为准，或后续将 convert_to_schema 的 KMA 映射层替换为 kma_convert。
