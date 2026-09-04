@@ -1,11 +1,11 @@
-# 麒麟 OS Memory Gold 标注手册 v2（KMA 对齐，裁定落点版）
+# 麒麟 OS Memory Gold 标注手册 v2（KMA 对齐，P1 定稿版）
 
 - 角色：Annotator A（lyf-1213）· 阶段8 v2
-- 分支：`feat/B-stage8-kma`（PR #27）
-- 日期：2026-09-03（起草）；2026-09-04（按 Reviewer 裁定 #1-#4 落点更新）
-- 依据：`reports/stage8_kma_gold_annotation_draft_A.md`（六类口径草案）、KMA 权威候选 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md`、D9 检索集、Reviewer 裁定 `worklog/20260904_KMA_FROZEN_adjudications_1_4_R.md`、B 复核意见
-- 性质：**裁定落点版**（KMA=FREEZE_PROPOSAL 未 FROZEN；§3/§4/§5/§6 已按 Reviewer 裁定固定；KMA FROZEN 后据此定稿并重建 labels 骨架/试标/Kappa；本文替代 v1.x 标注手册的旧枚举口径）
-- **版本互指（Reviewer Low-1）**：FROZEN 前现行试标/标注以 v1.3（`data/gold/annotation_guideline.md`）为准；FROZEN 后以本 v2 定稿为准。
+- 分支：`feat/A-stage8-p1-2-3`（P1-2 批次）
+- 日期：2026-09-03（起草）；2026-09-04（按 Reviewer 裁定 #1-#4 落点）；2026-09-04（P1-2 定稿）
+- 依据：`reports/stage8_kma_gold_annotation_draft_A.md`（六类口径）、KMA 权威候选 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md`、D9 检索集、Reviewer 裁定 `worklog/20260904_KMA_FROZEN_adjudications_1_4_R.md`（#1-#4、#9、#10）、B 复核意见
+- 性质：**P1 定稿版**（本仓库 #7 KMA→FROZEN 认定达成，df8cdf6；§3-§11 已按裁定固定；本文为阶段8 v2 现行标注标准，替代 v1.x 标注手册的旧枚举口径）
+- **版本互指（Reviewer Low-1）**：v2 定稿后阶段8 试标/标注以本 v2 为准；v1.3（`data/gold/annotation_guideline.md`）仅作旧口径回溯参考。
 
 ---
 
@@ -234,4 +234,4 @@
 9. **KMA FROZEN（#7）**：✅ 本仓库 #27 已认定 FROZEN（2026-09-04，D/E 联合授权 + 主仓库 PR#137 合并；schema kma_alignment.status=FROZEN）；主仓库在线文档仍 CANDIDATE_FOR_FREEZE（差异协调中，以本仓库认定推进 P1）
 
 ## 12. A 不越权声明
-- 本文按裁定落点更新，P1-1 收口（schema/enum/手册）为 A 侧执行；全量重转 processed、labels 骨架落地、试标属 P1-2 起，待闸口确认后执行。
+- 本文为 P1-2 定稿版；P1-1 收口（schema/enum/sensitivity）已完成；后续 P1-3 全量重转由 A 执行（禁 mock）、P1-4 骨架由 B 生成、P1-5 试标 A/B 独立、P1-6 Kappa 由 B 计算，均按 P1 工作流批次纪律推进。
