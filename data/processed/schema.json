@@ -2,14 +2,15 @@
   "schema_name": "kylin_memory_gold",
   "schema_version": "v1.0",
   "kma_alignment": {
-    "reference": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md",
+    "reference": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md（权威）| evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md（历史存档）",
     "doc_id": "KMA-DATA-SCHEMA-001",
-    "status": "FREEZE_PROPOSAL",
-    "note": "gold 业务字段必须对齐 KMA Canonical Business Schema v1.0；评测样本层字段（sample_id/input/evidence/annotator/template_family）为评测专用，KMA 不冻结",
+    "status": "FROZEN（本仓库 #27 落实，2026-09-04：D/E 联合授权 + 主仓库 PR #137 合并（非作者 D Reviewer APPROVE，2026-09-03）；主仓库文档头部状态以其自身治理提交为准，两仓库状态需后续对齐）",
+    "note": "gold 业务字段必须对齐 KMA Canonical Business Schema v1；本仓库按 FROZEN 认定执行 P1（全量重转/labels/试标/Kappa）。评测样本层字段（sample_id/input/evidence/annotator/template_family）为评测专用。",
     "lifecycle_truth": "memory_status (active/superseded/deprecated/expired/removed/candidate)",
     "user_isolation": "user_id 直接携带，禁止模型生成/从正文推断",
     "time_format": "YYYY-MM-DDTHH:MM:SS.sssZ (UTC 毫秒，带时区)",
-    "id_rule": "*_id 为 opaque string，禁止依赖前缀解析业务含义"
+    "id_rule": "*_id 为 opaque string，禁止依赖前缀解析业务含义",
+    "main_authoritative_candidate": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md（主仓库 docs/architecture，PR #137 合并 2026-09-03；本仓库 #27 认定 FROZEN）"
   },
   "task_types": [
     "preference_extraction",
@@ -47,44 +48,145 @@
   "gold_enum_alignment": {
     "preference_extraction": {
       "kma_object": "Preference",
-      "preference_scope": ["global", "topic", "tool", "session", "time_window"],
-      "expression_type": ["explicit", "implicit"],
+      "preference_scope": [
+        "global",
+        "topic",
+        "tool",
+        "session",
+        "time_window"
+      ],
+      "expression_type": [
+        "explicit",
+        "implicit"
+      ],
       "confidence_score": "float [0,1]",
       "should_persist": "boolean",
       "is_temporary": "boolean",
-      "memory_status": ["active", "superseded", "deprecated", "expired", "removed", "candidate"],
+      "memory_status": [
+        "active",
+        "superseded",
+        "deprecated",
+        "expired",
+        "removed",
+        "candidate"
+      ],
       "version": "integer >= 1",
       "note": "旧字段 preference_type/scope/confidence/should_store/operation 不再作为 canonical 真值，映射到 KMA"
     },
     "knowledge_retrieval": {
       "kma_object": "Knowledge",
-      "knowledge_type": ["workflow", "case", "template", "fact", "constraint", "failure_experience"],
+      "knowledge_type": [
+        "workflow",
+        "case",
+        "template",
+        "fact",
+        "constraint",
+        "failure_experience"
+      ],
       "knowledge_id": "string opaque",
-      "memory_status": ["active", "superseded", "deprecated", "expired", "removed", "candidate"],
-      "forbidden_recall_8": ["superseded", "expired", "removed_or_forgotten", "candidate", "unresolved_conflict", "cross_user", "sensitive_recall_prohibited", "deprecated"],
+      "memory_status": [
+        "active",
+        "superseded",
+        "deprecated",
+        "expired",
+        "removed",
+        "candidate"
+      ],
+      "forbidden_recall_8": [
+        "superseded",
+        "expired",
+        "removed_or_forgotten",
+        "candidate",
+        "unresolved_conflict",
+        "cross_user",
+        "sensitive_recall_prohibited",
+        "deprecated"
+      ],
       "note": "版本级引用 memory_id+version_id；跨用户隔离 S-08"
     },
     "conflict_resolution": {
       "kma_object": "Conflict",
-      "conflict_type": ["contradiction", "temporal_inconsistency", "source_conflict", "preference_conflict", "scope_ambiguity"],
-      "resolution_status": ["detected", "analyzing", "resolved_auto", "resolved_manual", "deferred", "unresolvable"],
+      "conflict_type": [
+        "contradiction",
+        "temporal_inconsistency",
+        "source_conflict",
+        "preference_conflict",
+        "scope_ambiguity"
+      ],
+      "resolution_status": [
+        "detected",
+        "analyzing",
+        "resolved_auto",
+        "resolved_manual",
+        "deferred",
+        "unresolvable"
+      ],
       "note": "旧枚举 time_update/scope/source/knowledge_version/safety 已重定义"
     },
     "precise_forgetting": {
       "kma_object": "ForgetPlan",
-      "forget_mode": ["single_item", "session", "topic", "time_window", "full_reset"],
-      "target_type": ["knowledge", "preference", "event", "all"],
-      "status": ["pending", "previewing", "awaiting_confirmation", "executing", "completed", "failed", "rolled_back"]
+      "forget_mode": [
+        "single_item",
+        "session",
+        "topic",
+        "time_window",
+        "full_reset"
+      ],
+      "target_type": [
+        "knowledge",
+        "preference",
+        "event",
+        "all"
+      ],
+      "status": [
+        "pending",
+        "previewing",
+        "awaiting_confirmation",
+        "executing",
+        "completed",
+        "failed",
+        "rolled_back"
+      ]
     },
     "tool_result": {
       "kma_object": "MemorySourceEvent.source_business_status",
-      "source_business_status": ["raw", "completed", "success", "partial", "failed", "cancelled", "timeout", "ignored"],
-      "note": "旧 status 枚举补 raw/completed/ignored；tool_call_id 在 tool_result 时必填"
+      "source_business_status": [
+        "raw",
+        "completed",
+        "success",
+        "partial",
+        "failed",
+        "cancelled",
+        "timeout",
+        "ignored"
+      ],
+      "sensitivity": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "note": "旧 status 枚举补 raw/completed/ignored；tool_call_id 在 tool_result 时必填；sensitivity（R-5 FROZEN，#10 裁定）事件层敏感样本必填、非敏感可空"
     },
     "end_to_end_session": {
       "kma_object": "MemorySourceEvent 链",
-      "memory_status": ["active", "superseded", "deprecated", "expired", "removed", "candidate"],
-      "note": "expected_memory 生命周期对齐 memory_status；expected_response 为评测层，KMA 不冻结"
+      "memory_status": [
+        "active",
+        "superseded",
+        "deprecated",
+        "expired",
+        "removed",
+        "candidate"
+      ],
+      "sensitivity": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "note": "expected_memory 生命周期对齐 memory_status；expected_response 为评测层，KMA 不冻结；sensitivity（R-5 FROZEN，#10 裁定）事件层敏感样本必填、非敏感可空"
     }
   }
 }
