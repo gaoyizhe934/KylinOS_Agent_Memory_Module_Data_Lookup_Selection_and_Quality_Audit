@@ -40,3 +40,10 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 - #10 D 轨物理映射确认（gold 字段 → SQLite/Vector 落库命名，Reviewer Medium-1）→ D（另案登记，不阻塞定义层）。
 - #11 E 轨「评测 gold ↔ canonical 映射签名」确认（Reviewer Low-1）→ E。
 - #12 schema.json kma_alignment 状态/引用切换至权威候选版后的复核 → B/A。
+
+## #9–#12 处理状态（2026-09-04，B）
+- #9 ✅ B 核对完成（来源=D3 L2 L194/L242/L254，FROZEN_BUSINESS_SEMANTIC）→ 待 E/D 终裁盖章；
+- #10 🟡 物理映射确认单已备 → 待 D（另案，不阻塞定义层）；
+- #11 🟡 映射签名确认单已备 → 待 E；
+- #12 ✅ schema.json kma_alignment 已切换至权威候选版并校验。
+- 证据：reports/stage8_frozen_items_9_12_B.md。

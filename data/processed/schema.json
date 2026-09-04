@@ -2,10 +2,10 @@
   "schema_name": "kylin_memory_gold",
   "schema_version": "v1.0",
   "kma_alignment": {
-    "reference": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md",
+    "reference": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md（权威）| evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md（历史存档）",
     "doc_id": "KMA-DATA-SCHEMA-001",
-    "status": "FREEZE_PROPOSAL",
-    "note": "gold 业务字段必须对齐 KMA Canonical Business Schema v1.0；评测样本层字段（sample_id/input/evidence/annotator/template_family）为评测专用，KMA 不冻结",
+    "status": "CANDIDATE_FOR_FREEZE（主仓库权威 2026-09-03 main@889b7553；尚未 FROZEN；历史存档版为 FREEZE_PROPOSAL 仅供参考）",
+    "note": "gold 业务字段必须对齐 KMA Canonical Business Schema v1（以主仓库权威 CANDIDATE 版为准）；评测样本层字段为评测专用，KMA 不冻结。",
     "lifecycle_truth": "memory_status (active/superseded/deprecated/expired/removed/candidate)",
     "user_isolation": "user_id 直接携带，禁止模型生成/从正文推断",
     "time_format": "YYYY-MM-DDTHH:MM:SS.sssZ (UTC 毫秒，带时区)",
