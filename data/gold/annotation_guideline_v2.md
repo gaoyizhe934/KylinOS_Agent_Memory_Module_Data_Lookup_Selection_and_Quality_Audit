@@ -120,7 +120,7 @@
 | target_type | `knowledge`/`preference`/`event`/`all` |
 | target_selector | 模式不变量约束 |
 | status | `pending`/`previewing`/`awaiting_confirmation`/`executing`/`completed`/`failed`/`rolled_back` |
-| is_cascade | boolean | 
+| is_cascade | boolean |
 | has_vector_cleanup / requires_confirmation | boolean（**DEFERRED：不新增为业务真值**，评测层可选、不进业务 canonical，见 §9.1） |
 | resolved_target_ids + affected_count | preview 结果 |
 
