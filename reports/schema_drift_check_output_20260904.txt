@@ -1,10 +1,10 @@
 Schema drift check output (B side) - 2026-09-04
-mapping rows: 30
+mapping rows: 68
 task=auxiliary_dialogue gold fields=goals, services
-task=conflict_resolution gold fields=conflict_type, keep_ids, remove_ids, resolution_reason, winner
-task=end_to_end_session gold fields=expected_memory, expected_response
-task=knowledge_retrieval gold fields=expected_answer_points, hard_negative_ids, relevance, relevant_ids
-task=precise_forgetting gold fields=checkpoints, expected_deleted, expected_residual_count, must_keep, target_ids
-task=preference_extraction gold fields=confidence, old_value, operation, preference_type, scope, should_store, value
+task=conflict_resolution gold fields=conflict_type, involved_knowledge_ids, left_knowledge_id, legacy, resolution_reason, resolution_status, resolution_strategy, right_knowledge_id
+task=end_to_end_session gold fields=expected_memory, expected_response, legacy, memory_status, memory_type, sensitivity
+task=knowledge_retrieval gold fields=evaluation_role, expected_answer_points, hard_negative_ids, knowledge_type, legacy, memory_status, relevant_ids, version_refs
+task=precise_forgetting gold fields=affected_count, checkpoints, expected_residual_count, forget_mode, has_vector_cleanup, is_cascade, legacy, must_keep, requires_confirmation, resolved_target_ids, status, target_selector, target_type
+task=preference_extraction gold fields=confidence_score, evidence_event_ids, expression_type, is_temporary, legacy, memory_status, preference_key, preference_scope, preference_value, previous_version_id, should_persist, version
 unregistered gold fields: 0
 enum meta issues: 0

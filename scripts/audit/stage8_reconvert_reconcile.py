@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Stage8 P1-3 reconvert reconciliation (B). Run AFTER A reconverts processed.
-# Checks: per-file row counts, timestamp UTC ms (.sssZ), raw_id for public_derived.
-# Non-destructive; reads only.
+# --canonical: expect six canonical task files (415) and ignore auxiliary_dialogue.
+import argparse
 import glob
 import io
 import json
@@ -14,9 +14,8 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='repla
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROCESSED = os.path.join(REPO, 'data', 'processed')
-DEFAULT_EXPECTED = os.path.join(REPO, 'reports', 'reconvert_expected_counts.json')
 
-EXPECTED_DEFAULT = {
+LEGACY_EXPECTED = {
     'conflict_resolution.jsonl': 40,
     'end_to_end_session.jsonl': 15,
     'knowledge_retrieval.jsonl': 60,
@@ -26,6 +25,15 @@ EXPECTED_DEFAULT = {
     'precise_forgetting.jsonl': 40,
     'preference_extraction.jsonl': 60,
 }
+CANONICAL_EXPECTED = {
+    'conflict_resolution.jsonl': 40,
+    'end_to_end_session.jsonl': 15,
+    'knowledge_retrieval.jsonl': 60,
+    'knowledge_retrieval_t2ranking.jsonl': 200,
+    'precise_forgetting.jsonl': 40,
+    'preference_extraction.jsonl': 60,
+}
+AUX_FILES = ('multiwoz_dialogues_sample.jsonl', 'multiwoz_public_sample.jsonl')
 
 def ts_ok(s):
     if not s or not isinstance(s, str):
@@ -38,19 +46,20 @@ def ts_ok(s):
     return s[20:23].isdigit()
 
 def main():
-    use_expected = os.path.exists(DEFAULT_EXPECTED)
-    expected = {}
-    if use_expected:
-        with open(DEFAULT_EXPECTED, 'r', encoding='utf-8') as fh:
-            expected = json.load(fh).get('expected', EXPECTED_DEFAULT)
-    else:
-        expected = EXPECTED_DEFAULT
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--canonical', action='store_true', help='canonical mode: expect 6 task files (415), ignore aux')
+    args = ap.parse_args()
+    expected = CANONICAL_EXPECTED if args.canonical else LEGACY_EXPECTED
+    skip_aux = args.canonical
     rows = {}
     ts_bad = []
     raw_missing = []
     gold_missing = []
+    total = 0
     for path in sorted(glob.glob(os.path.join(PROCESSED, '*.jsonl'))):
         fname = os.path.basename(path)
+        if skip_aux and fname in AUX_FILES:
+            continue
         n = 0
         with open(path, 'r', encoding='utf-8') as fh:
             for line in fh:
@@ -58,6 +67,7 @@ def main():
                 if not line:
                     continue
                 n += 1
+                total += 1
                 o = json.loads(line)
                 sid = o.get('sample_id', '')
                 if not ts_ok(o.get('timestamp')):
@@ -71,8 +81,7 @@ def main():
                 if gold is None or not isinstance(gold, dict) or len(gold) == 0:
                     gold_missing.append(sid)
         rows[fname] = n
-    total = sum(rows.values())
-    print('========== Stage8 P1-3 reconvert reconciliation ==========')
+    print('========== Stage8 P1-3 reconvert reconciliation (canonical=%s) ==========' % str(args.canonical))
     print('per file rows: %s' % rows)
     print('total: %d' % total)
     mism = []
@@ -81,9 +90,9 @@ def main():
             mism.append(fname + ' MISSING')
         elif rows[fname] != exp:
             mism.append('%s=%d expect=%d' % (fname, rows[fname], exp))
-    print('count mismatches (vs expected %s): %s' % ('ON' if use_expected else 'OFF(default)', mism if mism else 'none'))
+    print('count mismatches: %s' % (mism if mism else 'none'))
     print('ts not UTC .sssZ: %d' % len(ts_bad))
-    for x in ts_bad[:8]:
+    for x in ts_bad[:6]:
         print('  TS: ' + x)
     print('public_derived missing raw_id: %d' % len(raw_missing))
     print('records with empty gold: %d' % len(gold_missing))
