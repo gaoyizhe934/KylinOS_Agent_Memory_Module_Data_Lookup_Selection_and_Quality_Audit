@@ -13,6 +13,7 @@
 | 6 | D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl 补档入 evidence/source/kma_unified_data_format_FREEZE_V1/ | B 轨 PR#88 / A 提供 | ✅ A 已补档（2026-09-04，证据：evidence/source/kma_unified_data_format_FREEZE_V1/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl） |
 | 7 | KMA 转 FROZEN（签署 + 合并 main） | D/E Reviewer | ⬜ |
 | 8 | 全量重转 processed gold + 重建阶段8标注枚举/骨架/试标 | A/B（FROZEN 后） | ⬜ |
+| 9 | preference_scope/conflict_type 等权威版未列字段 → D3 契约（L2）核对落点 | A/B + D/E | ⬜（High-1 遗留新增） |
 
 FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环后在状态列更新为 ✅ 并附证据位置。
 
@@ -27,14 +28,15 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 
 ## P0 进度（2026-09-04）
 - B：canonical labels_A/B 骨架设计已起草 → reports/stage8_v2_labels_skeleton_design.md（FROZEN 前只出方案，未生成正式 labels/未改数据）。
-
 - A：D9 补档 #6 闭环（复制至 kma_unified_data_format_FREEZE_V1/）；#1/#3 定稿建议稿 → worklog/20260904_KMA_FROZEN_1_3_A_recommendation.md。
 
-## High-1 处理（2026-09-04，响应 D/E 复审 CHANGES_REQUESTED）
-- 主仓库权威 CANDIDATE 版入库：evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_CANDIDATE_main.md（main@889b7553，2026-09-03）；source_provenance.md 修订（两版关系 + 基线引用纠正）。
-- 核心枚举核对（R-2 expression_type / R-3 memory_status / R-4 source_business_status）：与仓库编码一致 ✅。
-- 新增待办：
-  #9 preference_scope/conflict_type 等值域来源确认（候选 L1 未逐值展开，依 D3 L2/不裁定清单）→ E/D；
-  #10 D 轨物理映射确认（gold 字段 → SQLite/Vector 命名，Medium-1）→ D（另案登记）；
-  #11 E 轨“评测 gold ↔ canonical 映射签名”确认（Low-1）→ E；
-  #12 schema.json kma_alignment 状态/引用切换至权威候选版后复核。
+## High-1 响应（2026-09-04，A）
+- 主仓库权威版（CANDIDATE_FOR_FREEZE，159 行，E 轨 2026-09-03）已抓取入库：`evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md`。
+- `source_provenance.md` 已修订：纠正基线引用错误（b70827c5 该路径 404）、移除无主仓库对应的编号 KMA-DATA-SCHEMA-001、明确两版关系（权威版=对齐基线，975 行旧版=仅枚举明细参考）。
+- 一致性核验：R-2/R-3/R-4/R-5（expression_type/memory_status/source_business_status/sensitivity）与本仓库编码一致；preference_scope/conflict_type 等权威版未列字段 → 需 D3（L2）契约核对（新增遗留项）。
+- 新增遗留项：#9 preference_scope/conflict_type 与 D3 契约（L2）核对落点。
+
+## 补充遗留项（2026-09-04，B 侧复核补充）
+- #10 D 轨物理映射确认（gold 字段 → SQLite/Vector 落库命名，Reviewer Medium-1）→ D（另案登记，不阻塞定义层）。
+- #11 E 轨「评测 gold ↔ canonical 映射签名」确认（Reviewer Low-1）→ E。
+- #12 schema.json kma_alignment 状态/引用切换至权威候选版后的复核 → B/A。

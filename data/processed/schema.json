@@ -10,7 +10,7 @@
     "user_isolation": "user_id 直接携带，禁止模型生成/从正文推断",
     "time_format": "YYYY-MM-DDTHH:MM:SS.sssZ (UTC 毫秒，带时区)",
     "id_rule": "*_id 为 opaque string，禁止依赖前缀解析业务含义",
-    "main_authoritative_candidate": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_CANDIDATE_main.md（主仓库 main@889b7553，CANDIDATE_FOR_FREEZE，2026-09-03）；status 字段待权威版复核后更新。"
+    "main_authoritative_candidate": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md（主仓库 main@889b7553，CANDIDATE_FOR_FREEZE，2026-09-03）；status 字段待权威版复核后更新。"
   },
   "task_types": [
     "preference_extraction",
