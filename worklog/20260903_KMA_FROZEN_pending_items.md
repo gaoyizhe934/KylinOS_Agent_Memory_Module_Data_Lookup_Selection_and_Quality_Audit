@@ -11,7 +11,7 @@
 | 4 | forgetting checkpoints 定位：保留为评测层验证时点，不进业务状态 + 版本冲突 conflict_type + retrieval D9 | Reviewer 裁定 | ✅ Reviewer 已裁定（2026-09-04）：checkpoints=评测层验证时点；版本冲突口诀；D9 版本引用采纳，见 adjudications #4 |
 | 5 | KMA_LEGACY_MAP 与 B 校验脚本核对（无冲突，需在 #25 合并后补齐 enum_check --kma） | B | ✅ 工具已移植适配至 #27（2026-09-03 进度更新） |
 | 6 | D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl 补档入 evidence/source/kma_unified_data_format_FREEZE_V1/ | B 轨 PR#88 / A 提供 | ✅ A 已补档（2026-09-04，证据：evidence/source/kma_unified_data_format_FREEZE_V1/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl） |
-| 7 | KMA 转 FROZEN（签署 + 合并 main） | D/E Reviewer | ⬜ |
+| 7 | KMA 转 FROZEN（签署 + 合并 main） | D/E Reviewer | ✅ 本仓库 #27 认定 FROZEN（2026-09-04）：D/E 联合授权 + 主仓库 PR #137（D APPROVE）合并 2026-09-03；落实于本仓库（schema kma_alignment.status=FROZEN），主仓库文档头部状态另行为准 |
 | 8 | 全量重转 processed gold + 重建阶段8标注枚举/骨架/试标 | A/B（FROZEN 后） | ⬜ |
 | 9 | preference_scope/conflict_type 等权威版未列字段 → D3 契约（L2）核对落点 | A/B + D/E | ✅ B 核对 + E/D 终裁盖章（2026-09-04，D3 L194/L242 FROZEN_BUSINESS_SEMANTIC，见 reports/stage8_frozen_items_9_12_B.md） |
 | 10 | R-5 sensitivity 收口：评测 gold 是否补 sensitivity（canonical R-5）或标评测层不纳入 | Reviewer 裁定 | ✅ Reviewer 已裁定（2026-09-04）：tool_result/e2e 事件层敏感样本补 sensitivity（KMA 枚举），检索不补；P1-1 执行落点，见 adjudications 补充 #10 |

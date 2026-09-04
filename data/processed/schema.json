@@ -4,13 +4,13 @@
   "kma_alignment": {
     "reference": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md（权威）| evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md（历史存档）",
     "doc_id": "KMA-DATA-SCHEMA-001",
-    "status": "CANDIDATE_FOR_FREEZE（主仓库权威 2026-09-03 main@889b7553；尚未 FROZEN；历史存档版为 FREEZE_PROPOSAL 仅供参考）",
-    "note": "gold 业务字段必须对齐 KMA Canonical Business Schema v1（以主仓库权威 CANDIDATE 版为准）；评测样本层字段为评测专用，KMA 不冻结。",
+    "status": "FROZEN（本仓库 #27 落实，2026-09-04：D/E 联合授权 + 主仓库 PR #137 合并（非作者 D Reviewer APPROVE，2026-09-03）；主仓库文档头部状态以其自身治理提交为准，两仓库状态需后续对齐）",
+    "note": "gold 业务字段必须对齐 KMA Canonical Business Schema v1；本仓库按 FROZEN 认定执行 P1（全量重转/labels/试标/Kappa）。评测样本层字段（sample_id/input/evidence/annotator/template_family）为评测专用。",
     "lifecycle_truth": "memory_status (active/superseded/deprecated/expired/removed/candidate)",
     "user_isolation": "user_id 直接携带，禁止模型生成/从正文推断",
     "time_format": "YYYY-MM-DDTHH:MM:SS.sssZ (UTC 毫秒，带时区)",
     "id_rule": "*_id 为 opaque string，禁止依赖前缀解析业务含义",
-    "main_authoritative_candidate": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md（主仓库 main@889b7553，CANDIDATE_FOR_FREEZE，2026-09-03）；status 字段待权威版复核后更新。"
+    "main_authoritative_candidate": "evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md（主仓库 docs/architecture，PR #137 合并 2026-09-03；本仓库 #27 认定 FROZEN）"
   },
   "task_types": [
     "preference_extraction",
