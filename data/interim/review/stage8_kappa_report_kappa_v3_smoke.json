@@ -1,0 +1,51 @@
+{
+  "tag": "kappa_v3_smoke",
+  "threshold": 0.7,
+  "passed": true,
+  "counts": {
+    "a": 40,
+    "b": 40,
+    "matched": 40,
+    "only_a": 0,
+    "only_b": 0
+  },
+  "overall": {
+    "n": 40,
+    "p_observed": 1.0,
+    "p_expected": 0.20000000000000004,
+    "kappa": 1.0
+  },
+  "per_task": {
+    "conflict_resolution (full-gold fallback)": {
+      "n": 8,
+      "p_observed": 1.0,
+      "p_expected": 1.0,
+      "kappa": 1.0
+    },
+    "end_to_end_session (full-gold fallback)": {
+      "n": 8,
+      "p_observed": 1.0,
+      "p_expected": 1.0,
+      "kappa": 1.0
+    },
+    "knowledge_retrieval (full-gold fallback)": {
+      "n": 8,
+      "p_observed": 1.0,
+      "p_expected": 1.0,
+      "kappa": 1.0
+    },
+    "precise_forgetting (full-gold fallback)": {
+      "n": 8,
+      "p_observed": 1.0,
+      "p_expected": 1.0,
+      "kappa": 1.0
+    },
+    "preference_extraction (full-gold fallback)": {
+      "n": 8,
+      "p_observed": 1.0,
+      "p_expected": 1.0,
+      "kappa": 1.0
+    }
+  },
+  "below_threshold_tasks": []
+}
