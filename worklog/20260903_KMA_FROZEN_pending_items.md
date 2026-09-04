@@ -47,3 +47,11 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 - #11 ✅ E 轨已签名（2026-09-04）：field_mapping / kappa_agreement_fields / schema_drift_audit 映射确认；
 - #12 ✅ schema.json kma_alignment 已切换至权威候选版并校验。
 - 证据：reports/stage8_frozen_items_9_12_B.md。
+
+## #1–#4 裁定落地状态（2026-09-04）
+- #1 preference_key：✅ Reviewer 裁定 + A 手册 v2 §3 落点（受控开放串 prefix[:object]，Kappa 全串比对）；B 已把 preference_key 纳入 registry 单源并同步脚本/测试（65818d9）。
+- #2 app/task：✅ Reviewer 裁定 + A 手册 v2 §3 preference_scope 对照表（判定顺序固定）。
+- #3 confidence：✅ Reviewer 裁定 + A 手册 v2 §3 档位表（三档 0.95/0.70/0.40 + 受控中间档）。
+- #4 checkpoints/版本冲突/D9：✅ Reviewer 裁定 #4.1/#4.2/#4.3 + A 手册 v2 §5/§6/§4 落点。
+- **B 一致性核对（2026-09-04）**：A 手册 v2（d179ce9）§3/§4/§5/§6/§9 与 registry 单源（含 preference_key）、Reviewer 裁定、KMA 权威候选一致；§9 已改为引用 registry 单源，未再维护第二套；stage8_kappa test 7/7 PASS。
+- 剩余：#7 KMA→FROZEN（主仓库 D 签署+PR 合并）→ #8 全量重转（FROZEN 后），触发 P1。
