@@ -1,0 +1,10 @@
+Schema drift check output (B side) - 2026-09-04
+mapping rows: 30
+task=auxiliary_dialogue gold fields=goals, services
+task=conflict_resolution gold fields=conflict_type, keep_ids, remove_ids, resolution_reason, winner
+task=end_to_end_session gold fields=expected_memory, expected_response
+task=knowledge_retrieval gold fields=expected_answer_points, hard_negative_ids, relevance, relevant_ids
+task=precise_forgetting gold fields=checkpoints, expected_deleted, expected_residual_count, must_keep, target_ids
+task=preference_extraction gold fields=confidence, old_value, operation, preference_type, scope, should_store, value
+unregistered gold fields: 0
+enum meta issues: 0

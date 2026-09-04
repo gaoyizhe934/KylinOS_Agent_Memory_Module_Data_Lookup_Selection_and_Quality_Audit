@@ -111,5 +111,26 @@
     "conflict_source_v1": 8,
     "conflict_knowledge_version_v1": 8,
     "conflict_safety_v1": 8
+  },
+  "_meta": {
+    "layer_note": "分层标注：本字典混合了治理/旧版评测枚举。下列键为评测或旧版标签（NOT production shared enum），不视为 KMA 生产 canonical 业务枚举；生产 canonical 枚举以 KMA 标准与 schema.json kma_alignment/gold_enum_alignment 为准。",
+    "eval_or_legacy_keys": [
+      "preference_type",
+      "scope",
+      "operation",
+      "conflict_type",
+      "status",
+      "persist_policy",
+      "checkpoints",
+      "confidence",
+      "winner",
+      "review_status"
+    ],
+    "governance_keys": [
+      "task_type",
+      "source",
+      "template_family"
+    ],
+    "lifecycle_note": "review_status 仅评测标签审阅；业务生命周期以 gold.memory_status（KMA active/superseded/deprecated/expired/removed/candidate）为准。"
   }
 }

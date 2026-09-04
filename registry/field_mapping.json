@@ -1,0 +1,346 @@
+{
+  "meta": {
+    "generated_at": "2026-09-04",
+    "purpose": "数据包数据侧字段 ↔ KMA Canonical/D3 映射登记（B 轨字段漂移自检）",
+    "standard": [
+      "KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md（E 轨 D12E，主仓库 main PR #137，CANDIDATE_FOR_FREEZE，R-1..R-6）",
+      "D3_MEMORY_BUSINESS_CONTRACT_V1.md",
+      "docs/day12/14_d12e_lifecycle_schema_drift_handoff_20260903.md（TD-016）",
+      "业务字段漂移修复与跨轨自检方案 docx §3"
+    ],
+    "discipline": "已冻结 Canonical 字段不静默改名/改值；无法无损映射字段 fail-closed 登记待确认；评测层标签显式标注 NOT production shared enum；未冻结项不改行为。",
+    "owner": "B（DGXD01）"
+  },
+  "rows": [
+    {
+      "task": "preference_extraction",
+      "data_field": "preference_type",
+      "canonical": "expression_type(explicit/implicit)；分类不替代 preference_key/knowledge_type",
+      "category": "A/C",
+      "layer": "eval_classification",
+      "status": "eval_only_registered",
+      "owner": "E 判定",
+      "notes": "评测层主题分类；NOT production shared enum；登记‘评测归一化’",
+      "td": ""
+    },
+    {
+      "task": "preference_extraction",
+      "data_field": "scope",
+      "canonical": "preference_scope: global/topic/tool/session/time_window",
+      "category": "D",
+      "layer": "eval_legacy",
+      "status": "awaiting_E_D",
+      "owner": "E",
+      "notes": "app/global/session 为旧值域；app/task 语义落点待 E 裁定（FROZEN 清单#2）；不擅自改 Gold",
+      "td": ""
+    },
+    {
+      "task": "preference_extraction",
+      "data_field": "confidence",
+      "canonical": "confidence_score float[0,1]",
+      "category": "C",
+      "layer": "eval_legacy",
+      "status": "deferred",
+      "owner": "A/E",
+      "notes": "HD-SCHEMA-03 DEFERRED；标签层评测归一化需 E 判定；不得当业务字段",
+      "td": "HD-SCHEMA-03"
+    },
+    {
+      "task": "preference_extraction",
+      "data_field": "should_store",
+      "canonical": "should_persist + is_temporary",
+      "category": "A/C",
+      "layer": "eval_mapping",
+      "status": "registered_awaiting_decision",
+      "owner": "E",
+      "notes": "登记语义映射，非生产枚举",
+      "td": ""
+    },
+    {
+      "task": "preference_extraction",
+      "data_field": "operation",
+      "canonical": "version + previous_version_id + memory_status",
+      "category": "A/C",
+      "layer": "eval_operation",
+      "status": "eval_only_registered",
+      "owner": "E",
+      "notes": "标注操作(create/update/no_op)属评测层，不入业务枚举",
+      "td": ""
+    },
+    {
+      "task": "preference_extraction",
+      "data_field": "value",
+      "canonical": "preference_value",
+      "category": "A",
+      "layer": "eval_mapping",
+      "status": "mapping_registered",
+      "owner": "B",
+      "notes": "文本内容映射",
+      "td": ""
+    },
+    {
+      "task": "knowledge_retrieval",
+      "data_field": "relevant_ids",
+      "canonical": "retrieval_ref=(memory_id, version_id) D9",
+      "category": "C",
+      "layer": "eval_legacy",
+      "status": "awaiting_E_D",
+      "owner": "E/D",
+      "notes": "现为单层 id，无版本；是否接入 D9 口径待 E/D 裁定",
+      "td": ""
+    },
+    {
+      "task": "knowledge_retrieval",
+      "data_field": "hard_negative_ids",
+      "canonical": "禁止召回 8 类(guardrail)",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测负样本/guardrail；NOT production shared enum",
+      "td": ""
+    },
+    {
+      "task": "knowledge_retrieval",
+      "data_field": "relevance",
+      "canonical": "（评测相关度）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测层",
+      "td": ""
+    },
+    {
+      "task": "knowledge_retrieval",
+      "data_field": "expected_answer_points",
+      "canonical": "（评测期望要点）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测层",
+      "td": ""
+    },
+    {
+      "task": "conflict_resolution",
+      "data_field": "conflict_type",
+      "canonical": "ConflictType: contradiction/temporal_inconsistency/source_conflict/preference_conflict/scope_ambiguity",
+      "category": "C",
+      "layer": "eval_classification",
+      "status": "eval_only_registered",
+      "owner": "E",
+      "notes": "旧轴枚举为评测分类；NOT production shared enum；冻结 Canonical 为唯一业务枚举",
+      "td": ""
+    },
+    {
+      "task": "conflict_resolution",
+      "data_field": "winner",
+      "canonical": "resolution_status/resolved_by",
+      "category": "A/C",
+      "layer": "eval_classification",
+      "status": "eval_only_registered",
+      "owner": "E",
+      "notes": "评测层判定标签；NOT production shared enum",
+      "td": ""
+    },
+    {
+      "task": "conflict_resolution",
+      "data_field": "resolution_reason",
+      "canonical": "（评测解释）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测层",
+      "td": ""
+    },
+    {
+      "task": "conflict_resolution",
+      "data_field": "keep_ids",
+      "canonical": "left_knowledge_id/right_knowledge_id/involved_knowledge_ids",
+      "category": "A",
+      "layer": "eval_mapping",
+      "status": "mapping_registered",
+      "owner": "B",
+      "notes": "保留对象映射",
+      "td": ""
+    },
+    {
+      "task": "conflict_resolution",
+      "data_field": "remove_ids",
+      "canonical": "involved_knowledge_ids（移除侧）",
+      "category": "A",
+      "layer": "eval_mapping",
+      "status": "mapping_registered",
+      "owner": "B",
+      "notes": "移除对象映射",
+      "td": ""
+    },
+    {
+      "task": "precise_forgetting",
+      "data_field": "target_ids",
+      "canonical": "ForgetPlan target_selector/resolved_target_ids",
+      "category": "A",
+      "layer": "eval_input_mapping",
+      "status": "mapping_registered",
+      "owner": "B",
+      "notes": "评测输入↔遗忘选择器映射",
+      "td": ""
+    },
+    {
+      "task": "precise_forgetting",
+      "data_field": "expected_deleted",
+      "canonical": "resolved_target_ids",
+      "category": "A",
+      "layer": "eval_input_mapping",
+      "status": "mapping_registered",
+      "owner": "B",
+      "notes": "应删对象",
+      "td": ""
+    },
+    {
+      "task": "precise_forgetting",
+      "data_field": "must_keep",
+      "canonical": "（受保护对象集合，评测层）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测层保护对象",
+      "td": ""
+    },
+    {
+      "task": "precise_forgetting",
+      "data_field": "checkpoints",
+      "canonical": "（评测验证时点）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B/E",
+      "notes": "保留评测层；不进业务状态（FROZEN 清单#4）",
+      "td": ""
+    },
+    {
+      "task": "precise_forgetting",
+      "data_field": "expected_residual_count",
+      "canonical": "affected_count",
+      "category": "A",
+      "layer": "eval_mapping",
+      "status": "mapping_registered",
+      "owner": "B",
+      "notes": "残留数映射",
+      "td": ""
+    },
+    {
+      "task": "tool_result",
+      "data_field": "status",
+      "canonical": "source_business_status: raw/completed/success/partial/failed/cancelled/timeout/ignored",
+      "category": "A/C",
+      "layer": "eval_legacy",
+      "status": "eval_only_registered",
+      "owner": "E",
+      "notes": "旧 5 态为评测分类；NOT production shared enum",
+      "td": ""
+    },
+    {
+      "task": "tool_result",
+      "data_field": "persist_policy",
+      "canonical": "（派生：requires_embedding/has_structured_payload）",
+      "category": "A/C",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "E",
+      "notes": "yes/no 为评测层标签；NOT production boolean/enum",
+      "td": ""
+    },
+    {
+      "task": "tool_result",
+      "data_field": "side_effect",
+      "canonical": "content_summary（敏感过滤）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测层",
+      "td": ""
+    },
+    {
+      "task": "tool_result",
+      "data_field": "failure_reason",
+      "canonical": "（failed 原因）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测层；failed 必填",
+      "td": ""
+    },
+    {
+      "task": "end_to_end_session",
+      "data_field": "expected_memory",
+      "canonical": "（评测期望记忆；生命周期对齐 memory_status/memory_type）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测期望层，非业务对象",
+      "td": ""
+    },
+    {
+      "task": "end_to_end_session",
+      "data_field": "expected_response",
+      "canonical": "（评测期望回复）",
+      "category": "A",
+      "layer": "eval_only",
+      "status": "eval_only_registered",
+      "owner": "B",
+      "notes": "评测期望层",
+      "td": ""
+    },
+    {
+      "task": "*",
+      "data_field": "source",
+      "canonical": "（数据治理字段，Canonical 无）",
+      "category": "A",
+      "layer": "governance",
+      "status": "keep",
+      "owner": "B",
+      "notes": "数据治理层；不改",
+      "td": ""
+    },
+    {
+      "task": "auxiliary_dialogue",
+      "data_field": "goals",
+      "canonical": "（语料原生，非金标）",
+      "category": "A",
+      "layer": "corpus_native",
+      "status": "keep",
+      "owner": "B",
+      "notes": "multiwoz 原生字段，保留，不参与六类金标",
+      "td": ""
+    },
+    {
+      "task": "auxiliary_dialogue",
+      "data_field": "services",
+      "canonical": "（语料原生，非金标）",
+      "category": "A",
+      "layer": "corpus_native",
+      "status": "keep",
+      "owner": "B",
+      "notes": "multiwoz 原生字段，保留，不参与六类金标",
+      "td": ""
+    },
+    {
+      "task": "preference_extraction",
+      "data_field": "old_value",
+      "canonical": "previous_version_value（评测旧值表达）",
+      "category": "A",
+      "layer": "eval_mapping",
+      "status": "mapping_registered",
+      "owner": "B",
+      "notes": "update 语义旧值，评测层映射",
+      "td": ""
+    }
+  ]
+}
