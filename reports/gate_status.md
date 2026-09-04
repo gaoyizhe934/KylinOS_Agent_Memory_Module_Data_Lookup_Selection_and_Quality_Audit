@@ -56,3 +56,9 @@ PR#1 审批意见（第四节）遗留三项待办，本分支逐一清偿：
 ## 说明
 
 `已完成` 表示本分支已产出对应证据/产物；`待 Reviewer 批准` 表示需要人工确认后才能标记为通过。
+
+## Schema 漂移自检（追加 2026-09-04，B = DGXD01）
+
+- 依据：数据包_B轨字段漂移自检修复任务说明_20260904.md（对照 KMA Canonical/D3，主仓库 CANDIDATE_FOR_FREEZE）。
+- 产出：reports/schema_drift_audit_B_20260904.md、registry/field_mapping.json（30 行映射登记）、scripts/audit/schema_drift_check.py（exit 0：0 未登记字段 / 0 分层缺失）、data/processed/enum_dictionary.json 增加 _meta 分层（NOT production shared enum）。
+- 性质：扫描+登记+只读映射，未改既有 Gold 字段值、未重转；未冻结项（§四清单）待 E/D 裁定。
