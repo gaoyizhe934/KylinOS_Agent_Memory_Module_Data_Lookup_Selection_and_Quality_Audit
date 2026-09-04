@@ -160,7 +160,14 @@
         "timeout",
         "ignored"
       ],
-      "note": "旧 status 枚举补 raw/completed/ignored；tool_call_id 在 tool_result 时必填"
+      "sensitivity": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "note": "旧 status 枚举补 raw/completed/ignored；tool_call_id 在 tool_result 时必填；sensitivity（R-5 FROZEN，#10 裁定）事件层敏感样本必填、非敏感可空"
     },
     "end_to_end_session": {
       "kma_object": "MemorySourceEvent 链",
@@ -172,7 +179,14 @@
         "removed",
         "candidate"
       ],
-      "note": "expected_memory 生命周期对齐 memory_status；expected_response 为评测层，KMA 不冻结"
+      "sensitivity": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "note": "expected_memory 生命周期对齐 memory_status；expected_response 为评测层，KMA 不冻结；sensitivity（R-5 FROZEN，#10 裁定）事件层敏感样本必填、非敏感可空"
     }
   }
 }

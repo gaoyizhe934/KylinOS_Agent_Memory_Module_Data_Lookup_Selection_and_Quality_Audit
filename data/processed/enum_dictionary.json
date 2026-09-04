@@ -88,6 +88,80 @@
       "explicit_config",
       "new_version",
       "safety_priority"
+    ],
+    "sensitivity": [
+      "none",
+      "low",
+      "medium",
+      "high",
+      "critical"
+    ],
+    "expression_type": [
+      "explicit",
+      "implicit"
+    ],
+    "preference_scope": [
+      "global",
+      "topic",
+      "tool",
+      "session",
+      "time_window"
+    ],
+    "knowledge_type": [
+      "workflow",
+      "case",
+      "template",
+      "fact",
+      "constraint",
+      "failure_experience"
+    ],
+    "memory_status": [
+      "active",
+      "superseded",
+      "deprecated",
+      "expired",
+      "removed",
+      "candidate"
+    ],
+    "resolution_status": [
+      "detected",
+      "analyzing",
+      "resolved_auto",
+      "resolved_manual",
+      "deferred",
+      "unresolvable"
+    ],
+    "source_business_status": [
+      "raw",
+      "completed",
+      "success",
+      "partial",
+      "failed",
+      "cancelled",
+      "timeout",
+      "ignored"
+    ],
+    "forget_mode": [
+      "single_item",
+      "session",
+      "topic",
+      "time_window",
+      "full_reset"
+    ],
+    "target_type": [
+      "knowledge",
+      "preference",
+      "event",
+      "all"
+    ],
+    "forget_plan_status": [
+      "pending",
+      "previewing",
+      "awaiting_confirmation",
+      "executing",
+      "completed",
+      "failed",
+      "rolled_back"
     ]
   },
   "template_family_distribution": {

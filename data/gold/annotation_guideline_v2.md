@@ -174,6 +174,7 @@
 | tool_call_id | 必填（tool_result 条件不变量） |
 | source_type | `tool_result` |
 | content_summary | 敏感过滤后摘要 |
+| sensitivity | `none`/`low`/`medium`/`high`/`critical`（**R-5 FROZEN，#10 裁定**：事件层敏感样本必填，非敏感可空） |
 
 判定：failed 不得写成成功；cancelled 禁止推断副作用；timeout 标未知；partial 拆分。
 
@@ -183,6 +184,7 @@
 | --- | --- |
 | expected_memory | 生命周期对齐 memory_status + memory_type |
 | expected_response | 评测层字段（KMA 不冻结） |
+| sensitivity | `none`/`low`/`medium`/`high`/`critical`（**R-5 FROZEN，#10 裁定**：事件层敏感样本必填，非敏感可空） |
 
 ## 9. 试标与一致性
 
@@ -228,7 +230,8 @@
 5. **版本冲突 conflict_type 落点（#4.2）**：✅ 已裁定——先后→temporal_inconsistency；同时→contradiction；版本链可消解→superseded/version（§5）
 6. **retrieval 版本引用 D9（#4.3）**：✅ 已裁定——采用 D9 口径（§4）
 7. **preference_scope/conflict_type 来源（#9）**：✅ D3(L2) 核对 + D/E 盖章（见 reports/stage8_frozen_items_9_12_B.md）
-8. **KMA FROZEN（#7）**：⬜ 仍待主仓库 D Reviewer 签署 + 合并 main
+8. **sensitivity 收口（#10，R-5）**：✅ 已裁定（2026-09-04，B 侧 P1-1 对齐 + 本手册 §7/§8）——tool_result/e2e 事件层敏感样本 `gold.sensitivity` 必填（五级枚举），非敏感可空；knowledge_retrieval 不补；preference 敏感沿用 should_store=false+memory_status=candidate+safety（可选标 sensitivity）
+9. **KMA FROZEN（#7）**：✅ 本仓库 #27 已认定 FROZEN（2026-09-04，D/E 联合授权 + 主仓库 PR#137 合并；schema kma_alignment.status=FROZEN）；主仓库在线文档仍 CANDIDATE_FOR_FREEZE（差异协调中，以本仓库认定推进 P1）
 
 ## 12. A 不越权声明
-- 本文按裁定落点更新，未重转 processed、未建 labels 骨架、未改 kappa；KMA FROZEN 后据此定稿。
+- 本文按裁定落点更新，P1-1 收口（schema/enum/手册）为 A 侧执行；全量重转 processed、labels 骨架落地、试标属 P1-2 起，待闸口确认后执行。
