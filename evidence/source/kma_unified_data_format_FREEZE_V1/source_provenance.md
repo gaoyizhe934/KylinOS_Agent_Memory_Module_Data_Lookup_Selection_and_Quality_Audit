@@ -1,30 +1,21 @@
-# KMA 标准溯源与对齐说明（响应 Reviewer Medium-1）
+# KMA 标准溯源与对齐说明（B 侧，2026-09-04 修订，响应 Reviewer High-1）
 
-- 建档：2026-09-03（PR #26 复核）
-- 目的：将 KMA 对齐依据入库，保证 Reviewer 可独立核验枚举/字段映射正确性。
+## 一、两版文档与关系
+| 文件 | 状态 | 来源 | 行数 | 说明 |
+| --- | --- | --- | --- | --- |
+| KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md | FREEZE_PROPOSAL（KMA-DATA-SCHEMA-001 v1.0，历史存档版） | 本仓库早期经工作区外（Downloads）提供文件存档 | 975 | 早期编码基准；编号/基线为其文件自述，未经主仓库 git 溯源 |
+| KMA_UNIFIED_DATA_FORMAT_FREEZE_CANDIDATE_main.md | CANDIDATE_FOR_FREEZE（Canonical Business Schema v1） | 主仓库 Kylin-Agent-Competition/kylinOS-agent-memory docs/architecture/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md，commit 889b7553（2026-09-03，E 轨作者），2026-09-04 抓取 | 约 441 | **主仓库当前权威候选**，D/E 轨 FROZEN 核验基准；R-1..R-6 裁定 |
 
-## 一、KMA 标准文档
-| 项 | 值 |
-| --- | --- |
-| 文档 | KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md（本目录已入库） |
-| 文档编号 | KMA-DATA-SCHEMA-001 |
-| 版本 | v1.0 |
-| 状态 | FREEZE_PROPOSAL（未 FROZEN，未签署） |
-| 基线仓库 | Kylin-Agent-Competition/kylinOS-agent-memory |
-| 基线提交 | main@b70827c5e9c9e014ae2c025eb01d0adfaabd4ef9 |
-| 获取方式 | 项目组本地提供（本仓库工作区外，Downloads 目录） |
-| 访问/建档日期 | 2026-09-03 |
+## 二、基线引用纠正（High-1 #3）
+- 旧 provenance 声称存档版基线 `main@b70827c5…`：该路径不可用（404），且 KMA-DATA-SCHEMA-001 编号在主仓库无对应 —— 已纠正：存档版仅作为历史参考，**不再作为对齐/核验基准**。
+- 本仓库对齐/核验基准改为：主仓库权威候选（上表第 2 行，含 commit/日期/路径）。
 
-## 二、仓库所编码 KMA 内容的对照
-- scripts/convert/convert_to_schema.py：KMA_ENUMS / KMA_LEGACY_MAP / kma_audit_processed 与本文 §5 枚举、§6 对象、§7 字段真值对照编码；
-- data/processed/schema.json：kma_alignment / gold_enum_alignment 与本文 §5/§6 对照；
-- reports/requirement_data_mapping_v2.md「三、KMA 统一格式对齐」与本文 §1/§5/§6/§7 对照。
-- 复核结论：本仓库所编码枚举（preference_scope/expression_type/memory_status/knowledge_type/conflict_type/resolution_status/forget_mode/target_type/forget_plan_status/source_business_status 等）与 KMA §5 枚举值一致（差异见 reports/stage1_kma_mapping_B_review.md 第四节，均标为 FROZEN 前裁定项，非编码不一致）。
-
-## 三、D9 检索集（待补档，开放项）
-- 引用处：reports/requirement_data_mapping_v2.md（hard_negative_ids/禁止召回 8 类，标注“D9 检索集口径”）、worklog/20260903_stage1_7_KMA_align_A.md（D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl，B 轨 PR#88）。
-- 现状：该文件不在本仓库、也未经本工作区提供，**无法在本 PR 归档**。
-- 处置：登记为 FROZEN 前必办（见 worklog/20260903_KMA_FROZEN_pending_items.md #6），由持有方（B 轨 PR#88 / A）提供后补入本目录，Reviewer 再核验检索部分。
+## 三、权威版枚举/裁定逐项核对记录（High-1 #2）
+已用主仓库候选版核对（抽查核心语义）：
+- R-2 expression_type=explicit/implicit（candidate 由 memory_status 表达）：与仓库编码一致 ✅
+- R-3 memory_status 六值（active/superseded/deprecated/expired/removed/candidate），is_active/is_outdated/should_decay 仅兼容：与仓库编码一致 ✅
+- R-4 processing_status 为 Runtime technical state，与 source_business_status（八值）正交、不得升格业务枚举：与仓库编码一致 ✅
+- preference_scope / conflict_type / forget_mode 等具体值域在候选 L1 未逐值展开（依 R-5/R-6 + D3 L2/不裁定清单）→ **登记待 E/D 确认来源**（见 pending 清单 #9）。
 
 ## 四、结论
-KMA 对齐依据已可独立追溯（本文档 + 编码对照）；D9 检索集待持有方补档后完成检索侧核验。
+High-1 已闭环（权威版入库 + provenance 纠正 + 核心枚举核对）；preference_scope/conflict_type 来源确认与 D 轨物理映射、E 轨签名另案登记。
