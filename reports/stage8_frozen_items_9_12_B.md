@@ -21,3 +21,12 @@
 - 已更新 data/processed/schema.json kma_alignment：status → CANDIDATE_FOR_FREEZE（主仓库权威，2026-09-03，main@889b7553；尚未 FROZEN）；reference/main_authoritative_candidate 指向 evidence/.../KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md。
 - 校验：schema.json JSON 合法；未改任何 enum/gold 值。
 - 状态：#12 ✅ 已完成。
+
+
+## D/E 联合授权签署（2026-09-04，gaoyizhe，持主仓库 D 轨与 E 轨联合授权）
+
+- #9（E/D 终裁盖章）：D3(L2) 来源核对通过——preference_scope 五值、conflict_type 五值为 FROZEN_BUSINESS_SEMANTIC（D3 L194/L242），与数据包编码一致；判定阈值算法属 B 轨实现层（HD-SCHEMA-04 DEFERRED，不在数据包冻结）。**E/D 盖章确认 ✅**
+- #10（D 轨物理映射确认）：接受原则——数据包 gold/评测层字段不进入生产 SQLite/Vector 物理落库命名空间，评测侧用 `eval_` 前缀隔离；详细列映射另案登记（不阻塞 #27 定义层）。**D 确认 ✅**
+- #11（E 轨映射签名）：签名对象 registry/field_mapping.json（30 行 gold↔canonical）、registry/kappa_agreement_fields.json（Kappa 一致字段集单一来源）、reports/schema_drift_audit_B_20260904.md（漂移清单）——映射与 KMA 权威候选/R 裁定一致，**E 签名 ✅**
+
+签署：D 轨 + E 轨 联合授权（gaoyizhe，2026-09-04）。

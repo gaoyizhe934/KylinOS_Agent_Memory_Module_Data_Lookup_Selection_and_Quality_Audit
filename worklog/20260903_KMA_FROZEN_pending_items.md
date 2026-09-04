@@ -13,7 +13,7 @@
 | 6 | D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl 补档入 evidence/source/kma_unified_data_format_FREEZE_V1/ | B 轨 PR#88 / A 提供 | ✅ A 已补档（2026-09-04，证据：evidence/source/kma_unified_data_format_FREEZE_V1/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl） |
 | 7 | KMA 转 FROZEN（签署 + 合并 main） | D/E Reviewer | ⬜ |
 | 8 | 全量重转 processed gold + 重建阶段8标注枚举/骨架/试标 | A/B（FROZEN 后） | ⬜ |
-| 9 | preference_scope/conflict_type 等权威版未列字段 → D3 契约（L2）核对落点 | A/B + D/E | ⬜（High-1 遗留新增） |
+| 9 | preference_scope/conflict_type 等权威版未列字段 → D3 契约（L2）核对落点 | A/B + D/E | ✅ B 核对 + E/D 终裁盖章（2026-09-04，D3 L194/L242 FROZEN_BUSINESS_SEMANTIC，见 reports/stage8_frozen_items_9_12_B.md） |
 
 FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环后在状态列更新为 ✅ 并附证据位置。
 
@@ -43,7 +43,7 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 
 ## #9–#12 处理状态（2026-09-04，B）
 - #9 ✅ B 核对完成（来源=D3 L2 L194/L242/L254，FROZEN_BUSINESS_SEMANTIC）→ 待 E/D 终裁盖章；
-- #10 🟡 物理映射确认单已备 → 待 D（另案，不阻塞定义层）；
-- #11 🟡 映射签名确认单已备 → 待 E；
+- #10 ✅ D 轨已确认原则（2026-09-04）：评测层 eval_ 前缀隔离，不入生产 SQLite/Vector 命名空间；详细列映射另案；
+- #11 ✅ E 轨已签名（2026-09-04）：field_mapping / kappa_agreement_fields / schema_drift_audit 映射确认；
 - #12 ✅ schema.json kma_alignment 已切换至权威候选版并校验。
 - 证据：reports/stage8_frozen_items_9_12_B.md。
