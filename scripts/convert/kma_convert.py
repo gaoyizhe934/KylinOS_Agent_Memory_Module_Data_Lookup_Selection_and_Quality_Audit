@@ -224,6 +224,17 @@ def main():
                 if new_ts != r.get("timestamp"):
                     r["timestamp"] = new_ts
                     stats["ts_fixed"] += 1
+                # High-4 修复：evidence_event_ids 幂等回填（引用本行 evidence 的 source_event_id，非新增 mock）
+                if task == "preference_extraction":
+                    gold = r.get("gold") or {}
+                    ev_ids = gold.get("evidence_event_ids")
+                    if not ev_ids:
+                        ids = []
+                        for ev in (r.get("evidence") or []):
+                            sid = (ev or {}).get("source_event_id")
+                            if sid and sid not in ids:
+                                ids.append(sid)
+                        gold["evidence_event_ids"] = ids
                 rows.append(r)
                 stats["rows"] += 1
         with open(path, "w", encoding="utf-8", newline="\n") as fh:

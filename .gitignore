@@ -36,3 +36,10 @@ worklog/stage8_P1-5_labels_A_reference_AI.jsonl
 
 # 阶段8 早期 v1.3 旧口径标注参考（已过时，以 v2 手册为准）
 worklog/20260903_stage8_A_annotation_reference.md
+# 阶段8 P1-5 泄露隔离：含答案/参考的草稿与核对表（Reviewer High-3，v2 永久废弃）
+data/interim/review/labels_B_trial_v2.draft.jsonl
+data/interim/review/P1_5_B_draft_reasons.md
+worklog/stage8_P1-5_annotation_guide_all_options.md
+worklog/stage8_P1-5_labels_checklist_mc.md
+
+data/interim/trial_v2_recommended_fill.md
