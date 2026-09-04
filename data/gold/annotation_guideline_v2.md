@@ -4,7 +4,8 @@
 - 分支：`feat/B-stage8-kma`（PR #27）
 - 日期：2026-09-03
 - 依据：`reports/stage8_kma_gold_annotation_draft_A.md`（六类口径草案）、KMA 标准 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md`、D9 检索集、B 复核意见
-- 性质：**草案**；KMA=FREEZE_PROPOSAL，FROZEN 后据此定稿并重建 labels 骨架/试标/Kappa。本文替代 v1.x 标注手册的旧枚举口径。
+- 性质：**草案**（KMA=FREEZE_PROPOSAL，FROZEN 后据此定稿并重建 labels 骨架/试标/Kappa；本文替代 v1.x 标注手册的旧枚举口径）
+- **版本互指（Reviewer Low-1）**：FROZEN 前现行试标/标注以 v1.3（`data/gold/annotation_guideline.md`）为准；FROZEN 后以本 v2 定稿为准。
 
 ---
 

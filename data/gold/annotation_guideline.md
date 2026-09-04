@@ -1,5 +1,7 @@
 # 麒麟 OS Memory Gold 标注手册 v1.3（Annotator A 起草版，B 审阅 P1/P2 闭环，Reviewer Low-1 引用核验）
 
+> **版本互指（Reviewer Low-1）**：本手册 v1.3 为 KMA FROZEN 前现行试标/标注依据；FROZEN 后以 v2（`data/gold/annotation_guideline_v2.md`）定稿为准，二者不并行使用。
+
 - 角色：Annotator A（lyf-1213）· 阶段 8「如何进行数据标注」
 - 分支：`feat/A-stage8-annotation`
 - 日期：2026-09-02（v1.1 起草）；2026-09-03（v1.2 按 B 审阅 P1×3/P2×5 修订；v1.3 按 Reviewer Low-1 核验引用）
