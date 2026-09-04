@@ -2,14 +2,36 @@
   "schema": "kma_canonical_business_schema_v1.0",
   "source_of_truth": "此文件为阶段8 一致字段集（kappa_agreement_fields）的单一来源；标注手册 v2 §9 与 scripts/audit/stage8_kappa.py（--fields-json）共同引用，禁止在手册/脚本各自维护第二套（防字段漂移）。",
   "status": "FREEZE_PROPOSAL",
-  "updated_at": "2026-09-03",
-  "note": "KMA=FREEZE_PROPOSAL；FROZEN 后据此定稿。与 registry/field_mapping.json（B 侧数据字段↔KMA 映射登记）互补：本文件只管 Kappa 一致字段集。",
+  "updated_at": "2026-09-04",
+  "note": "KMA=FREEZE_PROPOSAL；FROZEN 后据此定稿。与 registry/field_mapping.json（B 侧数据字段↔KMA 映射登记）互补：本文件只管 Kappa 一致字段集。 2026-09-04 Reviewer #1 裁定：preference_key 按全串比对 → 已纳入一致字段集。",
   "kappa_agreement_fields": {
-    "preference_extraction": ["expression_type", "preference_scope", "should_persist", "is_temporary", "memory_status"],
-    "knowledge_retrieval": ["evaluation_role", "knowledge_type", "memory_status"],
-    "conflict_resolution": ["conflict_type", "resolution_status"],
-    "precise_forgetting": ["forget_mode", "target_type", "status"],
-    "tool_result": ["source_business_status"],
-    "end_to_end_session": ["expected_response"]
+    "preference_extraction": [
+      "expression_type",
+      "preference_scope",
+      "preference_key",
+      "should_persist",
+      "is_temporary",
+      "memory_status"
+    ],
+    "knowledge_retrieval": [
+      "evaluation_role",
+      "knowledge_type",
+      "memory_status"
+    ],
+    "conflict_resolution": [
+      "conflict_type",
+      "resolution_status"
+    ],
+    "precise_forgetting": [
+      "forget_mode",
+      "target_type",
+      "status"
+    ],
+    "tool_result": [
+      "source_business_status"
+    ],
+    "end_to_end_session": [
+      "expected_response"
+    ]
   }
 }

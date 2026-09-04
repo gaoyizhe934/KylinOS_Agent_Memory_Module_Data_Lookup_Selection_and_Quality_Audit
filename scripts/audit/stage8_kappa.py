@@ -35,7 +35,7 @@ TASK_FIELD_SETS = {
 # KMA canonical gold 主字段集（草案，依据 reports/stage8_kma_gold_annotation_draft_A.md；
 # KMA=FREEZE_PROPOSAL，待 FROZEN/labels 定稿；可用 --fields-json 覆盖）
 KMA_FIELD_SETS = {
-    'preference_extraction': ['expression_type', 'preference_scope', 'should_persist', 'is_temporary', 'memory_status'],
+    'preference_extraction': ['expression_type', 'preference_scope', 'preference_key', 'should_persist', 'is_temporary', 'memory_status'],
     'knowledge_retrieval': ['evaluation_role', 'knowledge_type', 'memory_status'],
     'conflict_resolution': ['conflict_type', 'resolution_status'],
     'precise_forgetting': ['forget_mode', 'target_type', 'status'],
