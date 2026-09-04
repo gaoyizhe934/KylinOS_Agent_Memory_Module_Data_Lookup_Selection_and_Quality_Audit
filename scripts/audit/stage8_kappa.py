@@ -44,6 +44,18 @@ KMA_FIELD_SETS = {
 }
 
 
+def load_registry_kma_fields():
+    """Single source: registry/kappa_agreement_fields.json -> kappa_agreement_fields (KMA draft)."""
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                        'registry', 'kappa_agreement_fields.json')
+    try:
+        with open(path, 'r', encoding='utf-8') as fh:
+            data = json.load(fh)
+        fields = data.get('kappa_agreement_fields')
+        return fields if isinstance(fields, dict) else None
+    except Exception:
+        return None
+
 def load_labels(path):
     records = {}
     with open(path, 'r', encoding='utf-8') as fh:
@@ -124,11 +136,18 @@ def main():
     ap.add_argument('--format', choices=['legacy', 'kma'], default='legacy', help='field-set preset: legacy (v1.3) or kma (canonical draft)')
     ap.add_argument('--fields-json', default='', help='override task->field-set mapping JSON file')
     args = ap.parse_args()
+    kma_src = 'module'
     if args.fields_json:
         with open(args.fields_json, 'r', encoding='utf-8') as fh:
             field_sets = json.load(fh)
+        kma_src = 'fields-json'
     elif args.format == 'kma':
-        field_sets = KMA_FIELD_SETS
+        fs_reg = load_registry_kma_fields()
+        if fs_reg:
+            field_sets = fs_reg
+            kma_src = 'registry/kappa_agreement_fields.json'
+        else:
+            field_sets = KMA_FIELD_SETS
     else:
         field_sets = TASK_FIELD_SETS
 
@@ -169,7 +188,7 @@ def main():
     for task_type, pairs in sorted(by_task.items()):
         per_task[task_type] = summarize(pairs)
 
-    print('========== Stage 8 Cohen Kappa (tag=%s, format=%s) ==========' % (args.tag, args.format))
+    print('========== Stage 8 Cohen Kappa (tag=%s, format=%s, field_source=%s) ==========' % (args.tag, args.format, kma_src))
     print('A records: %d | B records: %d | matched: %d | only A: %d | only B: %d' % (
         len(recs_a), len(recs_b), len(matched_ids),
         len(set(recs_a) - set(recs_b)), len(set(recs_b) - set(recs_a))))

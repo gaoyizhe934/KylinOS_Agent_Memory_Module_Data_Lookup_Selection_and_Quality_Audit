@@ -55,10 +55,18 @@ def test_norm_list_order_independent():
 
 
 def test_kma_preset():
+    tasks = ['preference_extraction', 'knowledge_retrieval', 'conflict_resolution', 'precise_forgetting', 'tool_result', 'end_to_end_session']
     assert hasattr(k, 'KMA_FIELD_SETS')
-    for task in ['preference_extraction', 'knowledge_retrieval', 'conflict_resolution', 'precise_forgetting', 'tool_result', 'end_to_end_session']:
+    for task in tasks:
         assert task in k.KMA_FIELD_SETS, task
-    print('kma preset present OK')
+    reg = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'registry', 'kappa_agreement_fields.json')
+    with open(reg, 'r', encoding='utf-8') as fh:
+        data = json.load(fh)
+    single = data.get('kappa_agreement_fields', {})
+    for task in tasks:
+        assert task in single, 'registry kappa_agreement_fields missing ' + task
+        assert single[task] == k.KMA_FIELD_SETS[task], 'registry vs module drift: ' + task
+    print('kma preset present OK (registry single source in sync)')
 
 
 def test_cli_end_to_end():
