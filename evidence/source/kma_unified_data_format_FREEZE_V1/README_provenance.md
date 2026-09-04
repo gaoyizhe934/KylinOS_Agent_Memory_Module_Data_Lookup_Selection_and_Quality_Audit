@@ -35,7 +35,7 @@
 
 | 项 | 内容 |
 | --- | --- |
-| 存档路径 | `evidence/source/d9_retrieval_queryset/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl` |
+| 存档路径 | `evidence/source/d9_retrieval_queryset/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl`（另有副本 `evidence/source/kma_unified_data_format_FREEZE_V1/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl`，FROZEN 清单 #6 指定位置，2026-09-04 补档） |
 | 内容 | 36 条知识检索查询集候选（positive_retrieval × 20 + negative_guardrail × 16），含版本级引用 `relevant_refs/forbidden_refs/semantic_near_miss_refs`、`guardrail_category`（8 类）、`rationale` |
 | 来源 | B 轨工作产物（2026-08-31，B 轨裁决 PR#88），主仓库既有数据 |
 | 用途 | 阶段8 知识检索标注规则升级依据（版本级引用 + 禁止召回 8 类细分 + evaluation_role + rationale），已并入 `data/gold/annotation_quickref.md` 与 `annotation_guideline.md` §3 |
@@ -44,7 +44,7 @@
 ## 三、独立核验方式
 
 1. Reviewer 可打开 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md` 逐条核对 §5 枚举与 `schema.json` 的 `gold_enum_alignment` 是否一致。
-2. Reviewer 可打开 `evidence/source/d9_retrieval_queryset/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl` 核对检索标注规则（`knowledge_type`/`guardrail_category`/版本级引用）。
+2. Reviewer 可打开 `evidence/source/d9_retrieval_queryset/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl`（或 `evidence/source/kma_unified_data_format_FREEZE_V1/` 副本）核对检索标注规则（`knowledge_type`/`guardrail_category`/版本级引用）。
 3. 已编码内容若有出入，请以 `evidence/source/` 内存档为准发起修正（走 ADR 流程）。
 
 ## 四、FROZEN 前必办（登记自 B 复核 Low-1）
