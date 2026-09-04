@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""阶段8 候选池语义去重审计（A = lyf-1213，2026-09-04）
+"""阶段8 候选池规则归一化去重审计（A = lyf-1213，2026-09-04）
 
 用途：
-- 对 gold_candidates / processed / 试标集的 input 做"语义级归一化"去重检测，
+- 对 gold_candidates / processed / 试标集的 input 做"规则归一化"去重检测，
   暴露 v1.0 时代模板×计数器批量生成的重复缺陷。
 - 归一化口径：提取任务相关的语义主字段（query/user_message/turns/forget_instruction/
   candidates 等），剥离 context/version/序号等计数器噪音后做规范化 hash。
@@ -43,7 +43,7 @@ def _norm_text(text):
 
 
 def _extract_semantic_key(record, task_type):
-    """提取任务语义主字段，用于去重比对。"""
+    """提取任务主字段，用于去重比对。"""
     inp = record.get("input")
     if inp is None:
         return _norm_text(json.dumps(record, ensure_ascii=False))
@@ -131,7 +131,7 @@ def _json_safe(o):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="候选池语义去重审计")
+    parser = argparse.ArgumentParser(description="候选池规则归一化去重审计")
     parser.add_argument("--pool", choices=["interim", "processed"], default="interim")
     parser.add_argument("--files", nargs="*", default=[])
     parser.add_argument("--json", action="store_true", help="输出 JSON 证据")

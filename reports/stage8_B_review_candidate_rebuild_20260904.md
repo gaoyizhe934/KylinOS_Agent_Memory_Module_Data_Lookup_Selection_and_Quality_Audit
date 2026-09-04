@@ -24,7 +24,7 @@
 
 复跑 `stage8_semantic_dedup.py --pool interim --strict`：
 
-| 任务 | 总量 | 语义唯一 | 冗余条数 | 冗余率 (total-unique)/total |
+| 任务 | 总量 | 规则归一化唯一 | 冗余条数 | 冗余率 (total-unique)/total |
 | --- | --- | --- | --- | --- |
 | conflict_resolution | 40 | 5 | 40 | 88% |
 | end_to_end_session | 15 | 1 | 15 | 93% |
@@ -59,7 +59,7 @@
 - 结构：40 条 = 5 任务 × 8 ✅；sample_id 唯一 ✅。
 - source 分布：public_derived 21 / team_authored 19（≈53%/47%），与 A 报告一致 ✅。
 - template_family 覆盖 19 族，无同文复制 ✅。
-- 回源：40 条 sample_id 全部存在于 v2 候选池 ✅；候选池本身 dedup CLEAN（§1）→ 试标集语义全异成立 ✅。
+- 回源：40 条 sample_id 全部存在于 v2 候选池 ✅；候选池本身 dedup CLEAN（§1）→ 试标集规则归一化唯一成立 ✅。
 
 ### 4. Kappa 工具就位（任务 4）
 
@@ -91,6 +91,6 @@
 
 ## 五、结论
 
-A 候选池重建（77 条多样化候选）+ 试标集 v3（40 条全异）**通过 B 侧复核**：v1 缺陷可复现（88~93%）、v2 候选 schema/溯源干净、v3 结构正确且语义全异、Kappa 工具（registry 单源）对 v3 骨架就位。复核中发现 1 处报告合计笔误 + 2 项登记项（均不阻塞试标）。
+A 候选池重建（77 条多样化候选）+ 试标集 v3（40 条全异）**通过 B 侧复核**：v1 缺陷可复现（88~93%）、v2 候选 schema/溯源干净、v3 结构正确且规则归一化唯一、Kappa 工具（registry 单源）对 v3 骨架就位。复核中发现 1 处报告合计笔误 + 2 项登记项（均不阻塞试标）。
 
 **建议 Reviewer 裁定 §四 5 项后放行 A/B 正式试标 v3（P1-5）**；放行后 A 标 labels_A_trial_v3、B 标 labels_B_trial_v3，各自 label_check exit 0 后跑 stage8_kappa --format kma ≥0.70。

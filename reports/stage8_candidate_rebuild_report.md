@@ -5,14 +5,14 @@
 
 ---
 
-## 一、缺陷量化证据（语义去重审计）
+## 一、缺陷量化证据（规则归一化去重审计）
 
 脚本：`scripts/audit/stage8_semantic_dedup.py`（对 input 语义主字段归一化 hash；剥离计数器噪音）
 证据文件：`evidence/audit/stage8_candidate_semantic_dedup_20260904.json`
 
 ### 1.1 v1.0 候选母体（gold_candidates_v1）
 
-| 任务 | 总量 | 语义唯一 input | 重复组 | 重复率 |
+| 任务 | 总量 | 规则归一化唯一 input | 重复组 | 重复率 |
 | --- | --- | --- | --- | --- |
 | conflict_resolution | 40 | 5 | 5×8 | 88% |
 | end_to_end_session | 15 | 1 | 1×15 | 93% |
@@ -52,7 +52,7 @@ v1.0 模板母体不可作权威数据种子：试标 Kappa 必然虚高、量�
 | **合计** | **77** | **33（43%）** | **44（57%）** |
 
 ### 2.2 多样化与溯源
-- 全部语义去重通过：77 条 unique_input=77，dup_groups=0 ✅
+- 全部规则归一化去重通过：77 条 unique_input=77，dup_groups=0 ✅
 - public_derived 均带 `raw_id/source_file/source_version` 溯源 ✅
 - 模板族 21 个（vs v1 仅 6 个），覆盖 KMA preference_key 前缀族（output_style/tool_choice/app/workflow/safety/other）✅
 - 语言：真实数据英文保留原文（candidate_only），OS 场景中文 ✅
@@ -66,7 +66,7 @@ v1.0 模板母体不可作权威数据种子：试标 Kappa 必然虚高、量�
 骨架：`data/interim/labels_A/B_trial_v3.jsonl`（KMA canonical 字段，留空待标注）
 
 ### 3.1 试标集构成
-- 总数 40，语义全异（sample_id 唯一 + 回源候选池 dedup CLEAN）✅
+- 总数 40，规则归一化唯一（sample_id 唯一 + 回源候选池 dedup CLEAN）✅
 - source 分布：public_derived 21 / team_authored 19
 - 模板族 21 个全覆盖，无"模板×计数器"复制
 
@@ -74,7 +74,7 @@ v1.0 模板母体不可作权威数据种子：试标 Kappa 必然虚高、量�
 
 | 维度 | v2（缺陷） | v3（重建） |
 | --- | --- | --- |
-| 语义唯一 input | 40 条中大量重复（conf 3 对同文 / forg 5 条同文） | 40 条全异 ✅ |
+| 规则归一化唯一 input | 40 条中大量重复（conf 3 对同文 / forg 5 条同文） | 40 条全异 ✅ |
 | 数据来源 | 全 team_authored 模板 | 21 public_derived + 19 team_authored ✅ |
 | Kappa 意义 | 虚高（假达标） | 真实可判定 ✅ |
 

@@ -31,8 +31,8 @@
 
 ## 阶段8 候选池重建记录（2026-09-04，A = lyf-1213，feat/B-stage8-p1 分支）
 
-- 背景：试标母体 gold_candidates（v1.0 AI 模板生成）语义级 88%~93% 重复（审计脚本 `scripts/audit/stage8_semantic_dedup.py`，证据 `evidence/audit/stage8_candidate_semantic_dedup_20260904.json`），Kappa 虚高、不具权威数据价值。
-- 产出：重建候选池 77 条（5 任务，public_derived 43% + team_authored 57%，全部语义去重通过）+ 试标集 v3（40 条全异）+ A/B 骨架 v3；方案 `reports/stage8_candidate_rebuild_plan.md`，报告 `reports/stage8_candidate_rebuild_report.md`。
+- 背景：试标母体 gold_candidates（v1.0 AI 模板生成）规则归一化后 88%~93% 重复（审计脚本 `scripts/audit/stage8_semantic_dedup.py`，证据 `evidence/audit/stage8_candidate_semantic_dedup_20260904.json`），Kappa 虚高、不具权威数据价值。
+- 产出：重建候选池 77 条（5 任务，public_derived 43% + team_authored 57%，全部规则归一化去重通过）+ 试标集 v3（40 条全异）+ A/B 骨架 v3；方案 `reports/stage8_candidate_rebuild_plan.md`，报告 `reports/stage8_candidate_rebuild_report.md`。
 - 状态：⏳ 待 B 复核（去重口径/候选 schema/试标集结构）+ Reviewer 裁定（试标集 v2 废弃/来源占比/语言策略/tool_result 依赖/retrieval 版本引用），裁定前不量产、不正式试标。
 - 红线遵守：重建候选仅 candidate_only，不触碰封存集；Gate 纪律未越权。
 

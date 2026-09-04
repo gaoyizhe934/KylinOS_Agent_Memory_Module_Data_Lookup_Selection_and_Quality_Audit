@@ -9,9 +9,9 @@
 
 ## 0. 背景与定性
 
-试标母数据 `data/interim/gold_candidates_*.jsonl` 为 v1.0 时代 AI 按模板批量生成的自产合成候选（`source=team_authored`，`review_status=candidate_only`），存在**语义级大规模重复**，实测证据：
+试标母数据 `data/interim/gold_candidates_*.jsonl` 为 v1.0 时代 AI 按模板批量生成的自产合成候选（`source=team_authored`，`review_status=candidate_only`），存在**规则归一化后大规模重复**，实测证据：
 
-| 任务 | 候选总量 | 语义唯一 input 数 | 重复率 |
+| 任务 | 候选总量 | 规则归一化唯一 input 数 | 重复率 |
 | --- | --- | --- | --- |
 | precise_forgetting | 40 | 4 | 90% |
 | knowledge_retrieval | 60 | 5 | 92% |
@@ -35,7 +35,7 @@
 | --- | --- |
 | P1 真实数据接地 | 优先从已冻结真实数据集派生候选（t2ranking / longmemeval_cleaned / longmemeval_v2 / multiwoz_2_2），每条保留 `raw_id/source_file/source_version` 溯源 |
 | P2 自建多样化 | 麒麟 OS 特有场景（公开数据无法覆盖）由 A 手写多样化真实场景，**禁止模板×计数器批量复制**；每条 `candidate_only`，绝不进封存 |
-| P3 语义去重 | 候选池与试标集必须通过**语义级去重校验**（对 query/user_message/turns/forget_instruction 归一化后 hash，重复组=0） |
+| P3 规则归一化去重 | 候选池与试标集必须通过**规则归一化去重校验**（对 query/user_message/turns/forget_instruction 归一化后 hash，重复组=0） |
 | P4 模板族与分布随包交付 | 每次交付附模板族清单 + 分布统计（红线 5） |
 | P5 来源可溯源 | public_derived 样本 evidence 必须含 raw_id；team_authored 样本标注"真实场景手写"并记录场景来源 |
 | P6 禁 mock 边界 | 合成/自建候选仅作 candidate_only；封存集（sealed_test）必须来自麒麟 VM 真实回放，重建不触碰 |
@@ -62,7 +62,7 @@
 - Schema：沿用统一 Schema（sample_id 前缀 task 族），`source` 标注 public_derived/team_authored，`raw_id/source_file` 溯源
 - 规模：首轮重建每类任务 ≥12 条（含试标所需 8 条 + 缓冲），供重抽试标集
 
-### 3.2 语义去重校验（A 产出脚本 + B 复核）
+### 3.2 规则归一化去重校验（A 产出脚本 + B 复核）
 - 脚本：`scripts/audit/stage8_semantic_dedup.py`
 - 规则：对 `query`/`user_message`/`turns`(join)/`forget_instruction` 归一化（去空白/标点/计数器）后 hash；重复组必须为 0
 - 验收：候选池与试标集均 exit 0；B 复核哈希口径
@@ -70,7 +70,7 @@
 ### 3.3 试标集重抽（A 产出）
 - 位置：`data/interim/stage8_trial_set_v3.jsonl`
 - 规模：40 条（5 任务 × 8），从重建后候选池抽样，先跑去重校验再定稿
-- 特性：40 条语义全异；含真实数据派生 + OS 自建混合
+- 特性：40 条规则归一化唯一；含真实数据派生 + OS 自建混合
 
 ### 3.4 阻断项登记（A 产出）
 - 本方案即阻塞项登记载体；提请 Reviewer 在 PR#28 标记处置
@@ -83,7 +83,7 @@
 | --- | --- | --- | --- |
 | 1 重建方案 | 起草本方案 ✅ | 复核去重口径/来源占比 | 裁定方向 + 标记阻断项处置 |
 | 2 候选池重建 | 生成多样化候选（§2 规则） | 校验 schema/枚举/溯源 | — |
-| 3 语义去重 | 跑 dedup + 提交证据 | 复核 hash 口径 + exit 0 | — |
+| 3 规则归一化去重 | 跑 dedup + 提交证据 | 复核 hash 口径 + exit 0 | — |
 | 4 重抽试标集 | 抽样 40 + 去重定稿 | 结构校验 | 放行试标 |
 | 5 A/B 试标 | 独立标注 labels_A | 独立标注 labels_B | 分歧裁决 |
 | 6 Kappa | — | stage8_kappa --format kma（registry 单源）≥0.70 | 判定达标 |
@@ -105,4 +105,4 @@
 
 ## 6. 结论
 
-候选池是权威 Gold 的种子。本方案将 v1.0 模板母体返工为「真实数据接地 + 自建多样化 + 语义去重 + 可溯源」的候选池，重抽试标集后 A/B 独立标注，得到真实 Kappa。全程遵守红线（禁 mock 只作 candidate_only、先标后产、Gate 纪律）。
+候选池是权威 Gold 的种子。本方案将 v1.0 模板母体返工为「真实数据接地 + 自建多样化 + 规则归一化去重 + 可溯源」的候选池，重抽试标集后 A/B 独立标注，得到真实 Kappa。全程遵守红线（禁 mock 只作 candidate_only、先标后产、Gate 纪律）。
