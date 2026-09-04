@@ -51,3 +51,16 @@
 
 ---
 签署：Reviewer（gaoyizhe），D/E 联合授权背景下，2026-09-04。
+
+
+---
+
+## 补充裁定 #10（R-5 sensitivity 收口，2026-09-04，gaoyizhe）
+
+- 问题：A 复核发现权威版 R-5（canonical 用 `sensitivity`，sensitivity_level 仅注解层 alias）在本仓库 gold_enum_alignment/手册 v2 未体现。
+- 裁定：**评测 gold 补 `sensitivity` 字段（对齐 canonical R-5）**：
+  1. **tool_result / end_to_end_session（事件层）**：凡涉及敏感内容判定的样本，`gold.sensitivity` 必填（取值 KMA Sensitivity 枚举）；不涉及敏感判定的样本可空（不强制）；
+  2. **knowledge_retrieval**：不补（D9 检索集无敏感字段，正确）；
+  3. **preference_extraction**：敏感"不存储"决策沿用 `should_store=false + memory_status=candidate + safety` 表达；R-5 的 `sensitivity` 是事件/记忆条目的敏感级别标注，与"不存储敏感"决策互补（偏好样本如涉及敏感内容可标 sensitivity，非强制）；
+  4. 落点：schema.json gold_enum_alignment（tool_result/e2e 补 sensitivity + Sensitivity 枚举）、annotation_guideline_v2 §5/§6 补规则、enum_dictionary 补词表——**P1-1 收口执行**。
+- 依据：主仓库权威候选 R-5（CANDIDATE_FOR_FREEZE）§5.6 Sensitivity。

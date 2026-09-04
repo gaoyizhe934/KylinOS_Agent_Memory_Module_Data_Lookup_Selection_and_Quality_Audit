@@ -14,7 +14,7 @@
 | 7 | KMA 转 FROZEN（签署 + 合并 main） | D/E Reviewer | ⬜ |
 | 8 | 全量重转 processed gold + 重建阶段8标注枚举/骨架/试标 | A/B（FROZEN 后） | ⬜ |
 | 9 | preference_scope/conflict_type 等权威版未列字段 → D3 契约（L2）核对落点 | A/B + D/E | ✅ B 核对 + E/D 终裁盖章（2026-09-04，D3 L194/L242 FROZEN_BUSINESS_SEMANTIC，见 reports/stage8_frozen_items_9_12_B.md） |
-| 10 | R-5 sensitivity 收口：评测 gold 是否补 sensitivity（canonical R-5）或标评测层不纳入 | A 复核 + Reviewer 裁定 | 🟡 A 复核发现（2026-09-04）：权威版 R-5 canonical 用 sensitivity，本仓库 gold_enum_alignment 未含、手册 v2 未提 → P1-1 收口前裁定 |
+| 10 | R-5 sensitivity 收口：评测 gold 是否补 sensitivity（canonical R-5）或标评测层不纳入 | Reviewer 裁定 | ✅ Reviewer 已裁定（2026-09-04）：tool_result/e2e 事件层敏感样本补 sensitivity（KMA 枚举），检索不补；P1-1 执行落点，见 adjudications 补充 #10 |
 
 FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环后在状态列更新为 ✅ 并附证据位置。
 
