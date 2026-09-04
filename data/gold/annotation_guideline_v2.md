@@ -1,10 +1,10 @@
-# 麒麟 OS Memory Gold 标注手册 v2（KMA 对齐草案）
+# 麒麟 OS Memory Gold 标注手册 v2（KMA 对齐，裁定落点版）
 
 - 角色：Annotator A（lyf-1213）· 阶段8 v2
 - 分支：`feat/B-stage8-kma`（PR #27）
-- 日期：2026-09-03
-- 依据：`reports/stage8_kma_gold_annotation_draft_A.md`（六类口径草案）、KMA 标准 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1.md`、D9 检索集、B 复核意见
-- 性质：**草案**（KMA=FREEZE_PROPOSAL，FROZEN 后据此定稿并重建 labels 骨架/试标/Kappa；本文替代 v1.x 标注手册的旧枚举口径）
+- 日期：2026-09-03（起草）；2026-09-04（按 Reviewer 裁定 #1-#4 落点更新）
+- 依据：`reports/stage8_kma_gold_annotation_draft_A.md`（六类口径草案）、KMA 权威候选 `evidence/source/kma_unified_data_format_FREEZE_V1/KMA_UNIFIED_DATA_FORMAT_FREEZE_V1_MAIN_CANDIDATE.md`、D9 检索集、Reviewer 裁定 `worklog/20260904_KMA_FROZEN_adjudications_1_4_R.md`、B 复核意见
+- 性质：**裁定落点版**（KMA=FREEZE_PROPOSAL 未 FROZEN；§3/§4/§5/§6 已按 Reviewer 裁定固定；KMA FROZEN 后据此定稿并重建 labels 骨架/试标/Kappa；本文替代 v1.x 标注手册的旧枚举口径）
 - **版本互指（Reviewer Low-1）**：FROZEN 前现行试标/标注以 v1.3（`data/gold/annotation_guideline.md`）为准；FROZEN 后以本 v2 定稿为准。
 
 ---
@@ -68,18 +68,47 @@
 | 字段 | 枚举/规则 |
 | --- | --- |
 | expression_type | `explicit` / `implicit` |
-| preference_scope | `global` / `topic` / `tool` / `session` / `time_window` |
-| preference_key | 开放字符串（模板族约束，勿再造枚举；取值策略待裁定） |
+| preference_scope | `global` / `topic` / `tool` / `session` / `time_window`（对照表见下） |
+| preference_key | **受控开放字符串** `prefix[:object]`（Reviewer #1 裁定：前缀=受控词表 output_style/tool_choice/safety/app/workflow/other；object=小写 snake_case ≤32 字符可空） |
 | preference_value | 可执行、可比较字符串 |
-| confidence_score | float [0,1] |
+| confidence_score | float [0,1]（档位表见下，Reviewer #3 裁定） |
 | should_persist | boolean |
 | is_temporary | boolean |
 | memory_status | 6 值 |
 | version | int>=1（>1 必带 previous_version_id） |
 | evidence_event_ids | list 非空 |
 
-判定参考（映射自旧口径，FROZEN 后定稿）：
-- "以后都这样"→ explicit、should_persist=true、confidence_score=0.95（换算口径见 `worklog/20260903_KMA_confidence_scope_samples_A.md`，清单#3）、active
+### preference_key 规则（Reviewer #1 裁定，2026-09-04）
+- 格式：`preference_key := <prefix>[:<object>]`；前缀为受控词表（沿用旧模板族），`object` 开放短标识（小写 snake_case，≤32 字符，可空）。
+- 示例：`output_style:report`、`tool_choice:delete_confirm`、`app:project_mgmt_lang`。
+- **不造第二套枚举**（KMA §7）；`preference_key`=匹配键、`preference_value`=完整值。
+- Kappa 一致判定：按 `preference_key` 全串精确比对（已纳入 `registry/kappa_agreement_fields.json`）。
+
+### preference_scope 对照表（Reviewer #2 裁定）
+| 旧 scope | 语义 | KMA preference_scope | 样例 |
+| --- | --- | --- | --- |
+| app | 针对具体工具/应用的行为 | `tool` | "项目管理工具里用中文标签"→tool |
+| app | 麒麟 OS 助手作为系统整体 | `global` | "以后都先问我确认"→global |
+| task | 针对某类工作主题 | `topic` | "做周报时用简洁要点"→topic |
+| task | 针对工具行为的任务 | `tool` | "发邮件时带签名 X"→tool |
+| session | 仅本次会话 | `session` | "这次用英文回复"→session |
+| global | 全局习惯 | `global` | 一致 |
+| — | 时间窗 | `time_window` | "会议期间勿扰"→time_window |
+
+**判定顺序**：先判"是否系统整体(global)/仅本次(session)/时间窗(time_window)"，再按"具体工具→tool、工作主题→topic"细分。
+
+### confidence_score 档位表（Reviewer #3 裁定）
+| 旧 | 语义 | confidence_score | 可选中间档 |
+| --- | --- | --- | --- |
+| high | 显式、无需推断 | 0.95 | 0.85（显式有歧义） |
+| medium | 多句/行为推断 | 0.70 | 0.75（两次一致行为）/0.60（单次行为） |
+| low | 模糊、低证据 | 0.40 | 0.30~0.40（极弱） |
+
+- **默认只用三档**（0.95/0.70/0.40）保 A/B 一致；中间档仅当本表明示时使用。
+- 换算只在标注/转换映射层；`gold.confidence_score` 直接写数值。
+
+判定参考（映射自旧口径，按裁定定稿）：
+- "以后都这样"→ explicit、should_persist=true、confidence_score=0.95、active
 - "这次/仅本次"→ is_temporary=true、should_persist=false、candidate
 - "之前…改成…"→ 新 version（previous_version_id 指向旧版）
 - "不要了"→ 旧版 superseded
@@ -96,7 +125,11 @@
 | 版本引用 | memory_id + version_id |
 | 禁止召回 8 类 | superseded/expired/removed_or_forgotten/candidate/unresolved_conflict/cross_user/sensitive_recall_prohibited/deprecated |
 
-判定：正解=同用户 active 当前版本；旧版禁止召回；语义近似作 semantic_near_miss；evaluation_role（positive/negative_guardrail）；每条带 rationale。
+判定（Reviewer #4.3 裁定：采用 D9 口径）：
+- 正解 = 同用户 **active 当前版本**（memory_id+version_id 版本级引用）；
+- superseded 旧版（非当前）→ **forbidden（禁止召回）**；
+- 语义近似当前版 → **semantic_near_miss**（不计 guardrail violation）；
+- evaluation_role = positive_retrieval / negative_guardrail；每条带 rationale。
 
 > ⚠ **风险注（P2）**：检索 v2 依赖知识库（KB）与 D9 检索集（`memory_id+version_id` 版本引用）。当前无 KB、试标池多为 public t2r（`retr_t2r_*`）。**KB/D9 就绪前，检索 v2 部分（版本引用/禁止召回 8 类/semantic_near_miss/rationale/evaluation_role）不可完整执行**；相关字段显式标评测层（NOT production，见 §9.1），待 KB/D9 就绪后补齐。
 
@@ -110,7 +143,12 @@
 | involved_knowledge_ids | optional |
 | resolution_strategy | optional |
 
-判定：时间→temporal_inconsistency；作用域→scope_ambiguity；来源→source_conflict；安全→安全优先；版本→开放待裁定。
+判定（Reviewer #4.2 裁定，2026-09-04）：
+- **时间先后更新**（新覆盖旧，明确先后）→ `temporal_inconsistency`
+- **同层矛盾**（不可同时为真，需裁决取舍）→ `contradiction`
+- 作用域 → `scope_ambiguity`；来源 → `source_conflict`；安全 → 安全优先
+- **能由版本链消解的**（superseded + version_id）→ 用版本/生命周期表达，不进 conflict 标签；conflict 用于"需在两条冲突信息间裁决"的样本
+- 口诀：先后更新→temporal_inconsistency；同时矛盾→contradiction；版本链可消解→superseded/version。
 
 ## 6. 精准遗忘（ForgetPlan）
 
@@ -124,7 +162,9 @@
 | has_vector_cleanup / requires_confirmation | boolean（**DEFERRED：不新增为业务真值**，评测层可选、不进业务 canonical，见 §9.1） |
 | resolved_target_ids + affected_count | preview 结果 |
 
-判定：target_selector 按 forget_mode；checkpoints 保留评测层验证时点（不进业务状态，待裁定）。
+判定（Reviewer #4.1 裁定）：
+- target_selector 按 forget_mode；
+- **checkpoints = 评测层验证时点**（immediate_query/after_restart/after_full_reindex），**不进业务状态**；业务状态用 `ForgetPlan.status`/`memory_status` 表达；gold 中 checkpoints 留在评测层字段，不写入 canonical 业务状态。
 
 ## 7. Tool Result（MemorySourceEvent）
 
@@ -179,13 +219,16 @@
 - [ ] 遗忘可验证（删对+不误删）
 - [ ] memory_status 与 review_status 不混用
 
-## 11. 争议/待裁定（交 Reviewer）
+## 11. 裁定记录（Reviewer gaoyizhe，2026-09-04，见 worklog/20260904_KMA_FROZEN_adjudications_1_4_R.md）
 
-1. preference_key 取值策略（FROZEN 清单#1）
-2. app/task 语义落点（清单#2）
-3. confidence 换算口径（清单#3，换算表见 `worklog/20260903_KMA_confidence_scope_samples_A.md`）
-4. checkpoints 评测层定位（清单#4）
-5. 版本冲突 conflict_type 落点（与清单#4 一并）
+1. **preference_key 取值策略（#1）**：✅ 已裁定——受控开放字符串 `prefix[:object]`，Kappa 全串比对（§3）
+2. **app/task 语义落点（#2）**：✅ 已裁定——语义映射固定对照表（§3 preference_scope 对照表）
+3. **confidence 换算口径（#3）**：✅ 已裁定——三档主表 0.95/0.70/0.40 + 受控中间档（§3 confidence_score 档位表）
+4. **checkpoints 评测层定位（#4.1）**：✅ 已裁定——评测层验证时点，不进业务状态（§6）
+5. **版本冲突 conflict_type 落点（#4.2）**：✅ 已裁定——先后→temporal_inconsistency；同时→contradiction；版本链可消解→superseded/version（§5）
+6. **retrieval 版本引用 D9（#4.3）**：✅ 已裁定——采用 D9 口径（§4）
+7. **preference_scope/conflict_type 来源（#9）**：✅ D3(L2) 核对 + D/E 盖章（见 reports/stage8_frozen_items_9_12_B.md）
+8. **KMA FROZEN（#7）**：⬜ 仍待主仓库 D Reviewer 签署 + 合并 main
 
 ## 12. A 不越权声明
-- 本文为草案，未重转 processed、未建 labels 骨架、未改 kappa；供 A/B 对齐 + Reviewer 裁定。
+- 本文按裁定落点更新，未重转 processed、未建 labels 骨架、未改 kappa；KMA FROZEN 后据此定稿。
