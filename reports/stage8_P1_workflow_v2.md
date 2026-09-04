@@ -25,3 +25,8 @@
 
 ## 3. B 就绪工具（master 已含，供各批次直接调用）
 - stage8_kappa.py --format kma（registry 单源）、stage8_trial_sample.py、stage8_labels_skeleton_v2.py、stage8_label_check_v2.py、schema_drift_check.py；test 9/9 PASS。
+
+## 4. B 预完成（等待 A P1-2/P1-3）
+- P1-3 重转对账脚本已就绪：scripts/audit/stage8_reconvert_reconcile.py（行数/时间戳 UTC .sssZ/raw_id/gold 非空；exit 0=PASS）。
+- 预跑基线：当前旧版数据 715 行数 OK；715 条时间戳非 UTC .sssZ → 预期 FAIL；A P1-3 重转后复跑应 PASS。
+- P1-4 骨架生成器/label_check_v2、P1-6 kappa（registry 单源）已就绪（master）。
