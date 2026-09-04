@@ -27,3 +27,12 @@ Thumbs.db
 
 # 备份文件
 *.bak
+
+# 外部参考文档（主仓库 v2.0 计划等，非本仓库产物）
+麒麟OS_Agent_记忆模块数据包_v2.0_重建计划_修订版_*.docx
+
+# 阶段8 P1-5 AI 参考标签（临时比对产物，正式标签为 labels_A/B_trial_v2.jsonl）
+worklog/stage8_P1-5_labels_A_reference_AI.jsonl
+
+# 阶段8 早期 v1.3 旧口径标注参考（已过时，以 v2 手册为准）
+worklog/20260903_stage8_A_annotation_reference.md
