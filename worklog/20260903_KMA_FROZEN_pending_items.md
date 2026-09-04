@@ -5,10 +5,10 @@
 
 | # | 事项 | 责任 | 状态 |
 | --- | --- | --- | --- |
-| 1 | preference_key 取值策略（模板族约束开放字符串，勿再造枚举） | A/B 定稿 + Reviewer 裁定 | 🟡 A 建议稿已出（worklog/20260904_KMA_FROZEN_1_3_A_recommendation.md），待 B 复核 + Reviewer 裁定 |
-| 2 | 旧 scope app/task 语义落点（不机械映射 app→tool、task→topic） | Reviewer 裁定 | 🟡 A 样例已出（worklog/20260903_KMA_confidence_scope_samples_A.md），待裁定 |
-| 3 | confidence 高/中/低 → confidence_score [0,1] 固定换算口径 | A/B 定稿 | 🟡 A 定稿建议已出（同 #1 文件，三档主表 0.95/0.70/0.40），待 B 复核 + Reviewer 裁定 |
-| 4 | forgetting checkpoints 定位：保留为评测层验证时点，不进业务状态 | Reviewer 裁定 | ⬜ 待裁定 |
+| 1 | preference_key 取值策略（模板族约束开放字符串，勿再造枚举） | A/B 定稿 + Reviewer 裁定 | ✅ Reviewer 已裁定（2026-09-04）：受控开放字符串 prefix[:object]，见 worklog/20260904_KMA_FROZEN_adjudications_1_4_R.md |
+| 2 | 旧 scope app/task 语义落点（不机械映射 app→tool、task→topic） | Reviewer 裁定 | ✅ Reviewer 已裁定（2026-09-04）：语义映射对照表，见 adjudications #2 |
+| 3 | confidence 高/中/低 → confidence_score [0,1] 固定换算口径 | A/B 定稿 | ✅ Reviewer 已裁定（2026-09-04）：三档主表 0.95/0.70/0.40 + 受控中间档，见 adjudications #3 |
+| 4 | forgetting checkpoints 定位：保留为评测层验证时点，不进业务状态 + 版本冲突 conflict_type + retrieval D9 | Reviewer 裁定 | ✅ Reviewer 已裁定（2026-09-04）：checkpoints=评测层验证时点；版本冲突口诀；D9 版本引用采纳，见 adjudications #4 |
 | 5 | KMA_LEGACY_MAP 与 B 校验脚本核对（无冲突，需在 #25 合并后补齐 enum_check --kma） | B | ✅ 工具已移植适配至 #27（2026-09-03 进度更新） |
 | 6 | D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl 补档入 evidence/source/kma_unified_data_format_FREEZE_V1/ | B 轨 PR#88 / A 提供 | ✅ A 已补档（2026-09-04，证据：evidence/source/kma_unified_data_format_FREEZE_V1/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl） |
 | 7 | KMA 转 FROZEN（签署 + 合并 main） | D/E Reviewer | ⬜ |
