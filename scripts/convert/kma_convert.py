@@ -16,11 +16,27 @@ import glob
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROCESSED = os.path.join(ROOT, "data/processed")
 INTERIM = os.path.join(ROOT, "data/interim")
+
+
+def normalize_timestamp_utc(ts):
+    """KMA §3.6：时间统一 UTC 毫秒 YYYY-MM-DDTHH:MM:SS.sssZ。
+
+    输入允许带时区（如 2026-07-20T10:00:00+08:00）或无时区；
+    输出统一 UTC 毫秒 Z 格式。解析失败返回原值（不静默丢弃）。
+    """
+    if not isinstance(ts, str) or not ts:
+        return ts
+    try:
+        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        dt_utc = dt.astimezone(timezone.utc)
+        return dt_utc.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    except ValueError:
+        return ts
 
 # Reviewer 裁定 #2：旧 scope → KMA preference_scope 对照表
 SCOPE_MAP = {
@@ -183,7 +199,7 @@ def _is_canonical(task, gold):
 
 
 def main():
-    stats = {"rows": 0, "fixed": 0, "skip": 0, "already": 0, "files": []}
+    stats = {"rows": 0, "fixed": 0, "skip": 0, "already": 0, "ts_fixed": 0, "files": []}
     for path in sorted(glob.glob(os.path.join(PROCESSED, "*.jsonl"))):
         fname = os.path.basename(path)
         rows = []
@@ -203,6 +219,11 @@ def main():
                         stats["fixed"] += 1
                 else:
                     stats["skip"] += 1
+                # KMA §3.6 时间归一：UTC 毫秒 Z（B 侧对账要求）
+                new_ts = normalize_timestamp_utc(r.get("timestamp"))
+                if new_ts != r.get("timestamp"):
+                    r["timestamp"] = new_ts
+                    stats["ts_fixed"] += 1
                 rows.append(r)
                 stats["rows"] += 1
         with open(path, "w", encoding="utf-8", newline="\n") as fh:
@@ -210,9 +231,9 @@ def main():
                 fh.write(json.dumps(r, ensure_ascii=False) + "\n")
         stats["files"].append((fname, len(rows)))
     print("== P1-3 KMA 化转换 ==")
-    print("rows:", stats["rows"], "fixed:", stats["fixed"], "already:", stats["already"], "skip(aux):", stats["skip"])
+    print("rows:", stats["rows"], "fixed:", stats["fixed"], "already:", stats["already"], "skip(aux):", stats["skip"], "ts_fixed:", stats["ts_fixed"])
     print("files:", stats["files"])
-    print("note: 旧字段保留在 gold.legacy；禁 mock（仅字段/枚举映射）")
+    print("note: 旧字段保留在 gold.legacy；禁 mock（仅字段/枚举映射）；timestamp 归一 UTC 毫秒 Z（KMA §3.6）")
     print("== done ==")
 
 if __name__ == "__main__":
