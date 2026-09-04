@@ -28,8 +28,8 @@ CANONICAL = {
     'precise_forgetting': {'forget_mode': '', 'target_type': '', 'target_selector': '', 'status': '',
                            'is_cascade': None, 'has_vector_cleanup': None, 'requires_confirmation': None,
                            'resolved_target_ids': [], 'affected_count': None},
-    'tool_result': {'source_business_status': '', 'tool_call_id': '', 'content_summary': ''},
-    'end_to_end_session': {'expected_memory': {}, 'expected_response': ''},
+    'tool_result': {'source_business_status': '', 'tool_call_id': '', 'sensitivity': '', 'content_summary': ''},
+    'end_to_end_session': {'expected_memory': {}, 'expected_response': '', 'sensitivity': ''},
 }
 
 def main():

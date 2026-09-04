@@ -9,7 +9,8 @@
       "业务字段漂移修复与跨轨自检方案 docx §3"
     ],
     "discipline": "已冻结 Canonical 字段不静默改名/改值；无法无损映射字段 fail-closed 登记待确认；评测层标签显式标注 NOT production shared enum；未冻结项不改行为。",
-    "owner": "B（DGXD01）"
+    "owner": "B（DGXD01）",
+    "updated_at": "2026-09-04 (sensitivity #10)"
   },
   "rows": [
     {
@@ -340,6 +341,28 @@
       "status": "mapping_registered",
       "owner": "B",
       "notes": "update 语义旧值，评测层映射",
+      "td": ""
+    },
+    {
+      "task": "tool_result",
+      "data_field": "sensitivity",
+      "canonical": "sensitivity 五级（R-5 FROZEN）",
+      "category": "A",
+      "layer": "production_field",
+      "status": "frozen_r5",
+      "owner": "Reviewer #10 / A",
+      "notes": "tool_result 事件层敏感样本补 sensitivity（Reviewer #10, 2026-09-04）",
+      "td": ""
+    },
+    {
+      "task": "end_to_end_session",
+      "data_field": "sensitivity",
+      "canonical": "sensitivity 五级（R-5 FROZEN）",
+      "category": "A",
+      "layer": "production_field",
+      "status": "frozen_r5",
+      "owner": "Reviewer #10 / A",
+      "notes": "e2e 事件层敏感样本补 sensitivity（Reviewer #10, 2026-09-04）",
       "td": ""
     }
   ]
