@@ -24,3 +24,6 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 - **#27 去向**：保持 OPEN（不合并），作为阶段8 v2 工作载体持续累积（KMA 基线已在 master=#26）。
 - **Low-1**（v2 手册行尾空格）：已修复提交（style）。
 - 后续计划：见 reports/stage8_v2_followup_plan.md。
+
+## P0 进度（2026-09-04）
+- B：canonical labels_A/B 骨架设计已起草 → reports/stage8_v2_labels_skeleton_design.md（FROZEN 前只出方案，未生成正式 labels/未改数据）。
