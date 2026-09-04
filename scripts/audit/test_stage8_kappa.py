@@ -66,6 +66,9 @@ def test_kma_preset():
     for task in tasks:
         assert task in single, 'registry kappa_agreement_fields missing ' + task
         assert single[task] == k.KMA_FIELD_SETS[task], 'registry vs module drift: ' + task
+    loaded = k.load_registry_kma_fields()
+    assert loaded and 'preference_key' in loaded['preference_extraction'], 'registry loader must include preference_key'
+    print('registry loader includes preference_key OK')
     print('kma preset present OK (registry single source in sync)')
 
 

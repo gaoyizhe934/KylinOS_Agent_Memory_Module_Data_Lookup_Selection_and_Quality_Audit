@@ -55,3 +55,10 @@ FROZEN 达成前：不做破坏性重转、不打断阶段8试标；每项闭环
 - #4 checkpoints/版本冲突/D9：✅ Reviewer 裁定 #4.1/#4.2/#4.3 + A 手册 v2 §5/§6/§4 落点。
 - **B 一致性核对（2026-09-04）**：A 手册 v2（d179ce9）§3/§4/§5/§6/§9 与 registry 单源（含 preference_key）、Reviewer 裁定、KMA 权威候选一致；§9 已改为引用 registry 单源，未再维护第二套；stage8_kappa test 7/7 PASS。
 - 剩余：#7 KMA→FROZEN（主仓库 D 签署+PR 合并）→ #8 全量重转（FROZEN 后），触发 P1。
+
+## B 工具就绪确认（P0 收口，2026-09-04）
+- stage8_kappa.py --format kma：实际读取 registry/kappa_agreement_fields.json（field_source 验证），冒烟 kappa=1.0 PASS；
+- stage8_trial_sample.py：冒烟通过；
+- schema_drift_check.py：canonical enum/字段校验 exit 0（0 未登记 / 0 分层缺失）；
+- test 增补：load_registry_kma_fields() 断言含 preference_key。
+- 边界：未重转 processed、未生成正式 labels、未跑正式试标（FROZEN 前不执行）。
