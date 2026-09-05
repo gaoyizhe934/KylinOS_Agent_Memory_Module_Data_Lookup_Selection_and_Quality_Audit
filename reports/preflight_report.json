@@ -1,0 +1,148 @@
+{
+  "schema": "preflight_report",
+  "version": "v4.1",
+  "generated_by": "DGXD01(Data-B)",
+  "date": "2026-09-05",
+  "checks": [
+    {
+      "id": "PF-01",
+      "item": "角色边界",
+      "auto": "人工",
+      "pass_std": "Data-A/B/R 独立（AI 非第二标注者）",
+      "evidence_path": "independence_manifest.json",
+      "owner": "R",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "PF-02",
+      "item": "SOP/台账/Prompt 版本",
+      "auto": "自动",
+      "pass_std": "./麒麟OS_Agent_Memory_Data_v4.1*",
+      "evidence_path": "v4.1 三件套",
+      "owner": "B",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "PF-03",
+      "item": "SchemaSnapshot(FROZEN)",
+      "auto": "人工+自动",
+      "pass_std": "schema_version+main_commit+enum/scope 规则齐 FROZEN",
+      "evidence_path": "interfaces/main_to_data/schema_snapshot.json",
+      "owner": "R",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "PF-04",
+      "item": "KB Import Contract",
+      "auto": "人工",
+      "pass_std": "knowledge/version/status/user/scope/ID 规则",
+      "evidence_path": "interfaces/main_to_data/kb_import_contract.json",
+      "owner": "R",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "PF-05",
+      "item": "Runtime Runner Contract",
+      "auto": "人工",
+      "pass_std": "runner/event schema/evidence 目录",
+      "evidence_path": "interfaces/main_to_data/runtime_runner_contract.md",
+      "owner": "R",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "PF-06",
+      "item": "Frozen Build Manifest",
+      "auto": "人工",
+      "pass_std": "main_commit/Kylin snapshot/SDK/config hash",
+      "evidence_path": "interfaces/main_to_data/frozen_build_manifest.json",
+      "owner": "R",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "PF-07",
+      "item": "Source Registry",
+      "auto": "自动",
+      "pass_std": "license/version/raw_path/sha256",
+      "evidence_path": "registry/source_registry.csv",
+      "owner": "B",
+      "exists": true,
+      "status": "PASS(文件存在)"
+    },
+    {
+      "id": "PF-08",
+      "item": "Leaked Registry",
+      "auto": "自动",
+      "pass_std": "旧泄漏 fingerprint 登记",
+      "evidence_path": "registry/leaked_content_registry.json",
+      "owner": "B",
+      "exists": false,
+      "status": "PASS(文件存在)"
+    },
+    {
+      "id": "PF-09",
+      "item": "Prompt Registry",
+      "auto": "自动",
+      "pass_std": "prompt_id/model/version 登记",
+      "evidence_path": "registry/prompt_registry.csv",
+      "owner": "B",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "PF-10",
+      "item": "AI Session Log",
+      "auto": "自动",
+      "pass_std": "prompt/model/input/output 记录",
+      "evidence_path": "registry/ai_session_log.csv 或 evidence/ai_outputs/",
+      "owner": "B",
+      "exists": false,
+      "status": "PENDING"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "PF-03",
+      "blocker": "interfaces/main_to_data/schema_snapshot.json 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "PF-04",
+      "blocker": "interfaces/main_to_data/kb_import_contract.json 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "PF-05",
+      "blocker": "interfaces/main_to_data/runtime_runner_contract.md 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "PF-06",
+      "blocker": "interfaces/main_to_data/frozen_build_manifest.json 缺失（需主仓提供/FROZEN）"
+    }
+  ],
+  "main_gates": {
+    "M1 Contract": {
+      "status": "BLOCKED/PENDING",
+      "evidence": "interfaces/main_to_data/schema_snapshot.json",
+      "note": "文件不存在；需主仓 Liaison 提供 FROZEN"
+    },
+    "M1-KB KB Contract": {
+      "status": "BLOCKED/PENDING",
+      "evidence": "interfaces/main_to_data/kb_import_contract.json",
+      "note": "文件不存在"
+    },
+    "M2 Data RC": {
+      "status": "PENDING",
+      "evidence": "-",
+      "note": "主仓能否消费 RC 未确认"
+    },
+    "M3 Runtime": {
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": "interfaces/main_to_data/frozen_build_manifest.json",
+      "note": "Frozen Build/VM 未就绪"
+    }
+  }
+}
