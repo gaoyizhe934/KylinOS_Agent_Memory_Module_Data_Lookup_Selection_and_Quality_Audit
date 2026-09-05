@@ -1,0 +1,122 @@
+{
+  "schema": "v4.1_os_scenario_spec_preference",
+  "version": "0.1",
+  "owner": "Data-A (lyf-1213)",
+  "date": "2026-09-05",
+  "status": "DRAFT",
+  "source_layer": "os_controlled_authored",
+  "language": "zh-CN",
+  "note": "麒麟 OS Agent 偏好提取场景规格（P20 输入）。生成候选一律 candidate_only；scope 由 A 按 G2 标准逐条人工复核，禁止默认 tool。",
+  "scenarios": [
+    {
+      "scenario_id": "OSPREF-01",
+      "scenario_family": "os_pref_workflow",
+      "coverage_type": "explicit_persistent",
+      "expression_type": "explicit",
+      "scope_policy": "per_sample_semantic_review",
+      "description": "用户明确表达长期工作方式偏好（每周报告格式、会议纪要模板、提醒时间等）。",
+      "difficulty": "normal",
+      "planned_candidates": 12,
+      "notes": "场景族不固定 global/topic；逐样本按 G2 scope 标准人工判定（如『每周报告』→topic），scenario_family 不得替代逐样本判定"
+    },
+    {
+      "scenario_id": "OSPREF-02",
+      "scenario_family": "os_pref_app_tool",
+      "coverage_type": "explicit_persistent_tool",
+      "expression_type": "explicit",
+      "preference_scope_target": "tool",
+      "description": "针对特定应用/工具的行为偏好（项目管理工具用中文标签、邮件默认签名、日历视图等）。",
+      "difficulty": "normal",
+      "planned_candidates": 12,
+      "notes": "scope=工具行为 → tool，禁止默认 tool 但要逐条核对该工具是否唯一确定"
+    },
+    {
+      "scenario_id": "OSPREF-03",
+      "scenario_family": "os_pref_topic_style",
+      "coverage_type": "explicit_persistent_topic",
+      "expression_type": "explicit",
+      "preference_scope_target": "topic",
+      "description": "针对某类工作主题的偏好（做周报时用简洁要点、写代码评审时按模块分条）。",
+      "difficulty": "normal",
+      "planned_candidates": 12,
+      "notes": "指向某类主题 → topic，区别于工具"
+    },
+    {
+      "scenario_id": "OSPREF-04",
+      "scenario_family": "os_pref_time_window",
+      "coverage_type": "temporary_preference",
+      "expression_type": "explicit",
+      "preference_scope_target": "time_window",
+      "description": "有时效的偏好（本月每天上午 10 点提醒、项目期间用英文回复）。",
+      "difficulty": "hard",
+      "planned_candidates": 10,
+      "notes": "带 valid_from/valid_to 语义；is_temporary=true → memory_status=candidate/expired"
+    },
+    {
+      "scenario_id": "OSPREF-05",
+      "scenario_family": "os_pref_global_rule",
+      "coverage_type": "implicit_repeated_behavior",
+      "expression_type": "implicit",
+      "preference_scope_target": "global",
+      "description": "从多次一致行为推断的偏好（连续多次手动改简洁、多次改提醒方式），无口头声明。",
+      "difficulty": "hard",
+      "planned_candidates": 10,
+      "notes": "implicit 低置信必须 needs_review；需要多次一致行为证据"
+    },
+    {
+      "scenario_id": "OSPREF-06",
+      "scenario_family": "os_pref_contradict",
+      "coverage_type": "contradictory_preference",
+      "expression_type": "explicit",
+      "preference_scope_target": "global",
+      "description": "前后矛盾的偏好（先说详细回答，后说以后简短）——输出供 Conflict 任务复用为偏好冲突。",
+      "difficulty": "hard",
+      "planned_candidates": 8,
+      "notes": "与冲突候选联动，确保左右两条确实不能同时成立"
+    },
+    {
+      "scenario_id": "OSPREF-07",
+      "scenario_family": "os_pref_withdraw",
+      "coverage_type": "withdrawal",
+      "expression_type": "explicit",
+      "preference_scope_target": "global",
+      "description": "用户撤销/收回先前偏好（之前的偏好不要了，换回默认）。",
+      "difficulty": "hard",
+      "planned_candidates": 8,
+      "notes": "withdrawal 必须带原偏好证据链"
+    },
+    {
+      "scenario_id": "OSPREF-08",
+      "scenario_family": "os_pref_sensitive",
+      "coverage_type": "sensitive_or_non_storable",
+      "expression_type": "explicit",
+      "description": "敏感/不可存储偏好（健康隐私、金融信息、越权内容）——应判 negative / blocked by policy。",
+      "difficulty": "normal",
+      "planned_candidates": 8,
+      "notes": "敏感定级不得由 LLM 覆写；结果不存储；非合法 preference，不赋 preference_scope_target"
+    },
+    {
+      "scenario_id": "OSPREF-09",
+      "scenario_family": "os_pref_task_constraint",
+      "coverage_type": "task_constraint_boundary",
+      "expression_type": "explicit",
+      "description": "仅本次任务的约束/普通请求（这次就按英文、这次用简单路径）——不是长期偏好，可转临时/普通请求边界样本。",
+      "difficulty": "hard",
+      "planned_candidates": 10,
+      "notes": "关键负例：普通问答/一次性条件不得机械长期化（SEM_PREF_TEMP）；非合法 preference，不赋 preference_scope_target"
+    },
+    {
+      "scenario_id": "OSPREF-10",
+      "scenario_family": "os_pref_session",
+      "coverage_type": "session_scope",
+      "expression_type": "explicit",
+      "preference_scope_target": "session",
+      "description": "仅限本次会话有效的偏好（这次会话用暗色主题）。",
+      "difficulty": "normal",
+      "planned_candidates": 8,
+      "notes": "scope=session"
+    }
+  ],
+  "planned_total": 98,
+  "candidate_target_note": "候选池目标 293 条，含 public_derived（LME/PersonaChat/MultiWOZ 真实偏好）约 100 条 + OS spec 生成约 98 条 + 改写变体；最终以 P04 动态配额为准"
+}
