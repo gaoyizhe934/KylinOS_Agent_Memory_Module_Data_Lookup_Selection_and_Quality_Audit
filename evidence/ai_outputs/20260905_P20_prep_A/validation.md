@@ -19,4 +19,4 @@
 ## 备注
 - **base 已改绑 post-#32 master**（#32 已 merge，master 5f90409）；v4.1 规则基线在 master。
 - 当前 public source 全部 admission_eligible=false（Registry license 均 Reviewer（待批准）/待核验）。
-- CI/Baseline Validation 将在本 rebased HEAD 推送后触发。
+- CI/Baseline Validation 在本 HEAD（52fce60+）推送后触发。
