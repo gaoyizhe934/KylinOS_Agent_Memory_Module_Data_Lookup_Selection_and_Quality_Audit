@@ -35,8 +35,8 @@
   - P03 → `reports/tooling_bootstrap_report.json`：12 目标脚本**全部 `NEEDS_IMPLEMENTATION`**，待 Data-R 复核后进入 P2-A。
   - P00 → `reports/preflight_report.json`：PF-03/04/05/06 均 `BLOCKED_MAIN_CONTRACT`（interfaces 缺失）；M1/M1-KB/M2/M3 = PENDING / BLOCKED_EXTERNAL。
 - **C0/C2/C4/C5 仍 PENDING（Data-R）**；C1/C3 已由 B 产出草案待 R 签署。
-- 注意：B 的 inventory 内路径指向其本机工作区 `F:\麒麟OS记忆\.wt_stage8_v41_exec\`，跨仓需路径可移植性核验。
-- 当前工作分支：`feat/B-stage8-p1`（本地）；PR#33 = `feat/B-stage8-v4.1-closure`；v4.1 三件套由 PR#32（`docs/stage8-v4-handbook`）登记。
+- 已核验：B 的 inventory/tooling/preflight JSON 产出均为仓库相对路径（无本机绝对路径），跨仓可移植性 OK。
+- 当前工作分支：v4.1 执行 = PR#33 `feat/B-stage8-v4.1-closure`（本地 .wt_stage8_v41_exec）；docs = PR#32 `docs/stage8-v4-handbook`；本地主仓库历史分支 feat/B-stage8-p1（#28 已关闭）仅遗留。
 
 ## 分工（v4.1 三人独立数据团队，与主仓 Main A-E 完全独立）
 
