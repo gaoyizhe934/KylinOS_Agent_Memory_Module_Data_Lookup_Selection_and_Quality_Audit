@@ -1,9 +1,10 @@
 {
   "schema": "legacy_inventory_v4",
-  "generated_by": "DGXD01 (Data-B)",
+  "version": "v4.1",
+  "tool": "inventory_legacy.py",
+  "generated_by": "DGXD01(Data-B)",
   "date": "2026-09-05",
   "status": "NOT_FROZEN",
-  "note": "真实盘点结果；未假设 N=265。分层统计：gold(dev/regression/sealed)/processed/interim(v1)。",
   "summary": {
     "gold_total": 265,
     "gold_dev": 177,
@@ -11,141 +12,6 @@
     "gold_sealed": 38,
     "processed_nonaux_total": 415,
     "interim_v1_candidates_total": 215,
-    "note": "gold 三档合计 265（dev+regression+sealed_test）；processed 非aux 415（含 t2ranking public 200）；interim v1 候选 215。需 Data-R 判定 IN_SCOPE 边界。"
-  },
-  "layers": {
-    "gold": {
-      "total": 265,
-      "by_split": {
-        "dev": 177,
-        "regression": 50,
-        "sealed_test": 38
-      },
-      "by_task": {
-        "conflict_resolution": 40,
-        "end_to_end_session": 15,
-        "knowledge_retrieval": 60,
-        "precise_forgetting": 40,
-        "tool_result": 50,
-        "preference_extraction": 60
-      },
-      "files": [
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\dev\\conflict_resolution.jsonl",
-          "lines": 32
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\dev\\end_to_end_session.jsonl",
-          "lines": 15
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\dev\\knowledge_retrieval.jsonl",
-          "lines": 60
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\dev\\precise_forgetting.jsonl",
-          "lines": 40
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\dev\\tool_result.jsonl",
-          "lines": 30
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\regression\\preference_extraction.jsonl",
-          "lines": 40
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\regression\\tool_result.jsonl",
-          "lines": 10
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\sealed_test\\conflict_resolution.jsonl",
-          "lines": 8
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\sealed_test\\preference_extraction.jsonl",
-          "lines": 20
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\gold\\sealed_test\\tool_result.jsonl",
-          "lines": 10
-        }
-      ]
-    },
-    "processed": {
-      "total": 415,
-      "by_split": {
-        "processed": 415
-      },
-      "by_task": {
-        "conflict_resolution": 40,
-        "end_to_end_session": 15,
-        "knowledge_retrieval": 60,
-        "knowledge_retrieval_t2ranking": 200,
-        "precise_forgetting": 40,
-        "preference_extraction": 60
-      },
-      "files": [
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\processed\\conflict_resolution.jsonl",
-          "lines": 40
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\processed\\end_to_end_session.jsonl",
-          "lines": 15
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\processed\\knowledge_retrieval.jsonl",
-          "lines": 60
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\processed\\knowledge_retrieval_t2ranking.jsonl",
-          "lines": 200
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\processed\\precise_forgetting.jsonl",
-          "lines": 40
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\processed\\preference_extraction.jsonl",
-          "lines": 60
-        }
-      ]
-    },
-    "interim_v1": {
-      "total": 215,
-      "by_split": {
-        "interim": 215
-      },
-      "by_task": {
-        "gold_candidates_conflict_resolution": 40,
-        "gold_candidates_end_to_end_session": 15,
-        "gold_candidates_knowledge_retrieval": 60,
-        "gold_candidates_precise_forgetting": 40,
-        "gold_candidates_preference_extraction": 60
-      },
-      "files": [
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\interim\\gold_candidates_conflict_resolution.jsonl",
-          "lines": 40
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\interim\\gold_candidates_end_to_end_session.jsonl",
-          "lines": 15
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\interim\\gold_candidates_knowledge_retrieval.jsonl",
-          "lines": 60
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\interim\\gold_candidates_precise_forgetting.jsonl",
-          "lines": 40
-        },
-        {
-          "file": "F:\\麒麟OS记忆\\.wt_stage8_v41_exec\\data\\interim\\gold_candidates_preference_extraction.jsonl",
-          "lines": 60
-        }
-      ]
-    }
+    "note": "N 为盘点结果非假设；IN_SCOPE 边界由 Data-R 判定"
   }
 }
