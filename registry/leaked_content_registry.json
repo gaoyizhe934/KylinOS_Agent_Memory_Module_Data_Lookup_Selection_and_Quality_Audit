@@ -1,0 +1,12 @@
+{
+  "schema": "leaked_content_registry",
+  "version": "v4.1",
+  "updated_at": "2026-09-05",
+  "status": "DRAFT_SKELETON",
+  "note": "登记已泄露 ID/content/evidence/raw-span/template 的 fingerprint（v4.1 SOP Gate G5 Leakage）。来源：旧 PR#31/#28 隔离文件与旧试标暴露样本；逐条回填待 P2-A leakage_scan + Data-R 确认。",
+  "leaked_entries": [],
+  "pending_sources": [
+    "PR31 old40 trial labels/context（HISTORY_ONLY）",
+    "data/interim/review/ 历史草稿（#28 隔离）"
+  ]
+}
