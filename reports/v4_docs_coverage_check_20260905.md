@@ -1,5 +1,6 @@
 # v4 三份新文档覆盖度检查：能否解决项目现有问题（DGXD01，2026-09-05）
 
+> ⚠️ **PRE-v4.1 / HISTORICAL ANALYSIS**：本文检查 v4 三件套（v4.1 形成前版本），仅历史追溯，不构成现行口径。现行基线 = v4.1。
 > 检查对象：
 > - 《麒麟OS_Agent_Memory_Data_v4_新人AI机械化施工台账_v4.xlsx》（14 sheet 控制台）
 > - 《麒麟OS_Agent_Memory_Data_v4_新人AI机械化执行SOP_v4.docx》
@@ -36,3 +37,4 @@
 ## 二、结论
 - 新三件套把 v3 手册的"计划"升级为"可执行 Runbook"，已设计出 v1 存量处置（Legacy265）、六类语义判定、盲包隔离、去重/泄漏 Gate、AI 溯源与停止线——**主要数据质量问题有解法**。
 - 但落地仍依赖：Legacy265 样本映射、sealed 回滚、工具实现（P2-A）、主仓 KB/Runtime 冻结、Calibration 衔接、总量联动、以及**双盲独立性人工分派**。
+
