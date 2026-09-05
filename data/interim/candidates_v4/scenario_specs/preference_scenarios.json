@@ -90,22 +90,20 @@
       "scenario_family": "os_pref_sensitive",
       "coverage_type": "sensitive_or_non_storable",
       "expression_type": "explicit",
-      "preference_scope_target": "global",
       "description": "敏感/不可存储偏好（健康隐私、金融信息、越权内容）——应判 negative / blocked by policy。",
       "difficulty": "normal",
       "planned_candidates": 8,
-      "notes": "敏感定级不得由 LLM 覆写；结果不存储"
+      "notes": "敏感定级不得由 LLM 覆写；结果不存储；非合法 preference，不赋 preference_scope_target"
     },
     {
       "scenario_id": "OSPREF-09",
       "scenario_family": "os_pref_task_constraint",
       "coverage_type": "task_constraint_boundary",
       "expression_type": "explicit",
-      "preference_scope_target": "session",
       "description": "仅本次任务的约束/普通请求（这次就按英文、这次用简单路径）——不是长期偏好，可转临时/普通请求边界样本。",
       "difficulty": "hard",
       "planned_candidates": 10,
-      "notes": "关键负例：普通问答/一次性条件不得机械长期化（SEM_PREF_TEMP）"
+      "notes": "关键负例：普通问答/一次性条件不得机械长期化（SEM_PREF_TEMP）；非合法 preference，不赋 preference_scope_target"
     },
     {
       "scenario_id": "OSPREF-10",

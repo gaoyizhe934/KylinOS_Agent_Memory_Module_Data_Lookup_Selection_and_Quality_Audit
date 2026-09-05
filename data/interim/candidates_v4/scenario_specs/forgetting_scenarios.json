@@ -65,11 +65,11 @@
     {
       "scenario_id": "OSFORG-07",
       "scenario_family": "os_forg_ambiguous_negative",
-      "forget_mode": "ambiguous_selector",
+      "scenario_class": "ambiguous_selector_negative",
       "description": "模糊 selector（『把那些都删了』）无法确定 target → hard negative / needs_review。",
       "difficulty": "hard",
       "planned_candidates": 6,
-      "notes": "no_target / ambiguous_selector → hard negative"
+      "notes": "负例不适用 canonical forget_mode，故省略；no_target / ambiguous_selector → hard negative"
     },
     {
       "scenario_id": "OSFORG-08",

@@ -26,5 +26,12 @@
     "reports/v4.1_A_readiness_20260905.md"
   ],
   "ai_status": "DRAFT_INPUT_PACKAGE / candidate_only / NOT_ADMISSION_APPROVED",
-  "human_adoption": "pending A review; 待 B/R 复核 quota 口径与场景覆盖度"
+  "review_status": {
+    "A_review_status": "REVIEWED_STRUCTURE",
+    "A_reviewed_at": "2026-09-05",
+    "A_adopted_outputs": ["factory_config", "scenario_specs", "exemplar_candidates", "scope_review_standard", "semantic_rules_review", "readiness"],
+    "A_remaining_needs_review": ["语言策略", "Conflict 时间/矛盾灰度", "Forgetting selector 边界"],
+    "B_review_status": "PENDING",
+    "R_review_status": "PENDING"
+  }
 }

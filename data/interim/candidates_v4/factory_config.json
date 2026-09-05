@@ -6,6 +6,8 @@
   "status": "DRAFT_INPUT_PACKAGE",
   "admission_status": "NOT_ADMISSION_APPROVED",
   "note": "P20/P22/P23 候选工厂输入包（A 侧预处理，全部 candidate_only，非 Gold，不写 human_decision/final_label；未通过 Admission G1-G5，不得作为任何 Gold/Closure 证据）。正式量产等待：C1 Legacy-N 冻结(Data-R 签 LEGACY_SET_FROZEN) + 动态配额(Q7/P04) + P2-A 工具(admission_gate/validate_labels)。",
+  "pr_relationship": {"candidate_prep": "#34", "closure_status_owner": "#33", "note": "Closure 状态由 #33 管理，本文件不引用尚未进入 master 的 closure_status_v4.1.json；#32 合并后本 PR 改绑 master 基线"},
+  "blind_leakage_assertion": "P40/validator 必须断言：blind packet 禁止出现 expected / design / target label / negative / hard_negative / conflict resolution hint / preference_scope_target / design_scope_target / peer / reviewer / gold 字段；candidate 结构分层：blind_visible（无答案）+ design_metadata（含设计答案）",
   "quota": {
     "note": "以下为 provisional_max_pool（pre-C1 planning number），非 P04 最终配额。v4.1 P04 正式口径：candidate_needed = ceil((target - accepted_legacy) * 1.30)。C1 LEGACY_SET_FROZEN + Legacy 重准入完成后必须重算正式缺口。",
     "status": "PROVISIONAL",
@@ -30,20 +32,20 @@
   },
   "source_layer_map": {
     "public_direct": {
-      "note": "公开数据原样作为来源事实；需 raw locator + license + sha（G1）",
+      "note": "公开数据原样作为来源事实；eligibility 必须以仓库 Registry 为准，不得用笼统 registered 代替 Reviewer 批准。",
       "candidates": [
-        {"layer": "public_direct", "dataset": "longmemeval_cleaned_2025", "license": "registered", "usable_for": ["preference", "conflict", "forgetting"]},
-        {"layer": "public_direct", "dataset": "longmemeval_v2_2026", "license": "registered", "usable_for": ["conflict", "forgetting"]},
-        {"layer": "public_direct", "dataset": "personachat_2018", "license": "registered", "usable_for": ["preference"]},
-        {"layer": "public_direct", "dataset": "multiwoz_2_2_2020", "license": "registered", "usable_for": ["preference"]}
+        {"layer": "public_direct", "dataset": "longmemeval_cleaned_2025", "source_registry_status": "APPROVED_USABLE", "license_status": "reviewed_ok", "admission_eligible": true, "usable_for": ["preference", "conflict", "forgetting"]},
+        {"layer": "public_direct", "dataset": "longmemeval_v2_2026", "source_registry_status": "APPROVED_USABLE", "license_status": "reviewed_ok", "admission_eligible": true, "usable_for": ["conflict", "forgetting"]},
+        {"layer": "public_direct", "dataset": "personachat_2018", "source_registry_status": "SOURCE_PENDING_REVIEW", "license_status": "license_pending", "admission_eligible": false, "usable_for": ["preference"], "note": "Registry 现状：license 待核验、verdict 待人工/法务确认、Reviewer 待批准；G1 未 ready，禁用入正式候选直至批准"},
+        {"layer": "public_direct", "dataset": "multiwoz_2_2_2020", "source_registry_status": "APPROVED_USABLE", "license_status": "reviewed_ok", "admission_eligible": true, "usable_for": ["preference"]}
       ]
     },
     "public_controlled_derived": {
-      "note": "公开事实改写/改写为 OS 语境；必须保留 generation manifest 回溯到 raw（G9）",
+      "note": "公开事实改写/改写为 OS 语境；必须保留 generation manifest 回溯到 raw（G9）；eligibility 同源 Registry",
       "candidates": []
     },
     "os_controlled_authored": {
-      "note": "A 依据 OS scenario spec 手写/生成的中文场景；必须带 scenario_spec_id + generation manifest",
+      "note": "A 依据 OS scenario spec 手写/生成的中文场景；必须带 scenario_spec_id + generation manifest；用户/事件 ID 为设计占位（id_binding_status=NON_PRODUCTION），production binding 时 fail-closed",
       "scenario_spec_dir": "data/interim/candidates_v4/scenario_specs/"
     }
   },

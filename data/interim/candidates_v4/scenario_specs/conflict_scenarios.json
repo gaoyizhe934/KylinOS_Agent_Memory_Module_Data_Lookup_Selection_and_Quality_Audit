@@ -33,7 +33,7 @@
       "description": "偏好前后变更（先说详细回答，后说以后简短）。",
       "difficulty": "hard",
       "planned_candidates": 8,
-      "notes": "与 OSPREF-06 联动；winner=keep_new"
+      "notes": "与 OSPREF-06 联动；resolution 必须依据时间、scope、明确撤销/替代证据决定，不得仅凭 new/old 顺序预设 winner"
     },
     {
       "scenario_id": "OSCONF-04",
@@ -56,11 +56,11 @@
     {
       "scenario_id": "OSCONF-06",
       "scenario_family": "os_conf_non_conflict_negative",
-      "conflict_type": "non_conflict_hard_negative",
+      "scenario_class": "non_conflict_hard_negative",
       "description": "看似冲突实则可共存/历史/不同对象（两件事只是先后出现，不矛盾）——hard negative。",
       "difficulty": "hard",
       "planned_candidates": 10,
-      "notes": "禁止硬造冲突；这类样本转 hard negative"
+      "notes": "负例不适用 canonical conflict_type，故省略；禁止硬造冲突"
     },
     {
       "scenario_id": "OSCONF-07",
