@@ -11,11 +11,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 
 def run(script, *args):
     return subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "v4", script), *args],
-                          capture_output=True, text=True, encoding="utf-8")
+                          capture_output=True, text=True, encoding="utf-8", errors="replace")
 
 
 def test_inventory():
-    # 幂等 + raw 只读 + 输出一致
     with tempfile.TemporaryDirectory() as td:
         o1 = os.path.join(td, "inv1.json")
         o2 = os.path.join(td, "inv2.json")
@@ -31,14 +30,12 @@ def test_inventory():
 
 def test_preflight_failclosed():
     r = run("preflight.py")
-    # 主仓接口缺失 => exit 2 (fail-closed)；registry 缺失只 PENDING
     assert r.returncode in (0, 2), r.stdout
     assert "BLOCKED_MAIN_CONTRACT" in r.stdout
     print("test_preflight_failclosed PASS rc=", r.returncode)
 
 
 def test_raw_readonly():
-    # 记录 raw 目录某文件 hash，工具运行后应不变（工具本身只读 raw）
     import hashlib
     rawf = os.path.join(ROOT, "data", "raw", "longmemeval_cleaned_2025", "v0_sample", "longmemeval_oracle.json")
     if os.path.exists(rawf):
@@ -52,8 +49,20 @@ def test_raw_readonly():
         print("test_raw_readonly SKIP (无 raw 样本)")
 
 
+def test_dedup_v1_template():
+    p = os.path.join(ROOT, "data", "processed", "preference_extraction.jsonl")
+    if os.path.exists(p):
+        r = run("dedup_scan.py", "--files", p)
+        assert r.returncode == 2, "v1 模板 exact dup 应 FAIL"
+        assert "FAIL" in r.stdout
+        print("test_dedup_v1_template PASS (rc=2, 检出重复)")
+    else:
+        print("test_dedup_v1_template SKIP")
+
+
 if __name__ == "__main__":
     test_inventory()
     test_preflight_failclosed()
     test_raw_readonly()
+    test_dedup_v1_template()
     print("ALL PASS")
