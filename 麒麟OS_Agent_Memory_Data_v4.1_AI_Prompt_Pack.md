@@ -77,11 +77,16 @@
 }
 ```
 
+输出（两个文件，缺一不可）：
+- `reports/legacy_inventory_v4_full.jsonl`：逐样本账本（primary）
+- `reports/legacy_inventory_v4.json`：summary（必须由 full ledger 自动计算）
+
 规则：
 - 同一个物理/逻辑样本只能进入一次 inventory。
 - 不使用 Excel 预留行数推断真实存量。
 - 不把 processed/interim/gold 混为同一层。
 - 统计完成后给出：N、各 split 数、各 task 数、各 source 数、暴露样本数。
+- summary 只能由 full ledger 自动派生；任一文件读取/JSONL parse 失败 → `INVENTORY_NOT_FROZEN` 且退出码 nonzero，禁止少计后 PASS。
 - 最终状态只能由 Data-R 改成 `LEGACY_SET_FROZEN`。
 
 若无法确定真实集合：`INVENTORY_NOT_FROZEN`。
@@ -113,7 +118,8 @@
 - 将已暴露样本重新洗牌回 sealed。
 
 输出：
-`seal_audit_v4.1.json`、`seal_revocation_record.json`、`leak_registry_patch.json`、`reseal_plan.json`。
+- primary evidence：`seal_audit_v4.1.json`
+- supporting evidence：`seal_revocation_record.json`、`leak_registry_patch.json`、`reseal_plan.json`
 
 ---
 
@@ -208,6 +214,8 @@ Runtime：
 - 可用于：规则回归、工具回归、历史比较、泄漏登记
 - 默认不可用于新 v4.1 正式 blind calibration
 - v4.1 从 Admission PASS 中重新抽 fresh 40
+
+> 口径统一：**正常施工路径永远使用 fresh40；例外迁移不是默认排程**，只有 Data-R 显式批准后才覆盖默认 HISTORY_ONLY。
 
 只有同时满足以下全部条件，才可申请例外迁移：
 1. 样本/标签/答案从未被 A/B/R/AI Prompt 暴露。
@@ -451,6 +459,36 @@ A/B 使用不同随机顺序，记录 seed/hash。
 - 非 Runtime Gold / KB 可继续
 
 AI不得修改主仓 Contract 来消除阻塞。
+
+### 输出 contract（固定）`reports/main_dependency_gate.json`
+```json
+{
+  "prompt_id": "P70",
+  "c5_status": "PASS|PENDING|BLOCKED",
+  "dependencies": {
+    "M1": {
+      "status": "PASS|PENDING|BLOCKED",
+      "evidence_path": "",
+      "evidence_commit": "",
+      "owner": "",
+      "deadline": "D1 10:30",
+      "blocker": "",
+      "fallback": ""
+    },
+    "M1_KB": {"status": "PASS|PENDING|BLOCKED", "deadline": "D2 12:00"},
+    "M2": {"status": "PASS|PENDING|BLOCKED", "deadline": "D3 12:00"},
+    "M3": {"status": "PASS|PENDING|BLOCKED", "deadline": "D3 18:00"}
+  },
+  "safe_parallel_tasks": [],
+  "production_truth_allowed": false,
+  "runtime_allowed": false
+}
+```
+`c5_status` 计算规则：
+- 依赖项均已登记 owner/deadline/fallback/evidence locator → `PASS`（即 dependency plan registered，不要求 M1-KB/M2/M3 已全绿）
+- 某项信息未登记 → `PENDING`
+- 外部接口未 PASS 但已正确登记 → `dependency.status = PENDING/BLOCKED`，不得伪装成 PASS
+- 禁止把 registered / BLOCKED / PASS 混为一状态。
 
 ---
 
