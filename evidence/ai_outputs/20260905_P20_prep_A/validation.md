@@ -1,6 +1,7 @@
-# Candidate-Prep 专项校验结果 v3（Data-R review P1-7 / R3）
+# Candidate-Prep 专项校验结果 v4（post-#32 master rebase）
 
 - 脚本：`scripts/v4/validate_candidate_prep.py`
+- **rebased HEAD**：`81b7faf3a5fa37e048f542d2bc9920d7ede44ec0`（base = post-#32 master，含 v4.1 规则基线）
 - 执行：2026-09-05，Python 3.11
 - 结果：**ALL PASS**（json=5 jsonl=3 exemplars=9，files=8），exit 0
 
@@ -16,5 +17,6 @@
 9. **跨文档 scope 一致性**：OSPREF-01 无固定 preference_scope_target（scope_policy=per_sample_semantic_review）；pref_v41_ex01.design_scope_target=topic（与 scope guideline「以后每周报告都用要点→topic」一致）✅
 
 ## 备注
-- P0-1（base 改绑 master）：#32 未 merge，记 BLOCKED_DEPENDENCY；#32 合并后 clean rebase 到 master 再重跑本校验 + Baseline Validation/CI。
+- **base 已改绑 post-#32 master**（#32 已 merge，master 5f90409）；v4.1 规则基线在 master。
 - 当前 public source 全部 admission_eligible=false（Registry license 均 Reviewer（待批准）/待核验）。
+- CI/Baseline Validation 将在本 rebased HEAD 推送后触发。
