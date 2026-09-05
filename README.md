@@ -28,7 +28,8 @@ python scripts\oneclick\run_all.py
 ## 相关材料
 
 - 指导手册：`02_麒麟OS_Agent_记忆模块数据查找选型与质量审计指导手册_v1.0_20260729.docx`
-- **数据生产标准流程（现行优先）**：`麒麟OS_Agent_Memory_Data_v4_三人五天_30pct缓冲_完整版方案_v3.docx`（Data-A/B/R 三人五天 Half-Scale：785 Gold + 400 KB；1.3× 候选、双盲+Reviewer 裁决、Gate/红线以手册为准；后续数据生产/标注/发布计划一律优先遵循本手册）
+- **数据生产标准流程（现行优先）**：`麒麟OS_Agent_Memory_Data_v4.1_新人AI闭环执行SOP.docx`（配套台账 `麒麟OS_Agent_Memory_Data_v4.1_新人AI闭环施工台账.xlsx`、`麒麟OS_Agent_Memory_Data_v4.1_AI_Prompt_Pack.md`）——Closure C0-C5 闭环后启动正式5天；v4 手册保留为历史基线
+- v4 手册（历史基线）：`麒麟OS_Agent_Memory_Data_v4_三人五天_30pct缓冲_完整版方案_v3.docx`
 - v2.0 重建计划：`麒麟OS_Agent_记忆模块数据包_v2.0_重建计划_修订版.docx`
 - 数据卡：[reports/data_card_v1.md](reports/data_card_v1.md)
 - 复现说明：[reports/reproduction.md](reports/reproduction.md)
