@@ -1,0 +1,61 @@
+{
+  "schema": "closure_status_v4.1",
+  "version": "0.1",
+  "status": "DRAFT",
+  "note": "唯一机器状态源（Data-R review §9）。各 Markdown/报告只引用本文件，不再独立维护 PASS/PENDING 数字。本文件为 Data-A 草稿，签署与更新归 Data-R（以及 B 侧证据提交后由 R 确认）。",
+  "owner_signer": "Data-R",
+  "maintained_by": "Data-R / Data-B（证据）/ Data-A（草稿）",
+  "updated_at": "2026-09-05",
+  "gates": {
+    "C0": {
+      "status": "PENDING",
+      "evidence_path": "reports/independence_manifest.json",
+      "evidence_commit": null,
+      "reviewer": null,
+      "blocker": "independence_manifest.json 未入库；需确认 A/B/R 三个不同人工、AI 不补第二标注者"
+    },
+    "C1": {
+      "status": "PENDING",
+      "evidence_path": "reports/legacy_inventory_v4_full.jsonl",
+      "evidence_commit": null,
+      "reviewer": null,
+      "blocker": "当前仅数量 summary（reports/legacy_inventory_v4.json）+ 按文件计行；缺逐样本账本（file_path/ref/line_no/hash/fingerprint/sample_id/layer/split/task/source/label_exposed/template_family/IN_SCOPE）+ logical dedup + fail-closed；评论所述 895->250 未入库，不能作为正式 Legacy-N"
+    },
+    "C2": {
+      "status": "PENDING",
+      "evidence_path": "reports/seal_audit_v4.1_20260905.md",
+      "evidence_commit": null,
+      "reviewer": null,
+      "blocker": "审计文件未入库"
+    },
+    "C3": {
+      "status": "PENDING",
+      "evidence_path": "reports/tooling_bootstrap_report.json",
+      "evidence_commit": "fb23747",
+      "reviewer": null,
+      "blocker": "report 仍写 12 工具全 NEEDS_IMPLEMENTATION；HEAD 仅 3 原型（preflight/inventory_legacy/dedup_scan）；完整 P2-A 走独立 PR，bootstrap report 只记录真实 gap 与对应 PR"
+    },
+    "C4": {
+      "status": "PENDING",
+      "evidence_path": "reports/trial40_reuse_audit_20260905.md",
+      "evidence_commit": null,
+      "reviewer": null,
+      "blocker": "审计文件未入库；leaked_content_registry 仍 DRAFT_SKELETON(leaked_entries=[])"
+    },
+    "C5": {
+      "status": "BLOCKED",
+      "evidence_path": "reports/preflight_report.json",
+      "evidence_commit": "fb23747",
+      "reviewer": null,
+      "blocker": "schema_snapshot/kb_import_contract/runtime_runner_contract/frozen_build_manifest 均 BLOCKED_MAIN_CONTRACT；M3 BLOCKED_EXTERNAL；正式 5 天不得启动"
+    }
+  },
+  "summary": {
+    "gates_total": 6,
+    "approved": 0,
+    "pending": 5,
+    "blocked": 1,
+    "formal_day1_started": false,
+    "note": "正式 5 天时钟在 C0-C5 全 PASS 且 #32 规则基线合并后启动"
+  }
+}

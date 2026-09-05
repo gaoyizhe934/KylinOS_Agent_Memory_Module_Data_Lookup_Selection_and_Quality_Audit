@@ -1,0 +1,116 @@
+{
+  "schema": "preflight_report",
+  "version": "v4.1",
+  "tool": "preflight.py",
+  "generated_by": "DGXD01(Data-B)",
+  "git": "n/a",
+  "checks": [
+    {
+      "id": "DIR:data/raw",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:data/interim",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:data/processed",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:data/gold",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:registry",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:evidence",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:reports",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:scripts",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "IF:schema_snapshot",
+      "path": "interfaces/main_to_data/schema_snapshot.json",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "IF:kb_import_contract",
+      "path": "interfaces/main_to_data/kb_import_contract.json",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "IF:runtime_runner_contract",
+      "path": "interfaces/main_to_data/runtime_runner_contract.md",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "IF:frozen_build_manifest",
+      "path": "interfaces/main_to_data/frozen_build_manifest.json",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "REG:source_registry",
+      "path": "registry/source_registry.csv",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "REG:license_registry",
+      "path": "registry/license_registry.csv",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "REG:leaked_registry",
+      "path": "registry/leaked_content_registry.json",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "REG:provenance_registry",
+      "path": "registry/provenance_registry_v4.json",
+      "exists": false,
+      "status": "PENDING"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "IF:schema_snapshot",
+      "reason": "interfaces/main_to_data/schema_snapshot.json 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "IF:kb_import_contract",
+      "reason": "interfaces/main_to_data/kb_import_contract.json 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "IF:runtime_runner_contract",
+      "reason": "interfaces/main_to_data/runtime_runner_contract.md 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "IF:frozen_build_manifest",
+      "reason": "interfaces/main_to_data/frozen_build_manifest.json 缺失（需主仓提供/FROZEN）"
+    }
+  ],
+  "next_action": "safe_parallel: inventory_legacy / tooling bootstrap; 不产出 production Gold"
+}

@@ -29,6 +29,13 @@
 - [x] 阶段 7：统一 Schema 转换 — Reviewer 已批准（PR#21，715 条可溯源），Gate 7 通过
 - [ ] 阶段 8~11：待后续推进（试标/双标 → 切分封存 → 麒麟 VM 回放 → 报告）
 
+## 阶段8 候选池重建记录（2026-09-04，A = lyf-1213，feat/B-stage8-p1 分支）
+
+- 背景：试标母体 gold_candidates（v1.0 AI 模板生成）语义级 88%~93% 重复（审计脚本 `scripts/audit/stage8_semantic_dedup.py`，证据 `evidence/audit/stage8_candidate_semantic_dedup_20260904.json`），Kappa 虚高、不具权威数据价值。
+- 产出：重建候选池 77 条（5 任务，public_derived 43% + team_authored 57%，全部语义去重通过）+ 试标集 v3（40 条全异）+ A/B 骨架 v3；方案 `reports/stage8_candidate_rebuild_plan.md`，报告 `reports/stage8_candidate_rebuild_report.md`。
+- 状态：⏳ 待 B 复核（去重口径/候选 schema/试标集结构）+ Reviewer 裁定（试标集 v2 废弃/来源占比/语言策略/tool_result 依赖/retrieval 版本引用），裁定前不量产、不正式试标。
+- 红线遵守：重建候选仅 candidate_only，不触碰封存集；Gate 纪律未越权。
+
 ## Gate 3 待办清偿记录（2026-09-01，B = DGXD01，feat/B-stage3-prep 分支）
 
 PR#1 审批意见（第四节）遗留三项待办，本分支逐一清偿：
@@ -62,3 +69,28 @@ PR#1 审批意见（第四节）遗留三项待办，本分支逐一清偿：
 - 依据：数据包_B轨字段漂移自检修复任务说明_20260904.md（对照 KMA Canonical/D3，主仓库 CANDIDATE_FOR_FREEZE）。
 - 产出：reports/schema_drift_audit_B_20260904.md、registry/field_mapping.json（30 行映射登记）、scripts/audit/schema_drift_check.py（exit 0：0 未登记字段 / 0 分层缺失）、data/processed/enum_dictionary.json 增加 _meta 分层（NOT production shared enum）。
 - 性质：扫描+登记+只读映射，未改既有 Gold 字段值、未重转；未冻结项（§四清单）待 E/D 裁定。
+
+## v4.1 执行基线（追加 2026-09-05）
+
+### 基线切换
+- **现行基线 = v4.1**：`麒麟OS_Agent_Memory_Data_v4.1_新人AI闭环执行SOP.docx` + `...施工台账.xlsx` + `...AI_Prompt_Pack.md`（PR#32 登记）。
+- v4（SOP_v4/台账_v4/Prompt_v4）与 v3 完整版方案降级为**历史基线**，不再单独指导开工。
+- v4.1 在 v4 基础上补齐 Closure Q1-Q8：Legacy 真实盘点、Seal 撤销重封、P2-A Tooling Bootstrap、主仓 KB/Runtime Gate、旧 40 衔接、动态配额、人工独立性。
+- 依据报告：`reports/v4_docs_coverage_check_20260905.md`（Q1-Q8）、`reports/v4_gap_fix_plan_20260905.md`（G1-G10 与 Phase1/2/3）。
+
+### v4.1 Closure C0-C5 状态（PR#33，2026-09-05 晚更新）
+| Gate | 内容 | 负责人 | 状态 |
+| --- | --- | --- | --- |
+| C0 | 人工独立性（A/B/R 三人，AI 不能补人数） | Data-R | ⬜ PENDING |
+| C1 | Legacy-N 盘点冻结（不先假设 265） | Data-B/R | 🔶 B 已产出 `reports/legacy_inventory_v4.json`（N=265 为盘点结果，NOT_FROZEN）待 R 签 |
+| C2 | 旧 sealed 审计/撤销重封 | Data-R | ⬜ PENDING |
+| C3 | P2-A Tooling Bootstrap（12 工具） | Data-B/R | 🔶 B 已产出 `reports/tooling_bootstrap_report.json`（12 工具全 NEEDS_IMPLEMENTATION）待 R 复核 |
+| C4 | PR31 旧 40 = HISTORY_ONLY；fresh 40 计划 | Data-R | ⬜ PENDING |
+| C5 | 主仓 M1/M1-KB/M2/M3 依赖登记 | Data-R | 🔶 P00 Preflight 已登记 M1/M1-KB/M2/M3 = BLOCKED/PENDING（interfaces 缺失）待 R |
+
+**B 侧 Preflight 关键结论（P00，`reports/preflight_report.json`）**：PF-01/02/09/10 PENDING；PF-03/04/05/06 = `BLOCKED_MAIN_CONTRACT`（`interfaces/main_to_data/*` 全部缺失，需主仓 Liaison 提供 FROZEN）；PF-07 PASS；M3 = `BLOCKED_EXTERNAL`。
+
+- **红线**：C0-C5 未全 PASS 不启动正式 5 天时钟；Legacy 不先假设 265；人工独立性无豁免；工具缺失返回 NEEDS_IMPLEMENTATION。
+- **Closure 状态唯一机器真源**：`reports/closure_status_v4.1.json`（Data-R review §9）；本文件不再独立维护 Closure PASS/PENDING 数字，仅保留本节的评审依据引用。
+- **首批待办**（PR#33）：P00 Preflight ✅（B）、P01 Legacy Inventory ✅（B）、P03 Tooling Bootstrap ✅（B）、P70 Main Gate 🔶（P00 已含现状，待 R 正式登记）。
+- **Data-A 待命**：C1/C4 未冻结前不做 Legacy 重准入与新 Calibration；A 的 D1 任务（P10/P20/P22/P23）在 Closure 通过后启动。

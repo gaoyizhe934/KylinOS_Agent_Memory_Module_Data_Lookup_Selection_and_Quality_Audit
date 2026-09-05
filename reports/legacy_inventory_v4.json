@@ -1,0 +1,17 @@
+{
+  "schema": "legacy_inventory_v4",
+  "version": "v4.1",
+  "tool": "inventory_legacy.py",
+  "generated_by": "DGXD01(Data-B)",
+  "date": "2026-09-05",
+  "status": "NOT_FROZEN",
+  "summary": {
+    "gold_total": 265,
+    "gold_dev": 177,
+    "gold_regression": 50,
+    "gold_sealed": 38,
+    "processed_nonaux_total": 415,
+    "interim_v1_candidates_total": 215,
+    "note": "N 为盘点结果非假设；IN_SCOPE 边界由 Data-R 判定"
+  }
+}

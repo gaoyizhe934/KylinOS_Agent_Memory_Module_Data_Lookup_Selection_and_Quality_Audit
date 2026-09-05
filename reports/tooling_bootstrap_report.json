@@ -1,0 +1,132 @@
+{
+  "schema": "tooling_bootstrap_report",
+  "version": "v4.1",
+  "generated_by": "DGXD01 (Data-B)",
+  "date": "2026-09-05",
+  "note": "P03 Tooling Bootstrap：核对 v4.1 SOP 12 目标脚本是否存在；缺失返回 NEEDS_IMPLEMENTATION。Data-R 签署前不进入正式流水线。",
+  "status": "PENDING_REVIEW",
+  "tools": [
+    {
+      "tool_id": "T01",
+      "target_script": "preflight.py",
+      "function": "环境/接口/版本检查",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T02",
+      "target_script": "inventory_legacy.py",
+      "function": "仓库存量盘点+hash",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T03",
+      "target_script": "provenance_resolver.py",
+      "function": "raw locator/license/source 闭环",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T04",
+      "target_script": "dedup_scan.py",
+      "function": "exact+near+template/source 分布",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [
+        "stage8_semantic_dedup.py"
+      ],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T05",
+      "target_script": "leakage_scan.py",
+      "function": "ID/content/evidence/raw/template fingerprint",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [
+        "leakage_check.py"
+      ],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T06",
+      "target_script": "admission_gate.py",
+      "function": "G1-G5 汇总 fail-closed",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [
+        "stage8_label_check_v2.py",
+        "schema_drift_check.py"
+      ],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T07",
+      "target_script": "build_blind_packets.py",
+      "function": "fresh 双随机盲包",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T08",
+      "target_script": "validate_labels.py",
+      "function": "结构校验（不推断答案）",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [
+        "validate_schema.py",
+        "stage8_label_check_v2.py"
+      ],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T09",
+      "target_script": "disagreement_report.py",
+      "function": "差异聚类",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T10",
+      "target_script": "runtime_import.py",
+      "function": "actual trace 解析",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T11",
+      "target_script": "split_grouped.py",
+      "function": "group split",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [
+        "split_and_seal.py"
+      ],
+      "status": "NEEDS_IMPLEMENTATION"
+    },
+    {
+      "tool_id": "T12",
+      "target_script": "seal_release.py",
+      "function": "hash/revoke/reseal/manifest",
+      "exists": false,
+      "needs_implementation": true,
+      "reusable_nearby": [
+        "split_and_seal.py"
+      ],
+      "status": "NEEDS_IMPLEMENTATION"
+    }
+  ]
+}
