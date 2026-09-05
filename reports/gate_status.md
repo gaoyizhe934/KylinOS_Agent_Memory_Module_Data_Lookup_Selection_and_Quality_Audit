@@ -91,5 +91,6 @@ PR#1 审批意见（第四节）遗留三项待办，本分支逐一清偿：
 **B 侧 Preflight 关键结论（P00，`reports/preflight_report.json`）**：PF-01/02/09/10 PENDING；PF-03/04/05/06 = `BLOCKED_MAIN_CONTRACT`（`interfaces/main_to_data/*` 全部缺失，需主仓 Liaison 提供 FROZEN）；PF-07 PASS；M3 = `BLOCKED_EXTERNAL`。
 
 - **红线**：C0-C5 未全 PASS 不启动正式 5 天时钟；Legacy 不先假设 265；人工独立性无豁免；工具缺失返回 NEEDS_IMPLEMENTATION。
+- **Closure 状态唯一机器真源**：`reports/closure_status_v4.1.json`（Data-R review §9）；本文件不再独立维护 Closure PASS/PENDING 数字，仅保留本节的评审依据引用。
 - **首批待办**（PR#33）：P00 Preflight ✅（B）、P01 Legacy Inventory ✅（B）、P03 Tooling Bootstrap ✅（B）、P70 Main Gate 🔶（P00 已含现状，待 R 正式登记）。
 - **Data-A 待命**：C1/C4 未冻结前不做 Legacy 重准入与新 Calibration；A 的 D1 任务（P10/P20/P22/P23）在 Closure 通过后启动。

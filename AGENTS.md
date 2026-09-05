@@ -35,6 +35,7 @@
   - P03 → `reports/tooling_bootstrap_report.json`：12 目标脚本**全部 `NEEDS_IMPLEMENTATION`**，待 Data-R 复核后进入 P2-A。
   - P00 → `reports/preflight_report.json`：PF-03/04/05/06 均 `BLOCKED_MAIN_CONTRACT`（interfaces 缺失）；M1/M1-KB/M2/M3 = PENDING / BLOCKED_EXTERNAL。
 - **C0/C2/C4/C5 仍 PENDING（Data-R）**；C1/C3 已由 B 产出草案待 R 签署。
+- **Closure 状态唯一机器真源**：`reports/closure_status_v4.1.json`（Data-R review §9）；其他 Markdown 只引用它，不再独立维护 PASS/PENDING 数字。
 - 已核验：B 的 inventory/tooling/preflight JSON 产出均为仓库相对路径（无本机绝对路径），跨仓可移植性 OK。
 - 当前工作分支：v4.1 执行 = PR#33 `feat/B-stage8-v4.1-closure`（本地 .wt_stage8_v41_exec）；docs = PR#32 `docs/stage8-v4-handbook`；本地主仓库历史分支 feat/B-stage8-p1（#28 已关闭）仅遗留。
 
