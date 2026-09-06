@@ -62,7 +62,8 @@ def main():
             print("FAIL_CLOSED: %s missing field %s" % (name, field))
             sys.exit(2)
     # dedup schema（与 T04 输出一致）
-    for field in ["exact_duplicate_groups", "near_duplicate_review", "template_over_concentration", "samples", "checked_sample_ids"]:
+    for field in ["exact_duplicate_groups", "near_duplicate_pairs", "near_duplicate_decisions", "near_blocked",
+                  "template_over_concentration", "samples", "checked_sample_ids"]:
         if field not in dedup:
             print("FAIL_CLOSED: dedup missing required field %s" % field)
             sys.exit(2)

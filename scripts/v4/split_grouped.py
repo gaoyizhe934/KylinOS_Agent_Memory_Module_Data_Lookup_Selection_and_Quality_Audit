@@ -49,6 +49,19 @@ def main():
         print("FAIL_CLOSED: 零样本输入")
         sys.exit(2)
 
+    # sample_id invariant：非空；同 sample_id 只能映射一个 (group_key)（重复须 group 一致）
+    seen_sid_group = {}
+    for r in rows:
+        sid = r.get("sample_id")
+        if not sid:
+            print("FAIL_CLOSED: sample_id empty in input row")
+            sys.exit(2)
+        gk = group_key(r)
+        if sid in seen_sid_group and seen_sid_group[sid] != gk:
+            print("FAIL_CLOSED: sample_id %s maps to multiple group_keys" % sid)
+            sys.exit(2)
+        seen_sid_group[sid] = gk
+
     groups = {}
     for r in rows:
         g = group_key(r)

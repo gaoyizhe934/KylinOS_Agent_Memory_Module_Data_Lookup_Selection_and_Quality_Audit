@@ -69,12 +69,10 @@ def main():
     ap.add_argument("--out", default="reports/dedup_report.json")
     ap.add_argument("--near-threshold", type=float, default=0.85)
     ap.add_argument("--template-max", type=float, default=0.25)
-    ap.add_argument("--near-review-status", default="UNREVIEWED", choices=["UNREVIEWED", "REVIEWED"],
-                    help="near-dup 裁决状态：REVIEWED 表示 Reviewer 已逐对裁决")
-    ap.add_argument("--near-review-decision", default="", help="REVIEWED 时每对裁决，如 DROP:PASS 列表")
+    ap.add_argument("--near-decisions", default="", help="JSON 文件：near_duplicate_decisions [{a,b,decision,reviewer,reason}]；逐对绑定")
     args = ap.parse_args()
 
-    rows, matched_count = load_rows(args.input)
+    rows, _ = load_rows(args.input)
     if not rows:
         print("FAIL_CLOSED: 零样本/零 glob 匹配")
         sys.exit(2)
@@ -93,8 +91,37 @@ def main():
         for j in range(i + 1, len(normed)):
             sim = jaccard(normed[i][1], normed[j][1])
             if sim > args.near_threshold:
-                near.append({"a": normed[i][0].get("sample_id"), "b": normed[j][0].get("sample_id"),
-                             "similarity": round(sim, 4), "review_status": args.near_review_status})
+                a, b = normed[i][0].get("sample_id"), normed[j][0].get("sample_id")
+                near.append({"a": a, "b": b, "similarity": round(sim, 4)})
+
+    # 逐对裁决（frozenset 免序匹配）
+    decisions = {}
+    near_blocked = []
+    if near:
+        dec_path = os.path.join(ROOT, args.near_decisions) if args.near_decisions else ""
+        if not args.near_decisions or not os.path.exists(dec_path):
+            near_blocked.append("near_duplicate_decisions_missing_or_unreadable")
+        else:
+            dec = json.load(open(dec_path, encoding="utf-8")).get("near_duplicate_decisions", [])
+            seen_dec = set()
+            valid_decisions = {"ALLOW", "DROP_A", "DROP_B"}
+            near_pairs = {frozenset((n["a"], n["b"])) for n in near}
+            for d in dec:
+                a, b = d.get("a"), d.get("b")
+                pair = frozenset((a, b))
+                if not d.get("reviewer") or not d.get("reason"):
+                    near_blocked.append("decision_missing_reviewer_or_reason:%s-%s" % (a, b))
+                if d.get("decision") not in valid_decisions:
+                    near_blocked.append("invalid_decision:%s-%s:%s" % (a, b, d.get("decision")))
+                if pair in seen_dec:
+                    near_blocked.append("duplicate_decision_pair:%s-%s" % (a, b))
+                if pair not in near_pairs:
+                    near_blocked.append("unknown_decision_pair:%s-%s" % (a, b))
+                seen_dec.add(pair)
+                decisions[pair] = d
+            for n in near:
+                if frozenset((n["a"], n["b"])) not in decisions:
+                    near_blocked.append("near_pair_missing_decision:%s-%s" % (n["a"], n["b"]))
 
     # template concentration
     fam = {}
@@ -105,26 +132,30 @@ def main():
     fam_share = {k: round(v / total, 4) for k, v in fam.items()}
     over_conc = [k for k, v in fam_share.items() if v > args.template_max]
 
-    # near review：REVIEWED 需要每对裁决；未裁决 -> near_unreviewed 存在
-    near_review_ok = (len(near) == 0) or (args.near_review_status == "REVIEWED" and bool(args.near_review_decision))
-    near_unreviewed_pairs = [p for p in near if p["review_status"] != "REVIEWED"]
-
-    # 逐样本 G4
+    # 逐样本 G4：exact 组 / near DROP / template 集中
+    dropped_samples = set()
+    for n in near:
+        d = decisions.get(frozenset((n["a"], n["b"])))
+        if d:
+            if d["decision"] == "DROP_A":
+                dropped_samples.add(n["a"])
+            elif d["decision"] == "DROP_B":
+                dropped_samples.add(n["b"])
     samples = {}
     for r in rows:
         sid = r.get("sample_id")
         reasons = []
         if any(sid in grp for grp in exact_dups.values()):
             reasons.append("in_exact_duplicate_group")
-        if any(sid in (p["a"], p["b"]) for p in near_unreviewed_pairs):
-            reasons.append("in_unreviewed_near_dup")
+        if sid in dropped_samples:
+            reasons.append("near_dup_dropped")
         if (r.get("template_family") or "none") in over_conc:
             reasons.append("template_over_concentration")
         samples[sid] = {"ok": not reasons, "reasons": reasons}
 
     gates = {
         "G4_exact_dup_zero": len(exact_dups) == 0,
-        "G4_near_reviewed": near_review_ok,
+        "G4_near_reviewed": len(near_blocked) == 0,
         "G4_template_concentration_ok": len(over_conc) == 0,
     }
     all_ok = all(gates.values()) and all(s["ok"] for s in samples.values())
@@ -136,7 +167,8 @@ def main():
         "samples": samples,
         "exact_duplicate_groups": exact_dups,
         "near_duplicate_pairs": near,
-        "near_duplicate_review": {"status": args.near_review_status, "decision": args.near_review_decision},
+        "near_duplicate_decisions": list(decisions.values()),
+        "near_blocked": near_blocked,
         "template_family_share": fam_share,
         "template_over_concentration": over_conc,
         "gates": gates,
