@@ -86,5 +86,31 @@
     "sha256_lf": "fe3c847e60eaa0ec1e4c77d9b9afa1957a985a249a314fda04082073556c0a75"
    }
   ]
- }
+ },
+ "mapping_authority": {
+  "file": "reports/v4.1_D1_A_A218_template_family_mapping_authority.json",
+  "sha256_lf": "01e5618e3f22b8bf8baf8997b45f453fa5d40d32d4c63de1962a3f982684841c",
+  "pinned": {
+   "factory_config": {
+    "file": "data/interim/candidates_v4/factory_config.json",
+    "sha256_lf": "7fe1b91a9a62a5b5c8267d8dda4b8261b24c0142f269c9b381d68776d722a697"
+   },
+   "scenario_spec_files": [
+    {
+     "file": "data/interim/candidates_v4/scenario_specs/preference_scenarios.json",
+     "sha256_lf": "47e5557bf7194a25903cd4bad0427dec008cd2e1c4c6fc8b798c2807f8e20894"
+    },
+    {
+     "file": "data/interim/candidates_v4/scenario_specs/conflict_scenarios.json",
+     "sha256_lf": "462e73aae5b34ec8ea727bbece8ddeaefa36e7f7230ad3c973c3c81e08eb7226"
+    },
+    {
+     "file": "data/interim/candidates_v4/scenario_specs/forgetting_scenarios.json",
+     "sha256_lf": "fe3c847e60eaa0ec1e4c77d9b9afa1957a985a249a314fda04082073556c0a75"
+    }
+   ]
+  }
+ },
+ "mapping_payload_file_sha256_lf": "3ef46b2e18c952044c00b03d8f1bb211ed75e4e21d2526b2d95ef79a18b7a02c",
+ "rule": "current_template_family = mapping_authority entries (checked-in; pinned specs+factory_config); NOT scenario_family auto-equality; OSPREF-09/10 etc are current rework lanes (factory_config plan historical/incomplete), authority is the current registry"
 }

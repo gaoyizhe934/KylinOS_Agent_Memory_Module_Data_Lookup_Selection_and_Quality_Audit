@@ -34,7 +34,7 @@ def run_check_assert(root, src_rel, dst_rel, commit):
     if total != 218 or per.get("preference_candidates.jsonl") != 98 or per.get("conflict_candidates.jsonl") != 64 or per.get("forgetting_candidates.jsonl") != 56:
         fails.append("counts 98/64/56=218 violated: %s" % per)
     # 2) authority-consistent template_family + 3) order/set + 4) invariant
-    auth, _ = RW.load_authority(root, commit)
+    entries, _authobj, _authsha, _specs = RW.load_authority(root, commit)
     for fm, out in zip(r["src_meta"], r["outputs"]):
         src_rows = RW.read_jsonl_text(nl(RW.git_bytes(root, commit, fm["file"])).decode("utf-8"))
         out_rows = RW.read_jsonl_text(out["text"])
@@ -46,8 +46,9 @@ def run_check_assert(root, src_rel, dst_rel, commit):
                 fails.append("order/set changed in %s" % fm["file"]); break
             tf = o.get("template_family")
             sid = o["design_metadata"]["scenario_spec_id"]
-            if tf != auth.get(sid):
-                fails.append("template_family %s != authority %s (%s)" % (tf, auth.get(sid), o["sample_id"]))
+            want = entries[sid]["current_template_family"]
+            if tf != want:
+                fails.append("template_family %s != authority current %s (%s)" % (tf, want, o["sample_id"]))
             oo = dict(o); oo.pop("template_family", None)
             if RW.canon(oo) != RW.canon(s):
                 fails.append("field invariant violated (beyond template_family) in %s" % o["sample_id"])
@@ -76,9 +77,9 @@ def main():
     src_rel = RW.relpos(root, os.path.join(root, a.src))
     dst_rel = RW.relpos(root, os.path.join(root, a.dst))
     fails, r = run_check_assert(root, src_rel, dst_rel, a.source_commit)
-    print("counts_total=%d input_manifest_payload_sha256=%s mapping_payload_sha256=%s output_aggregate=%s" % (
+    print("counts_total=%d input_manifest_payload_sha256=%s mapping_payload_file_sha256_lf=%s output_aggregate=%s" % (
         sum(o["count"] for o in r["outputs"]), r["manifest"]["input_manifest_payload_sha256"],
-        r["manifest"]["mapping_payload"]["sha256"], r["manifest"]["output_set_aggregate_sha256"]))
+        r["manifest"]["mapping_payload_file_sha256_lf"], r["manifest"]["output_set_aggregate_sha256"]))
     if a.require_clean:
         st = subprocess.run(["git", "-C", root, "status", "--porcelain", "--", a.dst],
                             capture_output=True).stdout.decode("utf-8", "replace").strip()

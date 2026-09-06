@@ -29,6 +29,36 @@ jobs:
       - name: 检查 Python 脚本语法
         run: python -m compileall -q scripts
 
+      - name: Data-A A218 rework non-mutating --check（dst 不变；check 前后 porcelain 一致）
+        if: hashFiles('scripts/v4/rework_a218.py') != ''
+        run: |
+          git status --porcelain > "$RUNNER_TEMP/a218_before.txt"
+          python scripts/v4/rework_a218.py --repo "$GITHUB_WORKSPACE" --check
+          python scripts/v4/verify_rework_a218.py --repo "$GITHUB_WORKSPACE" --require-clean
+          git status --porcelain > "$RUNNER_TEMP/a218_after.txt"
+          diff "$RUNNER_TEMP/a218_before.txt" "$RUNNER_TEMP/a218_after.txt" || { echo 'A218 check mutated worktree'; exit 1; }
+
+      - name: Data-A A218 tamper negative-path（--check 预期失败且不自动修复；detached worktree）
+        if: hashFiles('scripts/v4/rework_a218.py') != ''
+        run: |
+          set -e
+          W="$RUNNER_TEMP/a218_neg"
+          git worktree add --detach "$W" HEAD >/dev/null
+          cd "$W"
+          DST="data/interim/d1_candidates_A_20260906_rw"
+          for F in "$DST/preference_candidates.jsonl" "$DST/template_family_mapping_payload.json" "$DST/rework_manifest_20260906.json"; do
+            cp "$F" "$F.orig"
+            printf '#' >> "$F"
+            if python scripts/v4/rework_a218.py --repo "$PWD" --check >/dev/null 2>&1; then
+              echo "expected fail for $F"; exit 1
+            fi
+            if cmp -s "$F" "$F.orig"; then echo "checker auto-repaired $F"; exit 1; fi
+            echo "tamper-ok ${F##*/}"
+            rm -f "$F.orig"
+          done
+          cd "$GITHUB_WORKSPACE"
+          git worktree remove --force "$W"
+
       - name: 校验处理后数据 Schema
         run: python scripts/validate/validate_schema.py
 
@@ -80,11 +110,3 @@ jobs:
         run: |
           python scripts/v4/d1_closeout_p04_recompute.py --repo "$GITHUB_WORKSPACE" --requal reports/legacy_semantic_requal_A.jsonl --requal-sha c5b217e3d93119e4cb56b06ae46772039698a56b62dc16b4c33ddfe0c1cfafd7 --completed reports/v4.1_D1_closeout_P04_completed10.json --out-csv "$RUNNER_TEMP/quota_plan_v4.1.csv" --out-json "$RUNNER_TEMP/quota_plan_v4.1_summary.json"
           python -c "import json,sys,hashlib;n=lambda p:chr(10).join(l.rstrip(chr(13)+chr(10)) for l in open(p,encoding='utf-8').read().split(chr(10))).rstrip(chr(10));a=json.load(open(sys.argv[1],encoding='utf-8'));b=json.load(open(sys.argv[2],encoding='utf-8'));assert a['accepted_legacy_effective']==10 and a['totals']['new_needed']==775 and a['totals']['candidate_needed']==961,'10/775/961';tt={t['task']:t for t in a['tasks']};assert tt['preference_extraction']['accepted_legacy']==6 and tt['precise_forgetting']['accepted_legacy']==4,'pref6/forg4';assert a['totals']['kb']['candidate_pool']==520 and a['totals']['runtime_sessions']==35 and a['totals']['scripts']==45 and a['totals']['fresh_calibration']==40,'kb/runtime';bp={k:v for k,v in b.items() if k!='generated_at'};ap={k:v for k,v in a.items() if k!='generated_at'};assert ap==bp,'P04 json mismatch';assert n(sys.argv[3])==n(sys.argv[4]),'P04 csv mismatch';print('P04 MATCH accepted10 new775 cand961 json+csv')" "$RUNNER_TEMP/quota_plan_v4.1_summary.json" reports/quota_plan_v4.1_summary.json "$RUNNER_TEMP/quota_plan_v4.1.csv" reports/quota_plan_v4.1.csv
-
-      # Data-A A218 rework 专项 CI（PR#52）——非变异 check + authority/invariant/hash verifier + clean
-      - name: Data-A A218 rework non-mutating --check
-        if: hashFiles('scripts/v4/rework_a218.py') != ''
-        run: python scripts/v4/rework_a218.py --repo "$GITHUB_WORKSPACE" --check
-      - name: Data-A A218 rework verify（98/64/56=218、authority、字段不变量、hash、worktree clean）
-        if: hashFiles('scripts/v4/verify_rework_a218.py') != ''
-        run: python scripts/v4/verify_rework_a218.py --repo "$GITHUB_WORKSPACE" --require-clean
