@@ -1,7 +1,8 @@
-# Candidate-Prep 专项校验结果 v4（post-#32 master rebase）
+# Candidate-Prep 专项校验结果 v5（post-#32 master rebase）
 
 - 脚本：`scripts/v4/validate_candidate_prep.py`
-- **rebased HEAD**：`81b7faf3a5fa37e048f542d2bc9920d7ede44ec0`（base = post-#32 master，含 v4.1 规则基线）
+- **validated business commit**：`81b7faf3a5fa37e048f542d2bc9920d7ede44ec0`（校验通过的业务内容版本，无后续业务变化）
+- **current PR HEAD**：`35ab037`（仅 validation.md/备注更新，业务 diff 不变）
 - 执行：2026-09-05，Python 3.11
 - 结果：**ALL PASS**（json=5 jsonl=3 exemplars=9，files=8），exit 0
 
@@ -19,4 +20,4 @@
 ## 备注
 - **base 已改绑 post-#32 master**（#32 已 merge，master 5f90409）；v4.1 规则基线在 master。
 - 当前 public source 全部 admission_eligible=false（Registry license 均 Reviewer（待批准）/待核验）。
-- CI/Baseline Validation 在本 HEAD（52fce60+）推送后触发。
+- CI/Baseline Validation 已在本 HEAD 通过（success）。
