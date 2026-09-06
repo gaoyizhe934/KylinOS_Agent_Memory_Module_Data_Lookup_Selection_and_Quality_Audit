@@ -1,0 +1,34 @@
+{
+ "schema": "v4.1_A_A218_selfcheck_advisory",
+ "date": "2026-09-06",
+ "role": "Data-A",
+ "note": "ADVISORY_SELF_CHECK; 非 B2/Data-R canonical authority; formal cross-track B2 由 Data-B 独立 PR",
+ "tools": {
+  "provenance": "scripts/v4/provenance_resolver.py",
+  "dedup": "scripts/v4/dedup_scan.py",
+  "leakage": "scripts/v4/leakage_scan.py"
+ },
+ "g1_prov": {
+  "checked": 218,
+  "unresolved": 0,
+  "pass": true
+ },
+ "g4_dedup": {
+  "status": "PASS",
+  "exact_duplicate_groups": 0,
+  "near_pairs": 0,
+  "gates": {
+   "G4_exact_dup_zero": true,
+   "G4_near_reviewed": true,
+   "G4_template_concentration_ok": true
+  }
+ },
+ "g5_leak": {
+  "leak": 0,
+  "pass": true
+ },
+ "g3": {
+  "status": "NOT_RUN_BY_A",
+  "owner": "Data-B B2 PR"
+ }
+}
