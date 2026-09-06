@@ -45,7 +45,7 @@
  "kept_as_candidate_history": 157,
  "input_file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
  "input_hash_sha256": "c1e4ce1e30233d17838bf3d4536acdb8f9e5f4b6d6f4c819cd8d3eab435c7ec7",
- "output_hash_sha256": "4ccbd015ed48da36efed062471d0868d574669df47e353f626a2dbb6621e626e",
+ "output_hash_sha256": "3b2f2188eef27e67eb8973f56001b9f75e5980993427bd05e4f28f5a11ae7c42",
  "selected_sample_ids": [
   "retr_t2r_10",
   "retr_t2r_1001",
@@ -91,5 +91,7 @@
   "retr_t2r_10172",
   "retr_t2r_10179"
  ],
- "note": "G4 仍 fail-closed：最终 template 集中度在 admitted 集复算；剩余 157 保留 Candidate/History 不删除"
+ "note": "G4 仍 fail-closed：最终 template 集中度在 admitted 集复算；剩余 157 保留 Candidate/History 不删除",
+ "selection_ids_sha256": "250004899ad951ecba40ae9294b34ef3ce525a1f4c299587eb38c6658daf46d2",
+ "evidence_payload_sha256": "3b2f2188eef27e67eb8973f56001b9f75e5980993427bd05e4f28f5a11ae7c42"
 }

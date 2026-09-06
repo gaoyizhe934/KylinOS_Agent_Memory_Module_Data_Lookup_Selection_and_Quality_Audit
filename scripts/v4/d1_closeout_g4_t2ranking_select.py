@@ -55,6 +55,7 @@ def main():
     ap.add_argument("--n", type=int, default=43)
     ap.add_argument("--seed", type=int, default=20260906)
     ap.add_argument("--out", default="reports/v4.1_D1_closeout_G4_t2ranking_select_20260906.json")
+    ap.add_argument("--check", default="", help="与 committed 选择包 JSON 全量比对(--check <path>)")
     args = ap.parse_args()
 
     path = os.path.join(ROOT, SRC)
@@ -183,15 +184,25 @@ def main():
         "selected_sample_ids": sel_ids,
         "note": "G4 仍 fail-closed：最终 template 集中度在 admitted 集复算；剩余 157 保留 Candidate/History 不删除",
     })
-    # canonical output hash binds FULL result (selected + diagnostics), not just IDs
-    result["output_hash_sha256"] = hashlib.sha256(
-        json.dumps(result, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+    # stable hash contract（Data-R Round3 Blocking-4）：selection_ids / evidence_payload（去 *_sha256 字段）
+    payload = {k: v for k, v in result.items() if not k.endswith("_sha256")}
+    payload_canon = json.dumps(payload, ensure_ascii=False, sort_keys=True)
+    evidence_payload_sha = hashlib.sha256(payload_canon.encode("utf-8")).hexdigest()
+    selection_ids_sha = hashlib.sha256(json.dumps(sel_ids, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+    result["selection_ids_sha256"] = selection_ids_sha
+    result["evidence_payload_sha256"] = evidence_payload_sha
+    result["output_hash_sha256"] = evidence_payload_sha  # 兼容别名（不再自引用）
     outp = os.path.join(ROOT, args.out)
     with open(outp, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=1)
     print("selected:", len(sel_ids), "of", total)
-    print("sample selected ids:", sel_ids[:8], "...")
-    print("output_hash:", output_hash)
+    print("evidence_payload_sha256:", evidence_payload_sha[:16])
+    if args.check:
+        ref = json.load(open(args.check, encoding="utf-8"))
+        ref_payload = {k: v for k, v in ref.items() if not k.endswith("_sha256")}
+        ok = (ref_payload == payload) and (ref.get("evidence_payload_sha256") == evidence_payload_sha)
+        print("B3 --check:", "MATCH" if ok else "MISMATCH")
+        sys.exit(0 if ok else 2)
 
 
 if __name__ == "__main__":
