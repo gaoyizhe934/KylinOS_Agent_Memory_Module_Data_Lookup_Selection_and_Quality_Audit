@@ -1,4 +1,4 @@
-# B2 P04 动态配额重算（Data-B，2026-09-06）— v2 正式版
+# B2 P04 动态配额重算（Data-B，2026-09-06）— v4 正式版
 
 - 脚本：`scripts/v4/d1_closeout_p04_recompute.py`（v4）
 - 规则：v4.1 SOP §7/Q7 + 台账 04 —— `accepted_legacy = REUSE/REWORK/RELABEL 且 requalification_status=完成`（非 Runtime）；`new_needed = max(target-accepted,0)`；`candidate = ceil(new_needed×1.3)`（Tool/E2E ×1.0 不可抵）。
