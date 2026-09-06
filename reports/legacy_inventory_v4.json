@@ -4,13 +4,16 @@
   "tool": "inventory_legacy.py",
   "generated_by": "DGXD01(Data-B)",
   "date": "2026-09-05",
-  "status": "NOT_FROZEN",
+  "status": "LEGACY_SET_FROZEN",
   "tool_source_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
   "scan_repo_ref": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
   "full_ledger_sha256": "541aa9d3b85b14b4ff01354453a4c7b08acbd1c1e64e5cf1b81a7577d8836cf2",
   "dedup_policy": "L1 sample_id(主) > L2 raw+task+source > L3 content+evidence > L4 locator; 每组合一 canonical IN_SCOPE",
   "canonical_assertion": "PASS (每组 IN_SCOPE==1, duplicate_of 可解析)",
   "source": "derived_from_full",
+  "frozen_by": "gaoyizhe934 (Data-R)",
+  "frozen_at": "2026-09-06T09:59:00+08:00",
+  "freeze_basis_head": "e8ed4370215aa767603cafbd262afe1f76683197",
   "summary": {
     "total_records": 895,
     "in_scope": 465,
@@ -24,6 +27,6 @@
       "tool_result": 50,
       "preference_extraction": 60
     },
-    "note": "N 为盘点结果非假设；IN_SCOPE 边界最终由 Data-R 判定"
+    "note": "N 为盘点结果非假设；IN_SCOPE 边界已由 Data-R 冻结"
   }
 }
