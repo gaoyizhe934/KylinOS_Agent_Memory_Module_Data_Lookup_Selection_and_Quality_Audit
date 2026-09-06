@@ -20,8 +20,10 @@
       "deadline": "D1 10:30",
       "blocker": "schema_snapshot.json 缺失；需主仓提供 FROZEN (canonical schema/enum/scope/unknown policy)",
       "fallback": "沿用最后批准版本；新字段推迟下一数据版本；M1 未 PASS 前只做 safe tasks，不产 production business truth",
-      "reviewed_at": "2026-09-06 (P70 refresh)",
-      "evidence_present": false
+      "checked_path": "interfaces/main_to_data/schema_snapshot.json",
+      "checked_at": "2026-09-06T17:30:00+08:00",
+      "checked_by": "Data-B",
+      "evidence_status": "missing"
     },
     "M1_KB": {
       "status": "BLOCKED",
@@ -31,8 +33,10 @@
       "deadline": "D2 12:00",
       "blocker": "kb_import_contract.json 缺失",
       "fallback": "Retrieval 只用 local_candidate_id + PRODUCTION_BINDING_PENDING，禁止伪造 knowledge_id",
-      "reviewed_at": "2026-09-06 (P70 refresh)",
-      "evidence_present": false
+      "checked_path": "interfaces/main_to_data/kb_import_contract.json",
+      "checked_at": "2026-09-06T17:30:00+08:00",
+      "checked_by": "Data-B",
+      "evidence_status": "missing"
     },
     "M2": {
       "status": "PENDING",
@@ -42,8 +46,12 @@
       "deadline": "D3 12:00",
       "blocker": "主仓能否导入小 RC 未确认",
       "fallback": "正式跨仓 RC 阻塞；本地标注可继续",
-      "reviewed_at": "2026-09-06 (P70 refresh)",
-      "evidence_present": null
+      "checked_path": "interfaces/main_to_data/(Data RC)",
+      "checked_at": "2026-09-06T17:30:00+08:00",
+      "checked_by": "Data-B",
+      "evidence_status": "unknown_pending",
+      "evidence_present": false,
+      "evidence_reason": "PENDING：主仓 Data RC 版本/回执未确认"
     },
     "M3": {
       "status": "BLOCKED",
@@ -53,8 +61,10 @@
       "deadline": "D3 18:00",
       "blocker": "Frozen Build / Kylin snapshot / runner / trace 路径未就绪",
       "fallback": "35 Runtime / 125 Tool / 35 E2E = BLOCKED_EXTERNAL；625 非 Runtime Gold + 400 KB 可继续",
-      "reviewed_at": "2026-09-06 (P70 refresh)",
-      "evidence_present": false
+      "checked_path": "interfaces/main_to_data/frozen_build_manifest.json",
+      "checked_at": "2026-09-06T17:30:00+08:00",
+      "checked_by": "Data-B",
+      "evidence_status": "missing"
     }
   },
   "safe_parallel_tasks": [
@@ -66,7 +76,10 @@
   ],
   "production_truth_allowed": false,
   "runtime_allowed": false,
-  "refreshed_at": "2026-09-06T17:30:00+08:00 (P70 refresh, post P04 freeze)",
-  "refresh_basis": "master 86c91ff (#44/#40/#45 merged, P04 frozen Review 5124879366); interfaces/main_to_data 重新核对仍缺失(主仓 Liaison 未提供)",
-  "note": "P70 刷新（2026-09-06）：M1/M1-KB/M3 仍 BLOCKED（interfaces/main_to_data 缺失，主仓 Liaison 未提供 FROZEN 包）、M2 PENDING；P04 已冻结（accepted=10/775/961, Review 5124879366）；production_truth_allowed=false、runtime_allowed=false；只允许 candidate-only/机器审计/KB prep 等安全并行，不宣称 Gold/fresh40 解锁"
+  "refreshed_at": "2026-09-06T17:30:00+08:00",
+  "note": "P70 刷新加固（2026-09-06，Data-R 建议）：跨仓绑定 main@bd98aa98（已核三 FROZEN 接口缺失）；M1/M1-KB/M3=BLOCKED(missing)、M2=PENDING；production_truth_allowed=false/runtime_allowed=false；Data-B 只记机器/外部事实(checked_at/checked_by)，Data-R 审批字段留待确认；只允许 candidate-only/机器预检/KB prep/接口追踪",
+  "main_repo": "Kylin-Agent-Competition/kylinOS-agent-memory",
+  "main_ref": "main",
+  "main_commit": "bd98aa98686d36990baaf1a149917258a3c463ad",
+  "checked_by": "Data-B (DGXD01)"
 }
