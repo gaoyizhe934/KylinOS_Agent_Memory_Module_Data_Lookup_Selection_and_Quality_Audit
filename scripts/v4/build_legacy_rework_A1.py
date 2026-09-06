@@ -86,7 +86,7 @@ def build_records(plan, outdir, requal_rows, root):
             "model": e.get("model") or gdef.get("model"),
             "source": "os_controlled_authored",
             "source_layer": "os_controlled_authored",
-            "source_file": os.path.join(outdir, e["outfile"]).replace("\\", "/"),
+            "source_file": os.path.relpath(os.path.join(outdir, e["outfile"]), root).replace("\\", "/"),
         }
         dm = {
             "scenario_spec_id": e["scenario_spec_id"],
@@ -149,7 +149,7 @@ def dump_canon(recs, path):
     return sha(body.encode("utf-8"))
 
 
-def write_manifest(plan, outdir, input_hash, output_hashes, committed_ok=True):
+def write_manifest(plan, outdir, input_hash, output_hashes, root):
     mf = {
         "schema": "v4.1_d1_legacy_rework_manifest",
         "batch_id": plan["batch_id"],
@@ -162,7 +162,7 @@ def write_manifest(plan, outdir, input_hash, output_hashes, committed_ok=True):
         "requal_source": REQUAL_DEFAULT.replace("\\", "/"),
         "input_hash": input_hash,
         "output_files": [
-            {"file": os.path.join(outdir, fn).replace("\\", "/"), "count": n, "output_sha256": h}
+            {"file": os.path.relpath(os.path.join(outdir, fn), root).replace("\\", "/"), "count": n, "output_sha256": h}
             for fn, n, h in output_hashes
         ],
         "regeneration_deterministic": {"builder": "scripts/v4/build_legacy_rework_A1.py", "verify": "python scripts/v4/build_legacy_rework_A1.py --check (CI)", "state": "VERIFY_VIA_CHECK"},
@@ -211,7 +211,7 @@ def main():
         sys.exit(0 if ok else 1)
     h1 = dump_canon(pref_recs, pf)
     h2 = dump_canon(forg_recs, ff)
-    write_manifest(plan, outdir, input_hash, [(os.path.basename(pf), len(pref_recs), h1), (os.path.basename(ff), len(forg_recs), h2)])
+    write_manifest(plan, outdir, input_hash, [(os.path.basename(pf), len(pref_recs), h1), (os.path.basename(ff), len(forg_recs), h2)], root)
     print("WROTE pref=%d forg=%d" % (len(pref_recs), len(forg_recs)))
     print("input_hash", input_hash)
     print("output pref", h1)

@@ -21,12 +21,12 @@ checked=10 unresolved=0 → exit 0（G1_provenance_unresolved_zero=true）
 ## 3) builder 确定性复现
 ```
 python scripts/v4/build_legacy_rework_A1.py --check
-pref  regenerated=e09290…31 == disk == manifest_sha（match）
-forg regenerated=b97f88…69f == disk == manifest_sha（match）
-input_hash recomputed=e01610… == manifest   → RESULT: MATCH
+pref  regenerated=3c108717…aa6 == disk == manifest_sha（match）
+forg regenerated=9269da40…f17 == disk == manifest_sha（match）
+input_hash recomputed=e01610d1… == manifest   → RESULT: MATCH
 ```
 读取冻结输入：data/gold 原行（按 sample_id 定位）+ reports/legacy_semantic_requal_A.jsonl（Rev3 fix_fields）；
-输出记录 input_commit / fix_source_commit / input_hash / output_sha256。
+输出记录 input_commit / fix_source_commit / input_hash / output_sha256；source_file 为 repo-relative（跨平台可复现，CI 修正）。
 
 ## CI（已并入 baseline-validation.yml）
 - validate_legacy_rework_A1.py（条件 hashFiles）
