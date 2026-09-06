@@ -1,0 +1,207 @@
+{
+ "schema": "v4.1_A_A218_template_family_mapping_authority",
+ "status": "DRAFT_FOR_R_REVIEW",
+ "approved": false,
+ "date": "2026-09-06",
+ "role": "Data-A (lyf-1213)",
+ "source_commit": "535ebad3db47e87bbb30f26b86b3193803d81a1b",
+ "pinned": {
+  "scenario_spec_files": [
+   {
+    "file": "data/interim/candidates_v4/scenario_specs/preference_scenarios.json",
+    "sha256_lf": "47e5557bf7194a25903cd4bad0427dec008cd2e1c4c6fc8b798c2807f8e20894"
+   },
+   {
+    "file": "data/interim/candidates_v4/scenario_specs/conflict_scenarios.json",
+    "sha256_lf": "462e73aae5b34ec8ea727bbece8ddeaefa36e7f7230ad3c973c3c81e08eb7226"
+   },
+   {
+    "file": "data/interim/candidates_v4/scenario_specs/forgetting_scenarios.json",
+    "sha256_lf": "fe3c847e60eaa0ec1e4c77d9b9afa1957a985a249a314fda04082073556c0a75"
+   }
+  ],
+  "factory_config": {
+   "file": "data/interim/candidates_v4/factory_config.json",
+   "sha256_lf": "7fe1b91a9a62a5b5c8267d8dda4b8261b24c0142f269c9b381d68776d722a697"
+  }
+ },
+ "rule": "current_template_family = per-entry explicit value (identity to scenario_family by default); mapping payload derived from this authority; rework_a218.py loads & verifies this file (not scenario_family auto-equality).",
+ "entries": [
+  {
+   "scenario_spec_id": "OSCONF-01",
+   "scenario_family": "os_conf_contradiction",
+   "current_template_family": "os_conf_contradiction",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSCONF-02",
+   "scenario_family": "os_conf_temporal_update",
+   "current_template_family": "os_conf_temporal_update",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSCONF-03",
+   "scenario_family": "os_conf_pref_change",
+   "current_template_family": "os_conf_pref_change",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSCONF-04",
+   "scenario_family": "os_conf_scope_ambiguity",
+   "current_template_family": "os_conf_scope_ambiguity",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSCONF-05",
+   "scenario_family": "os_conf_source_conflict",
+   "current_template_family": "os_conf_source_conflict",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSCONF-06",
+   "scenario_family": "os_conf_non_conflict_negative",
+   "current_template_family": "os_conf_non_conflict_negative",
+   "in_factory_config_plan": false,
+   "note": "current rework lane (scenario_family not in historical factory_config.template_family_plan; authority supersedes as current generation template family)"
+  },
+  {
+   "scenario_spec_id": "OSCONF-07",
+   "scenario_family": "os_conf_version",
+   "current_template_family": "os_conf_version",
+   "in_factory_config_plan": false,
+   "note": "current rework lane (scenario_family not in historical factory_config.template_family_plan; authority supersedes as current generation template family)"
+  },
+  {
+   "scenario_spec_id": "OSFORG-01",
+   "scenario_family": "os_forg_single_item",
+   "current_template_family": "os_forg_single_item",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSFORG-02",
+   "scenario_family": "os_forg_session",
+   "current_template_family": "os_forg_session",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSFORG-03",
+   "scenario_family": "os_forg_topic",
+   "current_template_family": "os_forg_topic",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSFORG-04",
+   "scenario_family": "os_forg_time_window",
+   "current_template_family": "os_forg_time_window",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSFORG-05",
+   "scenario_family": "os_forg_restart",
+   "current_template_family": "os_forg_restart",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSFORG-06",
+   "scenario_family": "os_forg_reindex",
+   "current_template_family": "os_forg_reindex",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSFORG-07",
+   "scenario_family": "os_forg_ambiguous_negative",
+   "current_template_family": "os_forg_ambiguous_negative",
+   "in_factory_config_plan": false,
+   "note": "current rework lane (scenario_family not in historical factory_config.template_family_plan; authority supersedes as current generation template family)"
+  },
+  {
+   "scenario_spec_id": "OSFORG-08",
+   "scenario_family": "os_forg_full_reset",
+   "current_template_family": "os_forg_full_reset",
+   "in_factory_config_plan": false,
+   "note": "current rework lane (scenario_family not in historical factory_config.template_family_plan; authority supersedes as current generation template family)"
+  },
+  {
+   "scenario_spec_id": "OSPREF-01",
+   "scenario_family": "os_pref_workflow",
+   "current_template_family": "os_pref_workflow",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-02",
+   "scenario_family": "os_pref_app_tool",
+   "current_template_family": "os_pref_app_tool",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-03",
+   "scenario_family": "os_pref_topic_style",
+   "current_template_family": "os_pref_topic_style",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-04",
+   "scenario_family": "os_pref_time_window",
+   "current_template_family": "os_pref_time_window",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-05",
+   "scenario_family": "os_pref_global_rule",
+   "current_template_family": "os_pref_global_rule",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-06",
+   "scenario_family": "os_pref_contradict",
+   "current_template_family": "os_pref_contradict",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-07",
+   "scenario_family": "os_pref_withdraw",
+   "current_template_family": "os_pref_withdraw",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-08",
+   "scenario_family": "os_pref_sensitive",
+   "current_template_family": "os_pref_sensitive",
+   "in_factory_config_plan": true,
+   "note": null
+  },
+  {
+   "scenario_spec_id": "OSPREF-09",
+   "scenario_family": "os_pref_task_constraint",
+   "current_template_family": "os_pref_task_constraint",
+   "in_factory_config_plan": false,
+   "note": "current rework lane (scenario_family not in historical factory_config.template_family_plan; authority supersedes as current generation template family)"
+  },
+  {
+   "scenario_spec_id": "OSPREF-10",
+   "scenario_family": "os_pref_session",
+   "current_template_family": "os_pref_session",
+   "in_factory_config_plan": false,
+   "note": "current rework lane (scenario_family not in historical factory_config.template_family_plan; authority supersedes as current generation template family)"
+  }
+ ],
+ "note": "factory_config.template_family_plan is historical planning input and is INCOMPLETE for OSPREF-09(task_constraint)/OSPREF-10(session); this authority supersedes it as the current rework template-family registry."
+}

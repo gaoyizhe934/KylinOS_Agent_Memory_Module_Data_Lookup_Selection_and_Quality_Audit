@@ -1,0 +1,81 @@
+{
+ "schema": "v4.1_A_A218_template_family_mapping_contract",
+ "status": "DRAFT_FOR_R_REVIEW",
+ "approved": false,
+ "date": "2026-09-06",
+ "role": "Data-A (lyf-1213)",
+ "lifecycle": "file stays DRAFT_FOR_R_REVIEW; Data-R Review ID + exact HEAD is the approval authority; tool rejects approved=true",
+ "rule": "current_template_family = mapping_authority entries (checked-in, authority-driven). OSPREF-09/10, OSCONF-06/07, OSFORG-07/08 etc. are current rework lanes: historical factory_config.template_family_plan is planning input and incomplete; this authority is the current rework template-family registry.",
+ "source_commit": "535ebad3db47e87bbb30f26b86b3193803d81a1b",
+ "mapping_authority": {
+  "file": "reports/v4.1_D1_A_A218_template_family_mapping_authority.json",
+  "sha256_lf": "01e5618e3f22b8bf8baf8997b45f453fa5d40d32d4c63de1962a3f982684841c",
+  "pinned": {
+   "factory_config": {
+    "file": "data/interim/candidates_v4/factory_config.json",
+    "sha256_lf": "7fe1b91a9a62a5b5c8267d8dda4b8261b24c0142f269c9b381d68776d722a697"
+   },
+   "scenario_spec_files": [
+    {
+     "file": "data/interim/candidates_v4/scenario_specs/preference_scenarios.json",
+     "sha256_lf": "47e5557bf7194a25903cd4bad0427dec008cd2e1c4c6fc8b798c2807f8e20894"
+    },
+    {
+     "file": "data/interim/candidates_v4/scenario_specs/conflict_scenarios.json",
+     "sha256_lf": "462e73aae5b34ec8ea727bbece8ddeaefa36e7f7230ad3c973c3c81e08eb7226"
+    },
+    {
+     "file": "data/interim/candidates_v4/scenario_specs/forgetting_scenarios.json",
+     "sha256_lf": "fe3c847e60eaa0ec1e4c77d9b9afa1957a985a249a314fda04082073556c0a75"
+    }
+   ]
+  },
+  "lifecycle": "file stays DRAFT_FOR_R_REVIEW; Data-R Review ID + exact HEAD is the approval authority; tool rejects approved=true (pin validation: scenario_specs+factory_config sha compared in code; duplicate scenario_spec_id rejected; in_factory_config_plan machine-checked)"
+ },
+ "input_manifest_payload_sha256": "d105036c81a284028228fa1a7d18a8069620e042499dc92b4d6298d72b778f35",
+ "mapping_payload_file_sha256_lf": "3ef46b2e18c952044c00b03d8f1bb211ed75e4e21d2526b2d95ef79a18b7a02c",
+ "source_files": [
+  {
+   "count_plan": 64,
+   "file": "data/interim/d1_candidates_A_20260906/conflict_candidates.jsonl",
+   "sha256_lf": "7f9efc7b5aa5c1ca5920360fffd2116557376c0aed0be7e947d02bc057c124ec"
+  },
+  {
+   "count_plan": 56,
+   "file": "data/interim/d1_candidates_A_20260906/forgetting_candidates.jsonl",
+   "sha256_lf": "f2e00a6fd2b19318812adf29aa6f2c17645a740f2d7c151d40ede70f0e11423e"
+  },
+  {
+   "count_plan": 98,
+   "file": "data/interim/d1_candidates_A_20260906/preference_candidates.jsonl",
+   "sha256_lf": "c180300699b2e8b27a5c753b2cb1f6a640238fe906eda9e56272a7782405df3f"
+  }
+ ],
+ "output_files": [
+  {
+   "count": 64,
+   "file": "data/interim/d1_candidates_A_20260906_rw/conflict_candidates.jsonl",
+   "sha256_lf": "efd0654803fb2b7607d9fa5c65dd66e69ebd051708f9f8f7713e309564ebe2f9"
+  },
+  {
+   "count": 56,
+   "file": "data/interim/d1_candidates_A_20260906_rw/forgetting_candidates.jsonl",
+   "sha256_lf": "d87809b5786269546a504bf3dba4fcf1b398282856be1d96e2bba86d41b55ea7"
+  },
+  {
+   "count": 98,
+   "file": "data/interim/d1_candidates_A_20260906_rw/preference_candidates.jsonl",
+   "sha256_lf": "0f89d7cac1dcc5f093da093197986e861921b0e7a8c52a5a03ab2ae677c5afa8"
+  }
+ ],
+ "output_set_aggregate_sha256": "efec07fdda1e210d3c0dfb47980b8924b9590cfd907d5cb795726561213fc464",
+ "self_check_advisory": {
+  "file": "data/interim/d1_candidates_A_20260906_rw/selfcheck_advisory_20260906.json",
+  "note": "ADVISORY; G1 218/0, G4 PASS, G5 0; G3 by Data-B B2 PR"
+ },
+ "g2": {
+  "status": "G2_OWNER_PENDING",
+  "note": "A 真人 100%; AI 不代"
+ },
+ "not_written": "不写 human_decision/final_label/gold/production truth"
+}

@@ -1,0 +1,17 @@
+{
+ "schema": "v4.1_D1_A_lane_snapshot",
+ "kind": "REWORK_SNAPSHOT_PRE_REVIEW",
+ "captured_at": "2026-09-06T22:20:26+08:00",
+ "pr": "#52 (feat/A-v4.1-d1-work) open",
+ "state": [
+  "PR52 open (A 独立 carrier)",
+  "A218 rw 218 已生成 (preference98/conflict64/forgetting56)",
+  "identity mapping contract = DRAFT_FOR_R_REVIEW (未批准)",
+  "G2_OWNER_PENDING (A 真人 100%)",
+  "formal B2/P30 G4 未 PASS",
+  "A218 不计 verified/deficit"
+ ],
+ "source_commit": "535ebad3db47e87bbb30f26b86b3193803d81a1b",
+ "superseded_note": "本快照为 pre-review 状态；以 PR52 exact HEAD + Data-R review 为准",
+ "not_written": "不写 human_decision/final_label/gold/production truth"
+}

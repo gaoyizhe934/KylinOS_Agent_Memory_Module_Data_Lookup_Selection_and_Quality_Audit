@@ -29,6 +29,55 @@ jobs:
       - name: 检查 Python 脚本语法
         run: python -m compileall -q scripts
 
+      - name: Data-A A218 rework non-mutating --check（unconditional；dst 不变；check 前后 porcelain 一致）
+        run: |
+          git status --porcelain > "$RUNNER_TEMP/a218_before.txt"
+          python scripts/v4/rework_a218.py --repo "$GITHUB_WORKSPACE" --check
+          python scripts/v4/verify_rework_a218.py --repo "$GITHUB_WORKSPACE" --require-dst-clean
+          git status --porcelain > "$RUNNER_TEMP/a218_after.txt"
+          diff "$RUNNER_TEMP/a218_before.txt" "$RUNNER_TEMP/a218_after.txt" || { echo 'A218 check mutated worktree'; exit 1; }
+
+      - name: Data-A A218 tamper negative-path（unconditional；5 case 各自独立 clean；checker/verifier 不修改 tampered bytes）
+        run: |
+          set -e
+          W="$RUNNER_TEMP/a218_neg"
+          git worktree add --detach "$W" HEAD >/dev/null
+          cd "$W"
+          ALL=(
+            "data/interim/d1_candidates_A_20260906_rw/preference_candidates.jsonl"
+            "data/interim/d1_candidates_A_20260906_rw/template_family_mapping_payload.json"
+            "data/interim/d1_candidates_A_20260906_rw/rework_manifest_20260906.json"
+            "reports/v4.1_D1_A_A218_template_family_mapping_authority.json"
+            "reports/v4.1_D1_A_A218_template_family_mapping_contract_draft_20260906.json"
+          )
+          CASES=(
+            "data/interim/d1_candidates_A_20260906_rw/preference_candidates.jsonl|rework"
+            "data/interim/d1_candidates_A_20260906_rw/template_family_mapping_payload.json|rework"
+            "data/interim/d1_candidates_A_20260906_rw/rework_manifest_20260906.json|rework"
+            "reports/v4.1_D1_A_A218_template_family_mapping_authority.json|rework"
+            "reports/v4.1_D1_A_A218_template_family_mapping_contract_draft_20260906.json|verify"
+          )
+          for pair in "${CASES[@]}"; do
+            F="${pair%%|*}"; T="${pair##*|}"
+            for X in "${ALL[@]}"; do git restore --source=HEAD -- "$X"; done
+            printf '#' >> "$F"
+            before=$(sha256sum "$F" | awk '{print $1}')
+            if [ "$T" = rework ]; then
+              python scripts/v4/rework_a218.py --repo "$PWD" --check >/dev/null 2>&1 || rc=$?
+            else
+              python scripts/v4/verify_rework_a218.py --repo "$PWD" --require-dst-clean >/dev/null 2>&1 || rc=$?
+            fi
+            if [ "${rc:-0}" -eq 0 ]; then echo "expected fail for $F"; exit 1; fi
+            unset rc
+            after=$(sha256sum "$F" | awk '{print $1}')
+            if [ "$before" != "$after" ]; then echo "checker modified tampered $F"; exit 1; fi
+            lines=$(git status --porcelain | wc -l)
+            if [ "$lines" -ne 1 ]; then echo "more than target dirty: $F"; git status --porcelain; exit 1; fi
+            echo "tamper-ok ${F##*/}"
+          done
+          cd "$GITHUB_WORKSPACE"
+          git worktree remove --force "$W"
+
       - name: 校验处理后数据 Schema
         run: python scripts/validate/validate_schema.py
 
