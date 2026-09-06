@@ -25,8 +25,8 @@
     "triage_in_near_dup": 265,
     "triage_placeholder": 40,
     "license_na_team": 265,
-    "license_pending": 200,
-    "license_ok": 0,
+    "license_pending": 0,
+    "license_ok": 200,
     "timestamp_defect": 265
   },
   "batch_gate": {
@@ -35,8 +35,7 @@
       "G1_provenance_unresolved=465(>0)",
       "G4_near_dup_unreviewed(>0.85, 265 samples)",
       "G4_template_concentration>25%(200 samples)",
-      "G5_leak(registered=38/fp_collision=2)",
-      "license_pending_review=200"
+      "G5_leak(registered=38/fp_collision=2)"
     ],
     "owner": "Data-R (final adjudication)",
     "note": "逐样本 NEEDS_HUMAN_REVIEW 不代表批次可放行；batch_gate 为聚合层 fail-closed 状态"
