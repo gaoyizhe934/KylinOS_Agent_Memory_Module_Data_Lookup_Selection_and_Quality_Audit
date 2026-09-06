@@ -1,9 +1,10 @@
 {
   "schema": "closure_freeze_record",
-  "version": "1.1",
-  "status": "PENDING_DATA_R_SIGNATURE",
+  "version": "1.2",
+  "status": "DATA_R_FROZEN",
   "rules_baseline_commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf",
   "closure_content_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+  "closure_head": "e8ed4370215aa767603cafbd262afe1f76683197",
   "p2a_merged_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
   "c0_c5": {
     "C0": {
@@ -13,14 +14,14 @@
       "evidence_sha256": "8b9899c15a678109fe4866b03f4be9a8ff3c2682abf85d95d11048f29c58983e"
     },
     "C1": {
-      "status": "READY_FOR_LEGACY_SET_FROZEN",
+      "status": "LEGACY_SET_FROZEN",
       "evidence_path": "reports/legacy_inventory_v4_full.jsonl",
       "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
       "full_ledger_sha256": "541aa9d3b85b14b4ff01354453a4c7b08acbd1c1e64e5cf1b81a7577d8836cf2",
-      "summary_sha256": "709848f571d8e482b03e276340e0193c655e4df57f95ff1d7919399aa8f27729",
+      "summary_sha256": "97cdaffeb48be39329a2a909bf6c173d7be0e4d1a26eefc7cfd4eb5239dc0612",
       "tool_source_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
       "scan_repo_ref": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
-      "note": "total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS"
+      "note": "Data-R Freeze：total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS"
     },
     "C2": {
       "status": "PASS",
@@ -57,8 +58,9 @@
     "M2": "PENDING (deadline D3 12:00)",
     "M3": "BLOCKED_EXTERNAL (frozen build 未就绪, deadline D3 18:00)"
   },
-  "formal_day1_started": false,
-  "signed_by": "PENDING_DATA_R_SIGNATURE",
-  "signed_at": null,
-  "note": "最终待签包：Data-R 签署时填 signed_by/signed_at/closure_head，并将 status 改为 DATA_R_FROZEN / LEGACY_SET_FROZEN(C1)/ formal_day1_started 置 true"
+  "formal_day1_started": true,
+  "formal_day1_started_at": "2026-09-06T09:59:00+08:00",
+  "signed_by": "gaoyizhe934 (Data-R)",
+  "signed_at": "2026-09-06T09:59:00+08:00",
+  "note": "Data-R 已完成 Closure Freeze；C0-C5 业务证据 6/6 接受，C1=LEGACY_SET_FROZEN。D1 自 signed_at 起启动；M1 PASS 前 production_truth_allowed 仍为 false。"
 }
