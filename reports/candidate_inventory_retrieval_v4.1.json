@@ -3,31 +3,15 @@
  "version": "v4.1",
  "date": "2026-09-06",
  "generated_by": "DGXD01(Data-B)",
- "purpose": "P04 frozen 后 Retrieval/KB 候选盘存（Data-R #48 建议）：先盘存再算真实缺口，不默认文件存在即可用",
- "baseline": {
-  "master": "86c91ff",
-  "p04_frozen": "accepted10/775/961 (Review 5124879366)"
+ "purpose": "Retrieval/KB 候选盘存（Data-R #49 P0/P1 分层口径，fail-closed）",
+ "snapshot": {
+  "master": "78349334 (#46/#48 merged)",
+  "p04_frozen": "accepted_legacy=0(Retrieval)/new175/cand228 (Review 5124879366)"
  },
- "retrieval_candidate_sources": {
-  "v4.1_candidate_only_new_batch": {
-   "file": "(无)",
-   "count": 0,
-   "note": "master 无独立 v4.1 retrieval candidate-only jsonl（A P20-23 无 retrieval；P21 尚未产出）"
-  },
-  "t2ranking_selected43": {
-   "file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
-   "count": 43,
-   "eligibility": {
-    "review_status": "candidate_only",
-    "license": "t2ranking_2023 approved",
-    "source": "public_derived",
-    "g4": "source-cap prep (43/200)",
-    "admission": "NOT_ADMISSION (需 P30)"
-   },
-   "note": "Data-R A3 legacy 可复用单元（200 中 G4 cap 43 选择）；非新 candidate-only 批，需 P30 验证"
-  },
-  "gold_retrieval_reps5": {
-   "file": "data/gold/*/knowledge_retrieval.jsonl",
+ "retrieval": {
+  "verified_v4.1_candidate_count": 0,
+  "verified_note": "当前无 canonical v4.1 retrieval candidate-only artifact（无 requalification completion/Admission 证据）",
+  "historical_retrieval_reps": {
    "count": 5,
    "ids": [
     "retr_000001",
@@ -36,34 +20,37 @@
     "retr_000004",
     "retr_000005"
    ],
-   "eligibility": {
-    "source": "team_authored",
-    "note": "Data-R A3 5 真查询可复用；55 复制 M1-KB 后留1 DROP"
-   }
+   "status": "REQUALIFICATION_REQUIRED / NOT_COUNTED",
+   "file": "data/gold/dev/knowledge_retrieval.jsonl(历史 kylin_memory_gold_v1.0 candidate_only)",
+   "note": "历史文件第 6 条起重复前 5 查询模板；无 v4.1 requal completion/Admission 证据；不可抵扣 228"
   },
-  "historical_d9_queryset": {
-   "file": "evidence/source/d9_retrieval_queryset/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl",
-   "count": 36,
-   "note": "历史产物，非 v4.1 candidate-only 批，不计入（Data-R：不能因文件存在计入）"
+  "t2ranking": {
+   "source_file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
+   "source_count": 200,
+   "selection_manifest": "reports/v4.1_D1_closeout_G4_t2ranking_select_20260906.json (PR #40)",
+   "selected_count": 43,
+   "selected_ids_sha256": "250004899ad951ecba40ae9294b34ef3ce525a1f4c299587eb38c6658daf46d2",
+   "materialized_v4.1_subset": false,
+   "note": "43 是 selection manifest（200 源中选出）；非该 jsonl 有 43 条；未 materialize v4.1 candidate-only 子集前不计 verified；43 全 t2ranking_retrieval_v1，非 G4 PASS（source-cap prep）"
+  },
+  "target_candidate_pool": 228,
+  "deficit": {
+   "verified": 228,
+   "conditional_after_43_normalized": 185,
+   "not_approved_180": "历史 gold5 不可计，180 不批准"
   }
  },
- "usable_base": 48,
- "retrieval_target_candidate_pool": 228,
- "deficit_estimate": {
-  "note": "保守：v4.1 新 candidate-only 批=0 → 缺口≈228；若 48 基础（43+5）经 P30 验证计入 → 缺口≈180；最终以 P30 admitted 集复算为准"
- },
  "kb": {
-  "target": 400,
-  "candidate_pool_target": 520,
-  "current_candidate_only": {
+  "verified_candidate_count": 0,
+  "gross_pool_target": 520,
+  "seed_inventory_not_counted": {
    "count": 0,
-   "note": "无 KB candidate jsonl；需 B 主导 P21 KB candidate prep"
+   "note": "无 canonical v4.1 KB artifact；历史/已有 KB 对象仅 seed 待规范化，规范化前不减少生成量"
   },
-  "deficit": 520,
-  "binding": "M1-KB BLOCKED → local_candidate_id + PRODUCTION_BINDING_PENDING"
+  "binding": "M1-KB BLOCKED -> local_candidate_id + PRODUCTION_BINDING_PENDING"
  },
  "gates_notes": {
-  "g4": "t2ranking 43 source-cap prep，非 G4 PASS；P30 admitted Retrieval 全集复算",
-  "p70": "M1/M1-KB/M3 BLOCKED；production_truth_allowed=false"
+  "g4": "t2ranking 43 source-cap/diversity prep 非 G4 PASS；P30 admitted Retrieval 全集复算",
+  "p70": "M1/M1-KB/M3 BLOCKED；production_truth_allowed=false；public 仅已批源(t2ranking_2023)"
  }
 }
