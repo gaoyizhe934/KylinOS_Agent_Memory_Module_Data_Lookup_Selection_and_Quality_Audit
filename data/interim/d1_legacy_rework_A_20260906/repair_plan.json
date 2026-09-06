@@ -11,10 +11,18 @@
   "generation": {"prompt_ref": "P10-A1-rework-v4.1", "seed": 20260906, "model": "deepseek-v4-flash"},
   "red_line_compliance": {"human_decision": false, "final_label": false, "gold": false,
                           "dev_reg_only_preserved": ["pref_000004", "pref_000003"], "raw_gold_untouched": true},
+  "exposed_lineage_blocked": {
+    "note": "req_pref_000003/000004 源自 sealed 暴露 lineage；canonical leakage 的 template 指纹(fp(template_family))与其已登记 registry 键(temp_instruction_v1/update_revoke_v1)匹配 → G5 unresolved；改写盲文不影响 template 指纹。按 Data-R #44 采用 Option2：显式 LEAK_EXPOSED/BLOCKED，不纳入 completion/accepted_legacy；须 Data-R 对 template 指纹处置裁决。",
+    "items": [
+      {"candidate_id": "req_pref_000003", "leak_key": "template:8eed3a81a6e3e81ffac6cfed4eb0c43dc690758b1eacab513e11f508dd2270a8", "reason": "LEAK_EXPOSED(template temp_instruction_v1 registered)"},
+      {"candidate_id": "req_pref_000004", "leak_key": "template:f7a32cbacebeacc6c9a8e888dfedc1329f93e3c48385edb3b886014cc86a5743", "reason": "LEAK_EXPOSED(template update_revoke_v1 registered)"}
+    ]
+  },
   "blockers": [
     {"id": "B1_R_sign", "item": "B1 机器复核 + Data-R 逐条签 requalification_status=完成", "status": "BLOCKED_EXTERNAL"},
     {"id": "M1", "item": "M1 FROZEN 后双盲重标为正式 Gold", "status": "BLOCKED"},
-    {"id": "PII", "item": "forg_000003 客户姓名关联 PII：Data-R 合成/脱敏口径", "status": "NEEDS_DATA_R"}
+    {"id": "PII", "item": "forg_000003 客户姓名关联 PII：Data-R 合成/脱敏口径", "status": "NEEDS_DATA_R"},
+    {"id": "LEAK_TEMPLATE", "item": "req_pref_000003/000004 因 lineage template_family 触发 registry template 指纹 → Option2 LEAK_EXPOSED/BLOCKED，accepted 不计；Data-R 裁决", "status": "NEEDS_DATA_R"}
   ],
   "entries": [
     {
@@ -43,7 +51,13 @@
       "gold_file": "data/gold/sealed_test/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
       "scenario_spec_id": "OSPREF-07", "scenario_family": "os_pref_withdraw",
       "scenario_class": "update_revoke", "step1": "preference_update_withdraw", "scope": "topic",
-      "split_eligibility": "DEV_REG_ONLY"
+      "split_eligibility": "DEV_REG_ONLY",
+      "exposed_lineage": true,
+      "rewrite_required": true,
+      "rewrite_reason": "leaked_content_exposure",
+      "rewrite_strategy": "semantic_preserving_paraphrase",
+      "rewrite_constraints": ["保留 preference update/withdraw 语义：新偏好=每节只写结论与关键数字，旧详尽风格作废", "禁止逐字复用 sealed 原句", "不新增盲包字段", "DEV_REG_ONLY / legacy_ref / scenario(OSPREF-07) / scope(topic) 保持不变"],
+      "blind_user_message": "报告写法我改主意了：从今往后每节只给出结论与关键数字即可，先前那种逐段详述的写法就此停用。"
     },
     {
       "candidate_id": "req_pref_000006", "task": "preference", "legacy_sample_id": "pref_000006",
@@ -57,7 +71,13 @@
       "gold_file": "data/gold/sealed_test/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
       "scenario_spec_id": "OSPREF-09", "scenario_family": "os_pref_task_constraint",
       "scenario_class": "task_constraint", "step1": "task_constraint", "scope": null,
-      "split_eligibility": "DEV_REG_ONLY"
+      "split_eligibility": "DEV_REG_ONLY",
+      "exposed_lineage": true,
+      "rewrite_required": true,
+      "rewrite_reason": "leaked_content_exposure",
+      "rewrite_strategy": "semantic_preserving_paraphrase",
+      "rewrite_constraints": ["保留 task_constraint 语义：仅本次会话/任务用英文，不入长期记忆", "禁止逐字复用 sealed 原句", "不新增盲包字段", "DEV_REG_ONLY / legacy_ref / scenario(OSPREF-09) / 不赋 scope 保持不变"],
+      "blind_user_message": "这次对话请用英文作答；这只是一次性要求，不必长期记住。"
     },
     {
       "candidate_id": "req_forg_000001", "task": "forgetting", "legacy_sample_id": "forg_000001",

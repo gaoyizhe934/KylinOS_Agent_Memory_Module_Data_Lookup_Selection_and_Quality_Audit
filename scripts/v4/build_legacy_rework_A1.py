@@ -138,7 +138,11 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
             dm["task_semantic_class"] = e["step1"]
             if e.get("scope"):
                 dm["design_scope_target"] = e["scope"]
-            blind = {"user_message": gr["input"]["user_message"]}
+            blind_user = e.get("blind_user_message") or gr["input"]["user_message"]
+            if e.get("rewrite_required"):
+                applied.append({"field": "blind_text", "issue": e.get("rewrite_reason"),
+                                "proposed_action": "semantic-preserving rewrite per repair_plan (%s)" % e.get("rewrite_strategy")})
+            blind = {"user_message": blind_user}
             rec = base_rec(e["candidate_id"], "preference_extraction", fixed_ts, blind, dm)
             rec["template_family"] = gr.get("template_family")
             pref_recs.append(rec)
@@ -203,6 +207,7 @@ def write_manifest(plan, outdir, input_hash, output_hashes, root, extra):
         ],
         "regeneration_deterministic": {"builder": "scripts/v4/build_legacy_rework_A1.py", "verify": "python scripts/v4/build_legacy_rework_A1.py --check (CI)", "state": "VERIFY_VIA_CHECK"},
         "scope": plan["scope"], "red_line_compliance": plan["red_line_compliance"], "blockers": plan["blockers"],
+        "exposed_lineage_blocked": plan.get("exposed_lineage_blocked"),
     }
     with open(os.path.join(outdir, "generation_manifest_A_20260906.json"), "w", encoding="utf-8") as f:
         f.write(canon(mf) + "\n")
