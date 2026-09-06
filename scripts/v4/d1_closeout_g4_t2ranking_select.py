@@ -97,8 +97,9 @@ def main():
     sel_ids = [c[1] for c in chosen_sorted]
 
     # hashes
-    src_raw = open(path, "rb").read()
-    input_hash = hashlib.sha256(src_raw).hexdigest()
+    src_text = open(path, encoding="utf-8").read()
+    canon_src = "\n".join(l.rstrip("\r\n") for l in src_text.split("\n")).rstrip("\n") + "\n"
+    input_hash = hashlib.sha256(canon_src.encode("utf-8")).hexdigest()
     out_text = "\n".join(sel_ids) + "\n"
     output_hash = hashlib.sha256(out_text.encode("utf-8")).hexdigest()
 

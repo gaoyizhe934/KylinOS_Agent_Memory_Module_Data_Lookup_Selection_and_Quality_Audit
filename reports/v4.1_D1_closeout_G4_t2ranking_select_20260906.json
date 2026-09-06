@@ -44,8 +44,8 @@
  "total_source": 200,
  "kept_as_candidate_history": 157,
  "input_file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
- "input_hash_sha256": "c14d109a33c964cdef8ffd974818f7bc6cfe61983ba504e8d0de76a807cf1556",
- "output_hash_sha256": "9eadd6601b3e235eb491d235c19cd82ce12e1232401a5384c03ac222b38840c5",
+ "input_hash_sha256": "c1e4ce1e30233d17838bf3d4536acdb8f9e5f4b6d6f4c819cd8d3eab435c7ec7",
+ "output_hash_sha256": "4ccbd015ed48da36efed062471d0868d574669df47e353f626a2dbb6621e626e",
  "selected_sample_ids": [
   "retr_t2r_10",
   "retr_t2r_1001",
