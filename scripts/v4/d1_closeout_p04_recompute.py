@@ -42,7 +42,11 @@ def main():
     ap.add_argument("--requal-sha", default="", help="frozen requal 文件 sha256（正式 P04 必须；缺省仅 preview）")
     ap.add_argument("--completed", required=True)
     ap.add_argument("--authority", default="Data-R #40 Review 5124685158 (20b575e)")
-    ap.add_argument("--out-prefix", default="")
+    ap.add_argument("--out-csv", default="reports/quota_plan_v4.1.csv")
+    ap.add_argument("--out-json", default="reports/quota_plan_v4.1_summary.json")
+    ap.add_argument("--authority-pr", default="40")
+    ap.add_argument("--authority-review-id", default="5124685158")
+    ap.add_argument("--authority-head", default="20b575e7fd9ca0b195a214ac3487e79d613a00ca")
     args = ap.parse_args()
 
     requal_raw = open(args.requal, "rb").read()
@@ -102,23 +106,29 @@ def main():
     print("TOTAL Gold target=%d accepted_eff=%d new_needed=%d candidate=%d" % (tot_gold, total_accepted, tot_new, tot_cand))
     print("completed_sample_ids_sha256:", signed_sha)
     print("(独立对象：KB 400 -> 候选520；Runtime sessions 35；scripts 45；fresh40 从 Admission PASS)")
-    if args.out_prefix and args.requal_sha:
-        doc = {"schema": "p04_formal_v4.1", "date": "2026-09-06", "generated_by": "DGXD01(Data-B)",
-               "authority": args.authority, "requal_sha256": requal_sha,
-               "completed_count": len(completed), "completed_sample_ids_sha256": signed_sha,
-               "accepted_legacy_effective": total_accepted,
+    if args.requal_sha:
+        doc = {"schema": "quota_plan_v4.1_summary", "version": "v4.1", "generated_by": "DGXD01(Data-B)",
+               "generated_at": "2026-09-06T16:45:00+08:00", "script": "d1_closeout_p04_recompute.py (v3)",
+               "authority_pr": args.authority_pr, "authority_review_id": args.authority_review_id,
+               "authority_head": args.authority_head,
+               "authority": "Data-R #40 Requalification Completion Signature (Review %s)" % args.authority_review_id,
+               "requal_source": args.requal, "requal_sha256": requal_sha,
+               "completed_count": len(completed), "completed_sample_ids": sorted(completed),
+               "completed_sample_ids_sha256": signed_sha,
+               "accepted_legacy_effective": total_accepted, "accepted_by_task": acc_by_task,
                "tasks": out,
                "totals": {"gold_target": tot_gold, "new_needed": tot_new, "candidate_needed": tot_cand,
-                          "kb": {"target": 400, "candidate_pool": 520}, "runtime_sessions": 35, "scripts": 45},
-               "g4_status": "BLOCKED", "accepted_note": "仅 Data-R #40 签署 10 条；#45 merge ≠ Legacy 完成重准入 ≠ Gold"}
-        json.dump(doc, open(args.out_prefix + ".json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-        with open(args.out_prefix + ".csv", "w", encoding="utf-8", newline="") as f:
+                          "kb": {"target": 400, "candidate_pool": 520}, "runtime_sessions": 35, "scripts": 45,
+                          "fresh_calibration": 40},
+               "g4_status": "BLOCKED", "note": "accepted 仅 Data-R #40 签署 10 条；P04 merge ≠ Gold ≠ Admission PASS；B 不自行写 Reviewer final authority（Data-R 冻结）"}
+        json.dump(doc, open(args.out_json, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        with open(args.out_csv, "w", encoding="utf-8", newline="") as f:
             w = csv.writer(f)
             w.writerow(["task", "target", "accepted_legacy", "new_needed", "candidate_needed"])
             for o in out:
                 w.writerow([o["task"], o["target"], o["accepted_legacy"], o["new_needed"], o["candidate_needed"]])
             w.writerow(["TOTAL", tot_gold, total_accepted, tot_new, tot_cand])
-        print("written", args.out_prefix + ".json/.csv")
+        print("written", args.out_csv, "and", args.out_json)
 
 
 if __name__ == "__main__":

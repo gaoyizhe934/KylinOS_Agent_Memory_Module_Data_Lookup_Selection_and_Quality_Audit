@@ -1,12 +1,34 @@
 {
- "schema": "p04_formal_v4.1",
- "date": "2026-09-06",
+ "schema": "quota_plan_v4.1_summary",
+ "version": "v4.1",
  "generated_by": "DGXD01(Data-B)",
- "authority": "Data-R #40 Review 5124685158 (20b575e)",
+ "generated_at": "2026-09-06T16:45:00+08:00",
+ "script": "d1_closeout_p04_recompute.py (v3)",
+ "authority_pr": "40",
+ "authority_review_id": "5124685158",
+ "authority_head": "20b575e7fd9ca0b195a214ac3487e79d613a00ca",
+ "authority": "Data-R #40 Requalification Completion Signature (Review 5124685158)",
+ "requal_source": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\requal_LF.jsonl",
  "requal_sha256": "c5b217e3d93119e4cb56b06ae46772039698a56b62dc16b4c33ddfe0c1cfafd7",
  "completed_count": 10,
+ "completed_sample_ids": [
+  "forg_000001",
+  "forg_000002",
+  "forg_000003",
+  "forg_000004",
+  "pref_000001",
+  "pref_000002",
+  "pref_000003",
+  "pref_000004",
+  "pref_000005",
+  "pref_000006"
+ ],
  "completed_sample_ids_sha256": "58c838ad1611cb3ec57adfd49800c64851cb806cb5c6d473b5cd13aae82d4752",
  "accepted_legacy_effective": 10,
+ "accepted_by_task": {
+  "preference_extraction": 6,
+  "precise_forgetting": 4
+ },
  "tasks": [
   {
    "task": "preference_extraction",
@@ -60,8 +82,9 @@
    "candidate_pool": 520
   },
   "runtime_sessions": 35,
-  "scripts": 45
+  "scripts": 45,
+  "fresh_calibration": 40
  },
  "g4_status": "BLOCKED",
- "accepted_note": "仅 Data-R #40 签署 10 条；#45 merge ≠ Legacy 完成重准入 ≠ Gold"
+ "note": "accepted 仅 Data-R #40 签署 10 条；P04 merge ≠ Gold ≠ Admission PASS；B 不自行写 Reviewer final authority（Data-R 冻结）"
 }

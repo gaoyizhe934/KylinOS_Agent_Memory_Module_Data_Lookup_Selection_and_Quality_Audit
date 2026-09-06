@@ -19,7 +19,7 @@
 | **合计** | **785** | **10** | **775** | **961** |
 
 - 独立对象：KB 400 → 候选 520；Runtime sessions 35；scripts 45；fresh40 从 Admission PASS
-- 产物：`reports/v4.1_D1_closeout_P04_formal_20260906.json/.csv`
+- 产物（v4.1 P04 规范名）：`reports/quota_plan_v4.1.csv` + `reports/quota_plan_v4.1_summary.json`（authority_pr=40/review_id=5124685158/head=20b575e + signed ids + requal sha）
 
 ## fail-closed（v2）
 unknown/duplicate/不在 requal 集/decision 非 ACCEPT/Tool-E2E/signed 与 effective 不一致 → exit nonzero；正式 P04 须 `--requal-sha`（否则仅 preview）。
