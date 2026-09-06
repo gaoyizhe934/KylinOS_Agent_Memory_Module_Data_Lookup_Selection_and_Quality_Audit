@@ -1,0 +1,69 @@
+{
+ "schema": "candidate_inventory_retrieval_v4.1",
+ "version": "v4.1",
+ "date": "2026-09-06",
+ "generated_by": "DGXD01(Data-B)",
+ "purpose": "P04 frozen 后 Retrieval/KB 候选盘存（Data-R #48 建议）：先盘存再算真实缺口，不默认文件存在即可用",
+ "baseline": {
+  "master": "86c91ff",
+  "p04_frozen": "accepted10/775/961 (Review 5124879366)"
+ },
+ "retrieval_candidate_sources": {
+  "v4.1_candidate_only_new_batch": {
+   "file": "(无)",
+   "count": 0,
+   "note": "master 无独立 v4.1 retrieval candidate-only jsonl（A P20-23 无 retrieval；P21 尚未产出）"
+  },
+  "t2ranking_selected43": {
+   "file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
+   "count": 43,
+   "eligibility": {
+    "review_status": "candidate_only",
+    "license": "t2ranking_2023 approved",
+    "source": "public_derived",
+    "g4": "source-cap prep (43/200)",
+    "admission": "NOT_ADMISSION (需 P30)"
+   },
+   "note": "Data-R A3 legacy 可复用单元（200 中 G4 cap 43 选择）；非新 candidate-only 批，需 P30 验证"
+  },
+  "gold_retrieval_reps5": {
+   "file": "data/gold/*/knowledge_retrieval.jsonl",
+   "count": 5,
+   "ids": [
+    "retr_000001",
+    "retr_000002",
+    "retr_000003",
+    "retr_000004",
+    "retr_000005"
+   ],
+   "eligibility": {
+    "source": "team_authored",
+    "note": "Data-R A3 5 真查询可复用；55 复制 M1-KB 后留1 DROP"
+   }
+  },
+  "historical_d9_queryset": {
+   "file": "evidence/source/d9_retrieval_queryset/D9_RETRIEVAL_QUERYSET_CANDIDATE_V2_36.jsonl",
+   "count": 36,
+   "note": "历史产物，非 v4.1 candidate-only 批，不计入（Data-R：不能因文件存在计入）"
+  }
+ },
+ "usable_base": 48,
+ "retrieval_target_candidate_pool": 228,
+ "deficit_estimate": {
+  "note": "保守：v4.1 新 candidate-only 批=0 → 缺口≈228；若 48 基础（43+5）经 P30 验证计入 → 缺口≈180；最终以 P30 admitted 集复算为准"
+ },
+ "kb": {
+  "target": 400,
+  "candidate_pool_target": 520,
+  "current_candidate_only": {
+   "count": 0,
+   "note": "无 KB candidate jsonl；需 B 主导 P21 KB candidate prep"
+  },
+  "deficit": 520,
+  "binding": "M1-KB BLOCKED → local_candidate_id + PRODUCTION_BINDING_PENDING"
+ },
+ "gates_notes": {
+  "g4": "t2ranking 43 source-cap prep，非 G4 PASS；P30 admitted Retrieval 全集复算",
+  "p70": "M1/M1-KB/M3 BLOCKED；production_truth_allowed=false"
+ }
+}
