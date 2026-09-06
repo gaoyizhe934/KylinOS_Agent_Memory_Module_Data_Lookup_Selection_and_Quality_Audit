@@ -1,0 +1,108 @@
+{
+ "schema": "gold_retrieval_duplicate_mark",
+ "version": "v4.1",
+ "date": "2026-09-06",
+ "generated_by": "DGXD01(Data-B)",
+ "basis": "Data-R adjudication A3 (60 gold retrieval = 5 真查询 + 55 复制；55 复制 M1-KB 后族内留 1 DROP；M1-KB 前 PENDING/BLOCKED)",
+ "total_gold_retrieval": 60,
+ "representatives": [
+  "retr_000001",
+  "retr_000002",
+  "retr_000003",
+  "retr_000004",
+  "retr_000005"
+ ],
+ "copy_total": 55,
+ "groups": [
+  {
+   "group_id": "retr_group_01",
+   "representative": "retr_000001",
+   "copy_count": 11,
+   "copies": [
+    "retr_000006",
+    "retr_000011",
+    "retr_000016",
+    "retr_000021",
+    "retr_000026",
+    "retr_000031",
+    "retr_000036",
+    "retr_000041",
+    "retr_000046",
+    "retr_000051",
+    "retr_000056"
+   ]
+  },
+  {
+   "group_id": "retr_group_02",
+   "representative": "retr_000002",
+   "copy_count": 11,
+   "copies": [
+    "retr_000007",
+    "retr_000012",
+    "retr_000017",
+    "retr_000022",
+    "retr_000027",
+    "retr_000032",
+    "retr_000037",
+    "retr_000042",
+    "retr_000047",
+    "retr_000052",
+    "retr_000057"
+   ]
+  },
+  {
+   "group_id": "retr_group_03",
+   "representative": "retr_000003",
+   "copy_count": 11,
+   "copies": [
+    "retr_000008",
+    "retr_000013",
+    "retr_000018",
+    "retr_000023",
+    "retr_000028",
+    "retr_000033",
+    "retr_000038",
+    "retr_000043",
+    "retr_000048",
+    "retr_000053",
+    "retr_000058"
+   ]
+  },
+  {
+   "group_id": "retr_group_04",
+   "representative": "retr_000004",
+   "copy_count": 11,
+   "copies": [
+    "retr_000009",
+    "retr_000014",
+    "retr_000019",
+    "retr_000024",
+    "retr_000029",
+    "retr_000034",
+    "retr_000039",
+    "retr_000044",
+    "retr_000049",
+    "retr_000054",
+    "retr_000059"
+   ]
+  },
+  {
+   "group_id": "retr_group_05",
+   "representative": "retr_000005",
+   "copy_count": 11,
+   "copies": [
+    "retr_000010",
+    "retr_000015",
+    "retr_000020",
+    "retr_000025",
+    "retr_000030",
+    "retr_000035",
+    "retr_000040",
+    "retr_000045",
+    "retr_000050",
+    "retr_000055",
+    "retr_000060"
+   ]
+  }
+ ]
+}

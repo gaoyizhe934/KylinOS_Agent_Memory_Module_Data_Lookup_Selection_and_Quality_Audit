@@ -1,0 +1,17 @@
+{
+  "session": "2026-09-06 Data-A P10 Rev3 — Data-R 终裁 41bf0e2 A 工作令（Review Round3 §D D1–D4）",
+  "human_operator": "lyf-1213 (Data-A)",
+  "role": "Data-A",
+  "model": "deepseek-v4-flash",
+  "adjudication_ref": "reports/v4.1_D1_R_adjudication_signed_20260906.md（commit 41bf0e2）；review inputs: reports/v4.1_D1_review_round3_strict_human_20260906.md（§D）",
+  "changes": [
+    "reports/legacy_semantic_requal_A.jsonl (Rev3): D1 pref_000002 scope→global(fix_fields)；D4 RELABEL2 行 target_task_type→null（全文件 target_task_type 均 null）；D2 forg_000004 mode 保持 single_item（文档同步）",
+    "reports/v4.1_D1_A_legacy_semantic_requal_20260906.md: Rev3 header；§一/§二 retrieval 60=5真查询×12、55 复制（D3）；§三 pref_000002 global / forg_000004 single_item；§四 accepted_legacy=10（A1）；§五 改为 Data-R 终裁对接；§六 L4/L5 更新",
+    "reports/v4.1_D1_execution_steps_ABR.md: A:P10 行 Rev2→Rev3"
+  ],
+  "verification": {
+    "result": "PASS",
+    "checks": ["465 行 unique", "DROP195/REWORK8/RELABEL2/PENDING260 不变", "reason_codes 0 缺失", "无 human_decision/final_label", "DEV_REG_ONLY=38", "target_task_type 全 null", "fix_fields=10", "forg DROP 全 FAIL"]
+  },
+  "ai_status": "proposal-only revision aligned to Data-R adjudication; human_decision/final_label not written by AI; ledger 03 回填引用 41bf0e2 由 A/B 人工执行"
+}

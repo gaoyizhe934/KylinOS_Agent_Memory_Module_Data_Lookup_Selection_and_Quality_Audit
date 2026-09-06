@@ -1,0 +1,20 @@
+{
+  "session": "2026-09-06 Data-A Round5 alignment (P0-1 accepted_legacy_effective=0) — A-only scope",
+  "human_operator": "lyf-1213 (Data-A)",
+  "role": "Data-A",
+  "model": "deepseek-v4-flash",
+  "review_ref": "Data-R D1 Review Round 5 REQUEST_CHANGES（HEAD 84c51c2）P0-1；用户明确只做 A 范围",
+  "canonical_amendment": "reports/v4.1_D1_quota_accepted_amendment_20260906.md（B d130458 落盘）：adjudicated_rework_relabel_candidates=10 不变；accepted_legacy_effective=0 直到 requalification_status=完成",
+  "changes": [
+    "reports/v4.1_D1_A_legacy_semantic_requal_20260906.md §四/§五：accepted_legacy=10 误读表述作废，改 effective=0 并指向 canonical amendment",
+    "reports/v4.1_D1_A_candidate_factory_20260906.md §四/§五：P04 公式改 accepted_legacy_effective；public 源状态更新（t2ranking 仅 Retrieval，B 452ef36）",
+    "data/interim/d1_candidates_A_20260906/generation_manifest_A_20260906.json：quota note 指向 canonical amendment",
+    "worklog/20260906_d1_A_P10_rev3.md：补 Round5 更正说明"
+  ],
+  "not_touched": ["41bf0e2 签署原文未改写", "B 的 quota_plan_draft / license_registry / PR body（P1-1/P1-2）归 DGXD/Data-R（d130458 已处理）"],
+  "verification": {
+    "result": "PASS (document-level)",
+    "checks": ["A 自有产物不再以 accepted_legacy=10 抵扣目标", "10 代表行 review_status=candidate_proposal 维持", "465/DROP195/REWORK8/RELABEL2/PENDING260 不变", "未新增重复 amendment 记录"]
+  },
+  "ai_status": "proposal/document alignment; no human_decision written"
+}
