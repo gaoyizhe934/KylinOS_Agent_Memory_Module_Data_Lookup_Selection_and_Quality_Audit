@@ -10,7 +10,7 @@
   "id_binding_status": "NON_PRODUCTION",
   "production_note": "M1/M1-KB/M3 未绿；本批全部 candidate_only + NON_PRODUCTION，不含 production business truth / production knowledge_id；不写 human_decision / final_label。",
   "quota_context": {
-    "note": "正式配额以 P04 冻结为准（Data-R 终裁 P10 accepted_legacy 后重算）。本批为各任务候选池内确定需要的 OS-authored 切片，不受 P04 结果影响。public_derived + 改写变体按缺口留待 Registry/P04 冻结后补齐。",
+    "note": "正式配额以 P04 冻结为准（accepted_legacy_effective 依 requalification_status=完成 计，Round5 P0-1 见 canonical amendment reports/v4.1_D1_quota_accepted_amendment_20260906.md）。本批为各任务候选池内确定需要的 OS-authored 切片，不受 P04 结果影响。public_derived + 改写变体按缺口留待 Registry/P04 冻结后补齐。",
     "task_pool_provisional": {"preference": 293, "conflict": 163, "forgetting": 130},
     "os_planned_this_batch": {"preference": 98, "conflict": 64, "forgetting": 56},
     "remaining_blocked": "public_derived(Registry license 未批准) + rewrite variants → 待 Data-R/Reviewer 批准 + P04 冻结"
