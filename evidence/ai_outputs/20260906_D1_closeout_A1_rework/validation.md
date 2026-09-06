@@ -21,14 +21,19 @@ checked=10 unresolved=0 → exit 0（G1_provenance_unresolved_zero=true）
 ## 3) builder 确定性复现 + pinned exact-input 证明
 ```
 python scripts/v4/build_legacy_rework_A1.py --check
-pref  regenerated=3c108717…aa6 == disk == manifest_sha（match）
-forg regenerated=9269da40…f17 == disk == manifest_sha（match）
-input_hash recomputed=ed85e6d8… == manifest   → RESULT: MATCH
+pref  regenerated=9ad487ce…02e == disk == manifest_sha（match）
+forg regenerated=30b5edc1…7e1 == disk == manifest_sha（match）
+input_hash recomputed=ec1580c3… == manifest   → RESULT: MATCH
 ```
 读取冻结输入（pinned commit c21ee694ef4164fe232a59096caa8c908967fa17，#37 merge master）：
 `git show <commit>:<gold_file>` 逐条 10 原始行 + `git show <commit>:reports/legacy_semantic_requal_A.jsonl`（Rev3 fix_fields）；
 当前 checkout 与 pinned blob newline-normalized 比对不一致 → fail-closed。
-manifest 记录 input_commit/fix_source_commit/source_files_sha256/selected_rows_sha256(ebf5c8e4…)/requal_blob_sha256(c5b217e3…)/repair_plan_sha256(9d7d9bd0…)/组合 input_hash/output_sha256；source_file repo-relative。
+manifest：input_commit/fix_source_commit/source_files_sha256/selected_rows_sha256(ebf5c8e4…)/requal_blob_sha256(c5b217e3…)/**repair_plan_sha256=78fe38c1…（pinned raw bytes，与 B1 contract 一致）**/input_hash/output_sha256；source_file repo-relative。
+
+## 4) canonical dedup / leak（Rev3，A-followup）
+- 10 候选补 top-level `template_family`=legacy v1 family（output_style_length_v1 等，每族 10%）。
+- dedup_scan → **dedup_status=PASS**（exact=0、near=0、template_concentration_ok=true）——修复此前 100% none BLOCKED。
+- leakage_scan → leak=2 = req_pref_000004/000003（DEV_REG_ONLY sealed 暴露候选，命中 leaked-content registry）——**预期且策略允许**（仅 DEV_REG_ONLY，禁再 seal）；B1 leak-gate 应按 REGISTERED_EXPOSURE_ALLOWED 处置（Data-R/B 定）。
 
 ## CI（已并入 baseline-validation.yml）
 - validate_legacy_rework_A1.py（条件 hashFiles）

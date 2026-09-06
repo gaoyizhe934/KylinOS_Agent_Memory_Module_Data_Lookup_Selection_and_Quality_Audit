@@ -79,6 +79,9 @@ def main():
             if k in r:
                 fails.append((sid, "contains " + k))
         dm = r.get("design_metadata", {})
+        v1 = (dm.get("legacy_ref", {}) or {}).get("v1_family")
+        if not r.get("template_family") or r.get("template_family") != v1:
+            fails.append((sid, "template_family missing/mismatch (got %s want %s)" % (r.get("template_family"), v1)))
         for f in ["scenario_spec_id", "legacy_ref", "generation", "candidate_event_refs", "applied_fixes", "split_eligibility"]:
             if f not in dm:
                 fails.append((sid, "dm missing " + f))

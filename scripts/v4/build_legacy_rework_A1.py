@@ -67,6 +67,15 @@ def _nl(b):
     return b.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
 
+def _nl_bytes(b):
+    return b.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+
+
+def file_raw_sha(path):
+    with open(path, "rb") as f:
+        return sha(_nl_bytes(f.read()))
+
+
 def verify_pinned_identical(root, commit, relpaths):
     bad = []
     for rp in relpaths:
@@ -130,7 +139,9 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
             if e.get("scope"):
                 dm["design_scope_target"] = e["scope"]
             blind = {"user_message": gr["input"]["user_message"]}
-            pref_recs.append(base_rec(e["candidate_id"], "preference_extraction", fixed_ts, blind, dm))
+            rec = base_rec(e["candidate_id"], "preference_extraction", fixed_ts, blind, dm)
+            rec["template_family"] = gr.get("template_family")
+            pref_recs.append(rec)
         else:
             dm["forget_mode"] = e["mode"]
             dm["checkpoints"] = e["checkpoints"]
@@ -142,7 +153,9 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
             if e.get("target_topic"):
                 dm["target_topic"] = e["target_topic"]
             blind = {"forget_instruction": gr["input"]["forget_instruction"], "inventory_context": e["inventory"]}
-            forg_recs.append(base_rec(e["candidate_id"], "precise_forgetting", fixed_ts, blind, dm))
+            rec = base_rec(e["candidate_id"], "precise_forgetting", fixed_ts, blind, dm)
+            rec["template_family"] = gr.get("template_family")
+            forg_recs.append(rec)
     selected_rows_sha = sha("\n".join(sorted(selected)).encode("utf-8"))
     requal_blob_sha = sha(requal_text.encode("utf-8") if isinstance(requal_text, str) else requal_text)
     return pref_recs, forg_recs, selected_rows_sha, requal_blob_sha
@@ -206,7 +219,7 @@ def main():
     outdir = args.outdir if os.path.isabs(args.outdir) else os.path.join(root, args.outdir)
     plan_p = os.path.join(outdir, "repair_plan.json")
     plan = json.load(open(plan_p, encoding="utf-8"))
-    plan_sha = sha(canon(plan).encode("utf-8"))
+    plan_sha = file_raw_sha(plan_p)  # pinned repair_plan raw-bytes sha (LF-normalized, 跨平台)
     input_commit = resolve_commit(root, plan["input_commit"])
     fix_commit = resolve_commit(root, plan["fix_source_commit"])
     if input_commit != plan["input_commit"] or fix_commit != plan["fix_source_commit"]:
