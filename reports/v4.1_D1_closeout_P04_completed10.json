@@ -1,0 +1,33 @@
+{
+ "schema": "p04_completed_signature_v2",
+ "authority_pr": 40,
+ "authority_review_id": "5124685158",
+ "authority_head": "20b575e7fd9ca0b195a214ac3487e79d613a00ca",
+ "completion_authority_head": "20b575e7fd9ca0b195a214ac3487e79d613a00ca",
+ "a_source_commit": "7c59633f81b3e4474be8a422450dcc3401940749",
+ "completed_rework_ids": [
+  "req_forg_000001",
+  "req_forg_000002",
+  "req_forg_000003",
+  "req_forg_000004",
+  "req_pref_000001",
+  "req_pref_000002",
+  "req_pref_000003",
+  "req_pref_000004",
+  "req_pref_000005",
+  "req_pref_000006"
+ ],
+ "mapping": {
+  "req_pref_000001": "pref_000001",
+  "req_pref_000002": "pref_000002",
+  "req_pref_000005": "pref_000005",
+  "req_pref_000004": "pref_000004",
+  "req_pref_000006": "pref_000006",
+  "req_pref_000003": "pref_000003",
+  "req_forg_000001": "forg_000001",
+  "req_forg_000002": "forg_000002",
+  "req_forg_000003": "forg_000003",
+  "req_forg_000004": "forg_000004"
+ },
+ "note": "completed 签名清单（authority/双 id/mapping）；canonical hashes 由 d1_closeout_p04_recompute.py 重算输出于 quota_plan_v4.1_summary.json（脚本消费校验 mapping 一致性）"
+}

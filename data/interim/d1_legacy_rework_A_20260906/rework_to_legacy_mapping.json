@@ -1,0 +1,83 @@
+{
+ "schema": "v4.1_rework_to_legacy_lineage_mapping",
+ "generated_by": "Data-A (lyf-1213)",
+ "date": "2026-09-06",
+ "a_candidate_commit": "7c59633f81b3e4474be8a422450dcc3401940749",
+ "authority": {
+  "pr": 40,
+  "review_id": 5124685158,
+  "completion_head": "20b575e7fd9ca0b195a214ac3487e79d613a00ca"
+ },
+ "source_files": [
+  "data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl",
+  "data/interim/d1_legacy_rework_A_20260906/legacy_rework_forgetting_candidates.jsonl"
+ ],
+ "count": 10,
+ "pairs": [
+  {
+   "rework_sample_id": "req_forg_000001",
+   "legacy_sample_id": "forg_000001",
+   "legacy_v1_family": "forget_scoped_v1",
+   "scenario_spec_id": "OSFORG-01"
+  },
+  {
+   "rework_sample_id": "req_forg_000002",
+   "legacy_sample_id": "forg_000002",
+   "legacy_v1_family": "forget_time_v1",
+   "scenario_spec_id": "OSFORG-04"
+  },
+  {
+   "rework_sample_id": "req_forg_000003",
+   "legacy_sample_id": "forg_000003",
+   "legacy_v1_family": "forget_person_v1",
+   "scenario_spec_id": "OSFORG-03"
+  },
+  {
+   "rework_sample_id": "req_forg_000004",
+   "legacy_sample_id": "forg_000004",
+   "legacy_v1_family": "forget_revoke_v1",
+   "scenario_spec_id": "OSFORG-01"
+  },
+  {
+   "rework_sample_id": "req_pref_000001",
+   "legacy_sample_id": "pref_000001",
+   "legacy_v1_family": "output_style_length_v1",
+   "scenario_spec_id": "OSPREF-01"
+  },
+  {
+   "rework_sample_id": "req_pref_000002",
+   "legacy_sample_id": "pref_000002",
+   "legacy_v1_family": "tool_choice_confirm_v1",
+   "scenario_spec_id": "OSPREF-01"
+  },
+  {
+   "rework_sample_id": "req_pref_000003",
+   "legacy_sample_id": "pref_000003",
+   "legacy_v1_family": "temp_instruction_v1",
+   "scenario_spec_id": "OSPREF-09"
+  },
+  {
+   "rework_sample_id": "req_pref_000004",
+   "legacy_sample_id": "pref_000004",
+   "legacy_v1_family": "update_revoke_v1",
+   "scenario_spec_id": "OSPREF-07"
+  },
+  {
+   "rework_sample_id": "req_pref_000005",
+   "legacy_sample_id": "pref_000005",
+   "legacy_v1_family": "scope_app_v1",
+   "scenario_spec_id": "OSPREF-02"
+  },
+  {
+   "rework_sample_id": "req_pref_000006",
+   "legacy_sample_id": "pref_000006",
+   "legacy_v1_family": "sensitive_no_store_v1",
+   "scenario_spec_id": "OSPREF-08"
+  }
+ ],
+ "hash_contract": "sha256(lf_normalized_utf8 of canonical JSON (sorted, no trailing ws)); fields: pairs_payload_sha256=over sorted pairs; rework_ids_sha256=over sorted rework ids; legacy_ids_sha256=over sorted legacy ids",
+ "purpose": "A-side reference/audit evidence (NOT the canonical binding input); P04 canonical lineage = git show #44 7c59633 via design_metadata.legacy_ref.legacy_sample_id (Data-R #45 Blocking-2 option1)",
+ "rework_ids_sha256": "cd930c8aae69031a84147ff2dc75a366ec314946ec619b77bba94b21542f8c91",
+ "legacy_ids_sha256": "f1f6ce0d1affa18aaf358e0efb579fe89481077cf42a8adda1bf306bc99663ce",
+ "pairs_payload_sha256": "990de7f31b0d1e95096ad9c284405c08e8dda662745ea2332b0d448f96fbbd7b"
+}

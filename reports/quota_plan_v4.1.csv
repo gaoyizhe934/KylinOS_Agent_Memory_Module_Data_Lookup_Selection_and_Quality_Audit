@@ -1,0 +1,8 @@
+task,target,accepted_legacy,new_needed,candidate_needed
+preference_extraction,225,6,219,285
+knowledge_retrieval,175,0,175,228
+conflict_resolution,125,0,125,163
+precise_forgetting,100,4,96,125
+tool_result,125,0,125,125
+end_to_end_session,35,0,35,35
+TOTAL,785,10,775,961
