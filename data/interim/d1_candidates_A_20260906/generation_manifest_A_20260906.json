@@ -1,0 +1,70 @@
+{
+  "schema": "v4.1_d1_candidate_generation_manifest",
+  "batch_id": "A_D1_OSAUTHORED_20260906",
+  "date": "2026-09-06",
+  "owner": "Data-A (lyf-1213)",
+  "role": "Data-A",
+  "source_layer": "os_controlled_authored",
+  "status": "candidate_only",
+  "admission_status": "NOT_ADMISSION_APPROVED",
+  "id_binding_status": "NON_PRODUCTION",
+  "production_note": "M1/M1-KB/M3 未绿；本批全部 candidate_only + NON_PRODUCTION，不含 production business truth / production knowledge_id；不写 human_decision / final_label。",
+  "quota_context": {
+    "note": "正式配额以 P04 冻结为准（Data-R 终裁 P10 accepted_legacy 后重算）。本批为各任务候选池内确定需要的 OS-authored 切片，不受 P04 结果影响。public_derived + 改写变体按缺口留待 Registry/P04 冻结后补齐。",
+    "task_pool_provisional": {"preference": 293, "conflict": 163, "forgetting": 130},
+    "os_planned_this_batch": {"preference": 98, "conflict": 64, "forgetting": 56},
+    "remaining_blocked": "public_derived(Registry license 未批准) + rewrite variants → 待 Data-R/Reviewer 批准 + P04 冻结"
+  },
+  "files": [
+    {
+      "file": "data/interim/d1_candidates_A_20260906/preference_candidates.jsonl",
+      "task_type": "preference_extraction",
+      "prompt_id": "P20",
+      "prompt_version": "P20-v4.1",
+      "count": 98,
+      "scenario_spec": "data/interim/candidates_v4/scenario_specs/preference_scenarios.json",
+      "per_scenario": {"OSPREF-01": 12, "OSPREF-02": 12, "OSPREF-03": 12, "OSPREF-04": 10, "OSPREF-05": 10, "OSPREF-06": 8, "OSPREF-07": 8, "OSPREF-08": 8, "OSPREF-09": 10, "OSPREF-10": 8}
+    },
+    {
+      "file": "data/interim/d1_candidates_A_20260906/conflict_candidates.jsonl",
+      "task_type": "conflict_resolution",
+      "prompt_id": "P22",
+      "prompt_version": "P22-v4.1",
+      "count": 64,
+      "scenario_spec": "data/interim/candidates_v4/scenario_specs/conflict_scenarios.json",
+      "per_scenario": {"OSCONF-01": 10, "OSCONF-02": 12, "OSCONF-03": 8, "OSCONF-04": 8, "OSCONF-05": 8, "OSCONF-06": 10, "OSCONF-07": 8}
+    },
+    {
+      "file": "data/interim/d1_candidates_A_20260906/forgetting_candidates.jsonl",
+      "task_type": "precise_forgetting",
+      "prompt_id": "P23",
+      "prompt_version": "P23-v4.1",
+      "count": 56,
+      "scenario_spec": "data/interim/candidates_v4/scenario_specs/forgetting_scenarios.json",
+      "per_scenario": {"OSFORG-01": 10, "OSFORG-02": 8, "OSFORG-03": 8, "OSFORG-04": 8, "OSFORG-05": 6, "OSFORG-06": 6, "OSFORG-07": 6, "OSFORG-08": 4}
+    }
+  ],
+  "generation": {
+    "generation_id": "gen_A_D1_OSAUTHORED_20260906",
+    "seed": 20260906,
+    "model": "deepseek-v4-flash",
+    "language": "zh-CN",
+    "template_family_note": "每条带 scenario_family；单族占比见批内统计，候选池层面 ≤25%(G4) 由 admission 阶段复核",
+    "builder_scripts": [
+      "evidence/ai_outputs/20260906_D1_candidate_factory_A/build_pref.py",
+      "evidence/ai_outputs/20260906_D1_candidate_factory_A/build_conf.py",
+      "evidence/ai_outputs/20260906_D1_candidate_factory_A/build_forg.py"
+    ]
+  },
+  "self_checks": {
+    "script": "evidence/ai_outputs/20260906_D1_candidate_factory_A/validate_batch.py",
+    "result": "ALL PASS",
+    "checks": ["jsonl parse", "identity fields(candidate_only/NON_PRODUCTION/NOT_ADMISSION_APPROVED)", "no human_decision/final_label/gold", "blind-visible leak token scan", "KMA enum legality(conflict_type/forget_mode)", "negative structure(target/selector omitted)", "target_ids∩must_keep=∅", "exact duplicate=0", "Jaccard>0.85 pairs=0", "total=218, per-scenario==planned"]
+  },
+  "notes": [
+    "OSPREF-05(implicit) 10 条输入为事件日志式行为证据，隐含偏好低置信，G2 阶段需 NEEDS_REVIEW 复核。",
+    "OSCONF-04(scope_ambiguity) 全部按“不同 scope 可共存”判定为 non_conflict_hard_negative，附 design_reason。",
+    "OSCONF-07(version) 与 OSCONF-02(temporal_update) 均标 temporal_inconsistency，以 scenario_family 区分版本/时点语义。",
+    "scope(design_scope_target) 为 A 侧设计提案，正式 scope 由 G2 逐条人工复核（reports/v4.1_scope_review_standard_A.md）。"
+  ]
+}
