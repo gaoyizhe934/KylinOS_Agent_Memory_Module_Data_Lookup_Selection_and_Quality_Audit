@@ -18,15 +18,17 @@ checked=10 unresolved=0 → exit 0（G1_provenance_unresolved_zero=true）
 ```
 10/10 os_controlled_authored，source_file 可解析，prompt P10-A1-rework-v4.1 active，scenario_spec_id 全命中。
 
-## 3) builder 确定性复现
+## 3) builder 确定性复现 + pinned exact-input 证明
 ```
 python scripts/v4/build_legacy_rework_A1.py --check
 pref  regenerated=3c108717…aa6 == disk == manifest_sha（match）
 forg regenerated=9269da40…f17 == disk == manifest_sha（match）
-input_hash recomputed=e01610d1… == manifest   → RESULT: MATCH
+input_hash recomputed=ed85e6d8… == manifest   → RESULT: MATCH
 ```
-读取冻结输入：data/gold 原行（按 sample_id 定位）+ reports/legacy_semantic_requal_A.jsonl（Rev3 fix_fields）；
-输出记录 input_commit / fix_source_commit / input_hash / output_sha256；source_file 为 repo-relative（跨平台可复现，CI 修正）。
+读取冻结输入（pinned commit c21ee694ef4164fe232a59096caa8c908967fa17，#37 merge master）：
+`git show <commit>:<gold_file>` 逐条 10 原始行 + `git show <commit>:reports/legacy_semantic_requal_A.jsonl`（Rev3 fix_fields）；
+当前 checkout 与 pinned blob newline-normalized 比对不一致 → fail-closed。
+manifest 记录 input_commit/fix_source_commit/source_files_sha256/selected_rows_sha256(ebf5c8e4…)/requal_blob_sha256(c5b217e3…)/repair_plan_sha256(9d7d9bd0…)/组合 input_hash/output_sha256；source_file repo-relative。
 
 ## CI（已并入 baseline-validation.yml）
 - validate_legacy_rework_A1.py（条件 hashFiles）
