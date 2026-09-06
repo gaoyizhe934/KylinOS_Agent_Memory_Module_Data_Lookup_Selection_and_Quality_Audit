@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 设置 Python
         uses: actions/setup-python@v5
@@ -41,3 +43,15 @@ jobs:
 
       - name: v4.1 P2-A 工具单测（fail-closed/negative path）
         run: python scripts/v4/test_v4_tools.py
+
+      - name: Data-A A1 legacy rework validator（repo-relative）
+        if: hashFiles('data/interim/d1_legacy_rework_A_20260906/*.jsonl') != ''
+        run: python scripts/v4/validate_legacy_rework_A1.py
+
+      - name: Data-A A1 canonical provenance（T03，10/10 PASS）
+        if: hashFiles('data/interim/d1_legacy_rework_A_20260906/*.jsonl') != ''
+        run: python scripts/v4/provenance_resolver.py --input "data/interim/d1_legacy_rework_A_20260906/*.jsonl" --out reports/prov_report_A1_ci.json
+
+      - name: Data-A A1 builder 确定性复现（--check）
+        if: hashFiles('data/interim/d1_legacy_rework_A_20260906/repair_plan.json') != ''
+        run: python scripts/v4/build_legacy_rework_A1.py --check

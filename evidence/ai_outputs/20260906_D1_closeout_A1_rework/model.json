@@ -1,0 +1,35 @@
+{
+  "session": "2026-09-06 Data-A Closeout A1 — 10 条 Legacy REWORK/RELABEL 重构（canonical os_controlled_authored）",
+  "human_operator": "lyf-1213 (Data-A)",
+  "role": "Data-A",
+  "model": "deepseek-v4-flash",
+  "branch": "feat/A-v4.1-d1-closeout",
+  "repo_base": "master c21ee694",
+  "review_ref": "Data-R Review #39 REQUEST_CHANGES（Blocking-1/2/3）；#38 A1–A3 分工确认",
+  "canonical_conformance": {
+    "source_layer": "os_controlled_authored",
+    "prompt_ref": "P10-A1-rework-v4.1（registry/prompt_registry.csv 新增 active 行）",
+    "scenario_spec_id": "每样本映射到 data/interim/candidates_v4/scenario_specs 现有场景",
+    "legacy_ref": "lineage 保留（legacy_sample_id/file/v1_family/user/conversation/split）"
+  },
+  "outputs": [
+    "data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl (6)",
+    "data/interim/d1_legacy_rework_A_20260906/legacy_rework_forgetting_candidates.jsonl (4)",
+    "data/interim/d1_legacy_rework_A_20260906/repair_plan.json",
+    "data/interim/d1_legacy_rework_A_20260906/generation_manifest_A_20260906.json",
+    "reports/v4.1_D1_A_legacy_rework_20260906.md",
+    "reports/prov_report_A1.json"
+  ],
+  "tooling": ["scripts/v4/build_legacy_rework_A1.py（确定性，读冻结输入+repair_plan）",
+              "scripts/v4/validate_legacy_rework_A1.py（repo-relative）",
+              "scripts/v4/provenance_resolver.py（canonical T03）"],
+  "verification": {
+    "local_result": "ALL PASS",
+    "checks": ["validate_legacy_rework_A1.py exit0", "T03 provenance checked=10 unresolved=0 exit0",
+               "build_legacy_rework_A1.py --check MATCH（input_hash/两文件 sha 与 manifest 一致）"]
+  },
+  "ci": ".github/workflows/baseline-validation.yml 新增 3 步（A1 validator / canonical T03 / builder --check，hashFiles 条件）",
+  "blockers": ["B1 机器复核 + Data-R 逐条签 requalification_status=完成", "M1 FROZEN 后双盲重标",
+               "forg_000002 time_window PENDING_RECHECK", "forg_000003 PII Data-R 口径"],
+  "ai_status": "candidate_only/NON_PRODUCTION; no human_decision/final_label/gold written"
+}
