@@ -8,17 +8,17 @@
  "source_files": [
   {
    "count_plan": 64,
-   "file": "data/interim/d1_candidates_A_20260906\\conflict_candidates.jsonl",
+   "file": "data/interim/d1_candidates_A_20260906/conflict_candidates.jsonl",
    "sha256_lf": "7f9efc7b5aa5c1ca5920360fffd2116557376c0aed0be7e947d02bc057c124ec"
   },
   {
    "count_plan": 56,
-   "file": "data/interim/d1_candidates_A_20260906\\forgetting_candidates.jsonl",
+   "file": "data/interim/d1_candidates_A_20260906/forgetting_candidates.jsonl",
    "sha256_lf": "f2e00a6fd2b19318812adf29aa6f2c17645a740f2d7c151d40ede70f0e11423e"
   },
   {
    "count_plan": 98,
-   "file": "data/interim/d1_candidates_A_20260906\\preference_candidates.jsonl",
+   "file": "data/interim/d1_candidates_A_20260906/preference_candidates.jsonl",
    "sha256_lf": "c180300699b2e8b27a5c753b2cb1f6a640238fe906eda9e56272a7782405df3f"
   }
  ],
@@ -30,9 +30,9 @@
  ],
  "mapping_payload": {
   "file": "data/interim/d1_candidates_A_20260906_rw/template_family_mapping_payload.json",
-  "sha256": "a8a91d171ba93296f1585535ca164b09d008c43a202b212de6f8ec4230f6a968"
+  "sha256": "dd96c1151583ac525681712280571955bb76bb96aaad54aff9bdcc1af0340648"
  },
- "input_manifest_payload_sha256": "81bff39d6ee8b886ddb929bfe467380ca6f43abed78562e2f47b3a82a1a9a5b7",
+ "input_manifest_payload_sha256": "d105036c81a284028228fa1a7d18a8069620e042499dc92b4d6298d72b778f35",
  "output_files": [
   {
    "count": 64,
@@ -68,5 +68,23 @@
   "status": "G2_OWNER_PENDING",
   "note": "A 真人 100%；AI 不代"
  },
- "not_written": "不写 human_decision/final_label/gold/production truth"
+ "not_written": "不写 human_decision/final_label/gold/production truth",
+ "manifest_ref": "data/interim/d1_candidates_A_20260906_rw/rework_manifest_20260906.json",
+ "authority": {
+  "scenario_ids": 25,
+  "scenario_spec_files": [
+   {
+    "file": "data/interim/candidates_v4/scenario_specs/preference_scenarios.json",
+    "sha256_lf": "47e5557bf7194a25903cd4bad0427dec008cd2e1c4c6fc8b798c2807f8e20894"
+   },
+   {
+    "file": "data/interim/candidates_v4/scenario_specs/conflict_scenarios.json",
+    "sha256_lf": "462e73aae5b34ec8ea727bbece8ddeaefa36e7f7230ad3c973c3c81e08eb7226"
+   },
+   {
+    "file": "data/interim/candidates_v4/scenario_specs/forgetting_scenarios.json",
+    "sha256_lf": "fe3c847e60eaa0ec1e4c77d9b9afa1957a985a249a314fda04082073556c0a75"
+   }
+  ]
+ }
 }
