@@ -1,0 +1,74 @@
+{
+  "schema": "closure_status_v4.1",
+  "version": "0.2",
+  "status": "DRAFT",
+  "note": "唯一机器状态源（Data-R review §9）。各 Markdown/报告只引用本文件，不再独立维护 PASS/PENDING 数字。本文件为 A/B 证据草稿，签署与更新归 Data-R。",
+  "owner_signer": "Data-R",
+  "maintained_by": "Data-R / Data-B（证据）/ Data-A（证据）",
+  "updated_at": "2026-09-05",
+  "rules_baseline": {"commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf", "note": "post-#32 master（#32 APPROVE + merge 后）"},
+  "closure_head": "b743e4229c12b8afac54657154737b169794a9bb",
+  "evidence_commit_rule": "evidence_commit 填该证据实际落盘的 commit SHA（本轮 b743e42 为 ledger/leak 最终版，其余证据自 dc5ea12 首次入库、b743e42 修正）；scan/source ref 另见各证据 generator_commit/scan_repo_ref",
+  "gates": {
+    "C0": {
+      "status": "PASS",
+      "evidence_path": "reports/independence_manifest.json",
+      "evidence_commit": "dc5ea12",
+      "reviewer": "gaoyizhe934",
+      "reviewed_at": "2026-09-05",
+      "blocker": null
+    },
+    "C1": {
+      "status": "PENDING",
+      "evidence_path": "reports/legacy_inventory_v4_full.jsonl",
+      "evidence_commit": "b743e42",
+      "generator_commit": "待 P2-A PR#36 merge 后最终工具 commit",
+      "scan_repo_ref": "待最终重跑",
+      "full_ledger_sha256": "见 legacy_inventory_v4.json",
+      "reviewer": null,
+      "blocker": "C1 需在 #36 merge 后以最新 master 同一 checkout 用最终 inventory_legacy.py 重跑，并拆分 tool_source_commit/scan_repo_ref/evidence_commit 后由 Data-R 复算签 LEGACY_SET_FROZEN"
+    },
+    "C2": {
+      "status": "PASS",
+      "evidence_path": "reports/seal_audit_v4.1.json",
+      "evidence_commit": "dc5ea12",
+      "reviewer": "gaoyizhe934",
+      "reviewed_at": "2026-09-05",
+      "blocker": null,
+      "note": "seal-v1 REVOKED (APPROVED_REVOKE)；暴露样本 DEV_REG_ONLY；新 seal 随正式5天 reseal"
+    },
+    "C3": {
+      "status": "PENDING",
+      "evidence_path": "reports/tooling_bootstrap_report.json",
+      "evidence_commit": "dc5ea12",
+      "reviewer": null,
+      "blocker": "12 工具已移入 P2-A PR#36（HEAD 8b384f3，R7 修复后待 Data-R 复审/merge）；#36 merge 后更新 tooling evidence 并将 C3 改 PASS"
+    },
+    "C4": {
+      "status": "PASS",
+      "evidence_path": "reports/trial40_reuse_audit.json",
+      "evidence_commit": "b743e42",
+      "reviewer": "gaoyizhe934",
+      "reviewed_at": "2026-09-05",
+      "blocker": null,
+      "note": "data_r_decision=APPROVED_HISTORY_ONLY；40 条逐样本已入 leak registry"
+    },
+    "C5": {
+      "status": "PASS",
+      "evidence_path": "reports/main_dependency_gate.json",
+      "evidence_commit": "dc5ea12",
+      "reviewer": "gaoyizhe934",
+      "reviewed_at": "2026-09-05",
+      "blocker": null,
+      "note": "依赖计划已登记=c5_status PASS；M1/M1-KB/M3=BLOCKED、M2=PENDING 保留；M1 PASS 前禁止 production business truth"
+    }
+  },
+  "summary": {
+    "gates_total": 6,
+    "approved": 4,
+    "pending": 2,
+    "blocked": 0,
+    "formal_day1_started": false,
+    "note": "正式 5 天时钟在 C1/C3 补齐 + C0-C5 全 PASS + Data-R Closure Freeze 后启动"
+  }
+}

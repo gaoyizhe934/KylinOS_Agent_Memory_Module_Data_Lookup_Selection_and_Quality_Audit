@@ -1,0 +1,36 @@
+{
+  "schema": "v4.1_independence_manifest",
+  "version": "0.1",
+  "status": "PASS",
+  "note": "Data-R R7 接受：A/B/R 三人工独立，AI 不补 Annotator，A/B 不互看，R 不提前给 final decision",
+  "updated_at": "2026-09-05",
+  "data_a": {
+    "github": "lyf-1213",
+    "human": true,
+    "role": "Data-A (Annotator A / 语义 / Pref/Conflict/Forget)"
+  },
+  "data_b": {
+    "github": "DGXD01",
+    "human": true,
+    "role": "Data-B (Annotator B / Provenance / Tooling / KB / Runtime)"
+  },
+  "data_r": {
+    "github": "gaoyizhe934",
+    "human": true,
+    "role": "Data-R (Reviewer / Gate / final_label / sealed / release)"
+  },
+  "a_b_distinct": true,
+  "r_distinct": true,
+  "ai_as_annotator": false,
+  "a_can_view_b_before_lock": false,
+  "b_can_view_a_before_lock": false,
+  "reviewer_final_before_dual_submit": false,
+  "evidence_refs": [
+    "worklog/owners.md (三人名单与分工)",
+    "AGENTS.md 分工表 (Data-A/B/R)",
+    "worklog/20260905_v41_closure_A.md (A 侧会话日志，AI 不补人数声明)",
+    "v4.1 SOP §8 人工独立性（无豁免）"
+  ],
+  "reviewer": "gaoyizhe934",
+  "reviewed_at": "2026-09-05"
+}
