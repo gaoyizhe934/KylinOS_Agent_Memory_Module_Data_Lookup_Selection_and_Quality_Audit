@@ -51,6 +51,8 @@ def main():
     root = os.path.abspath(args.repo)
     prompt_active = load_prompt_active(root)
     scenario_ids = load_scenario_ids(root)
+    plan = json.load(open(os.path.join(root, D, "repair_plan.json"), encoding="utf-8"))
+    plan_map = {e["candidate_id"]: e for e in plan["entries"]}
     fails = []
     rows = []
     for fn in FILES:
@@ -79,6 +81,21 @@ def main():
             if k in r:
                 fails.append((sid, "contains " + k))
         dm = r.get("design_metadata", {})
+        v1 = (dm.get("legacy_ref", {}) or {}).get("v1_family")
+        pe = plan_map.get(sid)
+        if pe is None:
+            fails.append((sid, "no repair_plan entry"))
+        else:
+            tf = r.get("template_family")
+            if pe.get("rewrite_required"):
+                cur = pe.get("current_template_family")
+                if not cur or tf != cur:
+                    fails.append((sid, "rewrite: template_family(%s) != current_template_family(%s)" % (tf, cur)))
+                if not v1 or v1 == cur:
+                    fails.append((sid, "rewrite: legacy_ref.v1_family(%s) not original lineage" % v1))
+            else:
+                if not tf or tf != v1:
+                    fails.append((sid, "template_family(%s) != legacy lineage(%s)" % (tf, v1)))
         for f in ["scenario_spec_id", "legacy_ref", "generation", "candidate_event_refs", "applied_fixes", "split_eligibility"]:
             if f not in dm:
                 fails.append((sid, "dm missing " + f))

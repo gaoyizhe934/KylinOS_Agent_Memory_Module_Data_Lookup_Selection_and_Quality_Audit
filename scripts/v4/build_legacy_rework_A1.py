@@ -67,6 +67,15 @@ def _nl(b):
     return b.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
 
+def _nl_bytes(b):
+    return b.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+
+
+def file_raw_sha(path):
+    with open(path, "rb") as f:
+        return sha(_nl_bytes(f.read()))
+
+
 def verify_pinned_identical(root, commit, relpaths):
     bad = []
     for rp in relpaths:
@@ -82,6 +91,18 @@ def parse_jsonl_text(text):
         if line.strip():
             rows.append(json.loads(line))
     return rows
+
+
+def resolve_template_family(e, gr, lid):
+    if e.get("rewrite_required"):
+        current = e.get("current_template_family")
+        if not current:
+            raise SystemExit("rewrite candidate %s missing current_template_family (fail-closed)" % lid)
+        return current
+    tf = gr.get("template_family")
+    if not tf:
+        raise SystemExit("template_family missing in pinned legacy row %s (fail-closed)" % lid)
+    return tf
 
 
 def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix_commit, root):
@@ -129,8 +150,14 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
             dm["task_semantic_class"] = e["step1"]
             if e.get("scope"):
                 dm["design_scope_target"] = e["scope"]
-            blind = {"user_message": gr["input"]["user_message"]}
-            pref_recs.append(base_rec(e["candidate_id"], "preference_extraction", fixed_ts, blind, dm))
+            blind_user = e.get("blind_user_message") or gr["input"]["user_message"]
+            if e.get("rewrite_required"):
+                applied.append({"field": "blind_text", "issue": e.get("rewrite_reason"),
+                                "proposed_action": "semantic-preserving rewrite per repair_plan (%s)" % e.get("rewrite_strategy")})
+            blind = {"user_message": blind_user}
+            rec = base_rec(e["candidate_id"], "preference_extraction", fixed_ts, blind, dm)
+            rec["template_family"] = resolve_template_family(e, gr, lid)
+            pref_recs.append(rec)
         else:
             dm["forget_mode"] = e["mode"]
             dm["checkpoints"] = e["checkpoints"]
@@ -142,7 +169,9 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
             if e.get("target_topic"):
                 dm["target_topic"] = e["target_topic"]
             blind = {"forget_instruction": gr["input"]["forget_instruction"], "inventory_context": e["inventory"]}
-            forg_recs.append(base_rec(e["candidate_id"], "precise_forgetting", fixed_ts, blind, dm))
+            rec = base_rec(e["candidate_id"], "precise_forgetting", fixed_ts, blind, dm)
+            rec["template_family"] = resolve_template_family(e, gr, lid)
+            forg_recs.append(rec)
     selected_rows_sha = sha("\n".join(sorted(selected)).encode("utf-8"))
     requal_blob_sha = sha(requal_text.encode("utf-8") if isinstance(requal_text, str) else requal_text)
     return pref_recs, forg_recs, selected_rows_sha, requal_blob_sha
@@ -180,6 +209,9 @@ def write_manifest(plan, outdir, input_hash, output_hashes, root, extra):
         "schema": "v4.1_d1_legacy_rework_manifest",
         "batch_id": plan["batch_id"], "date": plan["date"], "owner": plan["owner"],
         "branch": plan["branch"], "repo_base": plan["repo_base"],
+        "hash_contract": "sha256(lf_normalized_raw_bytes)  // repair_plan/source_files/requal/candidate 均按 LF-normalized raw bytes",
+        "template_family_policy": plan.get("template_family_policy"),
+        "template_family_source": "rewrite_required ? repair_plan.current_template_family : pinned legacy row template_family",
         "input_commit": plan["input_commit"], "fix_source_commit": plan["fix_source_commit"],
         "requal_source": REQUAL_DEFAULT.replace("\\", "/"),
         "input_hash": input_hash,
@@ -190,6 +222,7 @@ def write_manifest(plan, outdir, input_hash, output_hashes, root, extra):
         ],
         "regeneration_deterministic": {"builder": "scripts/v4/build_legacy_rework_A1.py", "verify": "python scripts/v4/build_legacy_rework_A1.py --check (CI)", "state": "VERIFY_VIA_CHECK"},
         "scope": plan["scope"], "red_line_compliance": plan["red_line_compliance"], "blockers": plan["blockers"],
+        "historical_exposure": plan.get("historical_exposure"),
     }
     with open(os.path.join(outdir, "generation_manifest_A_20260906.json"), "w", encoding="utf-8") as f:
         f.write(canon(mf) + "\n")
@@ -206,7 +239,7 @@ def main():
     outdir = args.outdir if os.path.isabs(args.outdir) else os.path.join(root, args.outdir)
     plan_p = os.path.join(outdir, "repair_plan.json")
     plan = json.load(open(plan_p, encoding="utf-8"))
-    plan_sha = sha(canon(plan).encode("utf-8"))
+    plan_sha = file_raw_sha(plan_p)  # pinned repair_plan raw-bytes sha (LF-normalized, 跨平台)
     input_commit = resolve_commit(root, plan["input_commit"])
     fix_commit = resolve_commit(root, plan["fix_source_commit"])
     if input_commit != plan["input_commit"] or fix_commit != plan["fix_source_commit"]:
