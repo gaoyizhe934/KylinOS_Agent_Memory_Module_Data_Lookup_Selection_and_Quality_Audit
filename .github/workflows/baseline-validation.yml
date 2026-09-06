@@ -55,3 +55,29 @@ jobs:
       - name: Data-A A1 builder 确定性复现（--check）
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/repair_plan.json') != ''
         run: python scripts/v4/build_legacy_rework_A1.py --check
+
+      - name: Data-B B1 canonical machine check（锁 A final SHA d62dafc4）
+        if: hashFiles('data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl') != ''
+        run: |
+          python scripts/v4/d1_closeout_b1_machine_check.py --repo "$GITHUB_WORKSPACE" --a-commit d62dafc42fd64cb65e086137553efcca8439ad45 --work "$RUNNER_TEMP/b1_pinned" --out "$RUNNER_TEMP/b1_check.jsonl" --summary-out "$RUNNER_TEMP/b1_summary.json"
+          python -c "
+import sys
+def norm(p):
+    return chr(10).join(l.rstrip(chr(13)+chr(10)) for l in open(p,encoding='utf-8').read().split(chr(10))).rstrip(chr(10))
+a=norm(sys.argv[1]); b=norm(sys.argv[2]); assert a==b, 'B1 jsonl mismatch'
+c=norm(sys.argv[3]); d=norm(sys.argv[4]); assert c==d, 'B1 summary mismatch'
+print('B1 canonical check MATCH')
+" "$RUNNER_TEMP/b1_check.jsonl" reports/v4.1_D1_closeout_B1_machine_check_20260906.jsonl "$RUNNER_TEMP/b1_summary.json" reports/v4.1_D1_closeout_B1_summary_20260906.json
+
+      - name: Data-B B3 G4 select 确定性重跑（seed 20260906，43/200）
+        if: hashFiles('data/processed/knowledge_retrieval_t2ranking.jsonl') != ''
+        run: |
+          python scripts/v4/d1_closeout_g4_t2ranking_select.py --n 43 --seed 20260906 --out "$RUNNER_TEMP/b3_select.json"
+          python -c "
+import json,sys
+a=json.load(open(sys.argv[1],encoding='utf-8')); b=json.load(open(sys.argv[2],encoding='utf-8'))
+assert a['selected_sample_ids']==b['selected_sample_ids'], 'selection mismatch'
+assert a['output_hash_sha256']==b['output_hash_sha256'], 'output hash mismatch'
+assert a['total_source']==200 and len(a['selected_sample_ids'])==43, '43/200 constraint'
+print('B3 deterministic MATCH; selected=', len(a['selected_sample_ids']))
+" "$RUNNER_TEMP/b3_select.json" reports/v4.1_D1_closeout_G4_t2ranking_select_20260906.json
