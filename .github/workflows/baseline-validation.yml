@@ -38,3 +38,6 @@ jobs:
 
       - name: 校验阶段3版本线索存档
         run: python scripts/audit/stage3_version_lock.py
+
+      - name: v4.1 P2-A 工具单测（fail-closed/negative path）
+        run: python scripts/v4/test_v4_tools.py

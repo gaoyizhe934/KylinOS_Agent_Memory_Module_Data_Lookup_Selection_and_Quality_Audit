@@ -1,0 +1,19 @@
+{
+  "schema": "prov_report",
+  "version": "v4.1",
+  "tool": "provenance_resolver.py",
+  "input": [
+    "tmp_p2a_test/nonexist/*.jsonl"
+  ],
+  "checked": 0,
+  "unresolved": [
+    {
+      "pattern": "tmp_p2a_test/nonexist/*.jsonl",
+      "reason": "glob 零匹配（fail-closed）"
+    }
+  ],
+  "unresolved_count": 1,
+  "gates": {
+    "G1_provenance_unresolved_zero": false
+  }
+}
