@@ -1,6 +1,6 @@
 # B2 P04 动态配额重算（Data-B，2026-09-06）— v2 正式版
 
-- 脚本：`scripts/v4/d1_closeout_p04_recompute.py`（v2：fail-closed + 正式输出）
+- 脚本：`scripts/v4/d1_closeout_p04_recompute.py`（v4）
 - 规则：v4.1 SOP §7/Q7 + 台账 04 —— `accepted_legacy = REUSE/REWORK/RELABEL 且 requalification_status=完成`（非 Runtime）；`new_needed = max(target-accepted,0)`；`candidate = ceil(new_needed×1.3)`（Tool/E2E ×1.0 不可抵）。
 
 ## 正式 P04（Data-R #40 Review 5124685158 签署 10 条）
@@ -21,7 +21,7 @@
 - 独立对象：KB 400 → 候选 520；Runtime sessions 35；scripts 45；fresh40 从 Admission PASS
 - 产物（v4.1 P04 规范名）：`reports/quota_plan_v4.1.csv` + `reports/quota_plan_v4.1_summary.json`（authority_pr=40/review_id=5124685158/head=20b575e + signed ids + requal sha）
 
-## fail-closed（v2）
+## fail-closed（v4）+ lineage mapping proof
 unknown/duplicate/不在 requal 集/decision 非 ACCEPT/Tool-E2E/signed 与 effective 不一致 → exit nonzero；正式 P04 须 `--requal-sha`（否则仅 preview）。
 
 ## 待 Data-R
