@@ -69,15 +69,6 @@
   }
  ],
  "output_set_aggregate_sha256": "efec07fdda1e210d3c0dfb47980b8924b9590cfd907d5cb795726561213fc464",
- "distribution_advisory": {
-  "global_max_family_pct": 5.5,
-  "task_max_pct": {
-   "preference": 12.2,
-   "conflict": 18.75,
-   "forgetting": 17.9
-  },
-  "note": "G4 concentration evidence (advisory), not authority"
- },
  "self_check_advisory": {
   "file": "data/interim/d1_candidates_A_20260906_rw/selfcheck_advisory_20260906.json",
   "note": "ADVISORY; G1 218/0, G4 PASS, G5 0; G3 by Data-B B2 PR"

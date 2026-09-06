@@ -61,12 +61,20 @@ def load_authority(root, commit):
         raise SystemExit("mapping authority missing: %s" % AUTHORITY_FILE)
     raw = open(p, "rb").read()
     auth = json.loads(nl(raw).decode("utf-8"))
+    # strict schema/lifecycle
+    if auth.get("schema") != "v4.1_A_A218_template_family_mapping_authority":
+        raise SystemExit("authority schema mismatch")
     if auth.get("source_commit") != commit:
         raise SystemExit("authority source_commit mismatch")
-    if auth.get("approved"):
-        raise SystemExit("authority must stay DRAFT_FOR_R_REVIEW (Data-R Review ID + exact HEAD is approval)")
+    if auth.get("status") != "DRAFT_FOR_R_REVIEW":
+        raise SystemExit("authority status must be DRAFT_FOR_R_REVIEW")
+    if auth.get("approved") is not False:
+        raise SystemExit("authority approved must be literal False")
+    fc = auth.get("pinned", {}).get("factory_config", {})
+    if fc.get("file") != "data/interim/candidates_v4/factory_config.json":
+        raise SystemExit("authority pinned factory_config.file not canonical path")
 
-    # ---- fail-closed pin validation: scenario_specs ----
+    # ---- scenario_specs pin + duplicate-id reject + prefix allowlist ----
     spec_files = []
     fams = {}
     for fn in SPEC_FILES:
@@ -75,18 +83,21 @@ def load_authority(root, commit):
         spec_files.append({"file": rel, "sha256_lf": sha(nl(b))})
         spec = json.loads(nl(b).decode("utf-8"))
         for sc in spec.get("scenarios", []):
-            if sc.get("scenario_id"):
-                fams[sc["scenario_id"]] = sc["scenario_family"]
+            sid = sc.get("scenario_id")
+            if not sid:
+                continue
+            if sid in fams:
+                raise SystemExit("duplicate scenario_id in pinned spec: %s" % sid)
+            fams[sid] = sc["scenario_family"]
     pinned_specs = auth.get("pinned", {}).get("scenario_spec_files", [])
-    if len(pinned_specs) != len(spec_files) or any(a["file"] != b0["file"] or a["sha256_lf"] != b0["sha256_lf"]
-                                                   for a, b0 in zip(sorted(pinned_specs, key=lambda x: x["file"]),
-                                                                   sorted(spec_files, key=lambda x: x["file"]))):
+    if (len(pinned_specs) != len(spec_files)
+            or any(a["file"] != b0["file"] or a["sha256_lf"] != b0["sha256_lf"]
+                   for a, b0 in zip(sorted(pinned_specs, key=lambda x: x["file"]),
+                                   sorted(spec_files, key=lambda x: x["file"])))):
         raise SystemExit("authority pinned scenario_specs mismatch vs git show actual")
 
-    # ---- fail-closed pin validation: factory_config + historical plan ----
-    fc = auth.get("pinned", {}).get("factory_config", {})
-    fc_rel = fc.get("file")
-    fc_raw = git_bytes(root, commit, fc_rel)
+    # ---- factory_config pin + historical plan (membership by current_template_family) ----
+    fc_raw = git_bytes(root, commit, fc["file"])
     if sha(nl(fc_raw)) != fc.get("sha256_lf"):
         raise SystemExit("authority pinned factory_config sha mismatch")
     fccfg = json.loads(nl(fc_raw).decode("utf-8"))
@@ -95,6 +106,7 @@ def load_authority(root, commit):
         "conflict": set(fccfg["template_family_plan"].get("conflict_families", [])),
         "forgetting": set(fccfg["template_family_plan"].get("forgetting_families", [])),
     }
+    PREFIX = {"OSPREF": "preference", "OSCONF": "conflict", "OSFORG": "forgetting"}
 
     entries = {}
     seen = set()
@@ -103,14 +115,21 @@ def load_authority(root, commit):
         if sid in seen:
             raise SystemExit("duplicate scenario_spec_id in authority: %s" % sid)
         seen.add(sid)
+        task = None
+        for pref, t in PREFIX.items():
+            if sid.startswith(pref):
+                task = t
+                break
+        if task is None:
+            raise SystemExit("unknown scenario_spec_id prefix: %s" % sid)
         if fams.get(sid) != e["scenario_family"]:
             raise SystemExit("authority %s family mismatch vs pinned spec" % sid)
-        if not e.get("current_template_family"):
+        ct = e.get("current_template_family")
+        if not ct:
             raise SystemExit("authority %s missing current_template_family" % sid)
-        task = "preference" if sid.startswith("OSPREF") else ("conflict" if sid.startswith("OSCONF") else "forgetting")
-        inplan = e["scenario_family"] in plan_by_task[task]
+        inplan = ct in plan_by_task[task]
         if e.get("in_factory_config_plan") != inplan:
-            raise SystemExit("authority %s in_factory_config_plan=%s inconsistent with pinned plan" % (sid, e.get("in_factory_config_plan")))
+            raise SystemExit("authority %s in_factory_config_plan inconsistent with pinned plan (by current_template_family)" % sid)
         entries[sid] = e
     if set(fams) != set(entries):
         raise SystemExit("authority must cover all pinned scenario_spec ids")

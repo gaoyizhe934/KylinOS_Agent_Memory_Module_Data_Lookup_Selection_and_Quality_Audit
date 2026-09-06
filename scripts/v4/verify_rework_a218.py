@@ -62,21 +62,42 @@ def run_check_assert(root, src_rel, dst_rel, commit):
         p = os.path.join(root, dst_rel, rel)
         if not os.path.exists(p) or sha(nl(open(p, "rb").read())) != sha(text.encode("utf-8")):
             fails.append("disk %s mismatch" % rel)
-    # 6) contract single-source consistency（防双口径/旧 hash 残留）
+    # 6) contract canonical projection equality（全量字段；单一机器真源 = manifest + authority）
     cj = os.path.join(root, "reports", "v4.1_D1_A_A218_template_family_mapping_contract_draft_20260906.json")
     if not os.path.exists(cj):
         fails.append("contract json missing")
     else:
+        mf = r["manifest"]
+        _LIFE = "file stays DRAFT_FOR_R_REVIEW; Data-R Review ID + exact HEAD is the approval authority; tool rejects approved=true"
+        _RULE = ("current_template_family = mapping_authority entries (checked-in, authority-driven). "
+                 "OSPREF-09/10, OSCONF-06/07, OSFORG-07/08 etc. are current rework lanes: "
+                 "historical factory_config.template_family_plan is planning input and incomplete; "
+                 "this authority is the current rework template-family registry.")
+        expected = {
+            "schema": "v4.1_A_A218_template_family_mapping_contract", "status": "DRAFT_FOR_R_REVIEW",
+            "approved": False, "date": "2026-09-06", "role": "Data-A (lyf-1213)",
+            "lifecycle": _LIFE, "rule": _RULE,
+            "source_commit": mf["source_commit"],
+            "mapping_authority": {"file": mf["mapping_authority"]["file"],
+                                  "sha256_lf": mf["mapping_authority"]["sha256_lf"],
+                                  "pinned": mf["mapping_authority"]["pinned"],
+                                  "lifecycle": mf["mapping_authority"]["lifecycle"]},
+            "input_manifest_payload_sha256": mf["input_manifest_payload_sha256"],
+            "mapping_payload_file_sha256_lf": mf["mapping_payload_file_sha256_lf"],
+            "source_files": mf["source_files"], "output_files": mf["output_files"],
+            "output_set_aggregate_sha256": mf["output_set_aggregate_sha256"],
+            "self_check_advisory": {"file": "data/interim/d1_candidates_A_20260906_rw/selfcheck_advisory_20260906.json",
+                                    "note": "ADVISORY; G1 218/0, G4 PASS, G5 0; G3 by Data-B B2 PR"},
+            "g2": {"status": "G2_OWNER_PENDING", "note": "A 真人 100%; AI 不代"},
+            "not_written": "不写 human_decision/final_label/gold/production truth",
+        }
         c = json.load(open(cj, encoding="utf-8"))
-        for stale in ("mapping_rule", "mapping_basis", "mapping_payload"):
+        if RW.canon(expected) != RW.canon(c):
+            fails.append("contract canonical projection mismatch with manifest/authority")
+        # no stale identity/old fields allowed
+        for stale in ("mapping_rule", "mapping_basis", "mapping_payload", "distribution_advisory"):
             if stale in c:
                 fails.append("contract stale key present: %s" % stale)
-        if c.get("mapping_payload_file_sha256_lf") != r["manifest"]["mapping_payload_file_sha256_lf"]:
-            fails.append("contract mapping_payload_file_sha256_lf mismatch")
-        if c.get("mapping_authority", {}).get("sha256_lf") != r["manifest"]["mapping_authority"]["sha256_lf"]:
-            fails.append("contract mapping_authority sha mismatch")
-        if not c.get("approved") is False or c.get("status") != "DRAFT_FOR_R_REVIEW":
-            fails.append("contract must remain DRAFT_FOR_R_REVIEW/approved=false")
     return fails, r
 
 
@@ -86,7 +107,7 @@ def main():
     ap.add_argument("--src", default="data/interim/d1_candidates_A_20260906")
     ap.add_argument("--dst", default="data/interim/d1_candidates_A_20260906_rw")
     ap.add_argument("--source-commit", default=RW.DEFAULT_COMMIT)
-    ap.add_argument("--require-clean", action="store_true")
+    ap.add_argument("--require-dst-clean", action="store_true")
     a = ap.parse_args()
     root = os.path.abspath(a.repo)
     src_rel = RW.relpos(root, os.path.join(root, a.src))
@@ -95,7 +116,7 @@ def main():
     print("counts_total=%d input_manifest_payload_sha256=%s mapping_payload_file_sha256_lf=%s output_aggregate=%s" % (
         sum(o["count"] for o in r["outputs"]), r["manifest"]["input_manifest_payload_sha256"],
         r["manifest"]["mapping_payload_file_sha256_lf"], r["manifest"]["output_set_aggregate_sha256"]))
-    if a.require_clean:
+    if a.require_dst_clean:
         st = subprocess.run(["git", "-C", root, "status", "--porcelain", "--", a.dst],
                             capture_output=True).stdout.decode("utf-8", "replace").strip()
         if st:
