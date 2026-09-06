@@ -1,13 +1,15 @@
 {
   "schema": "closure_status_v4.1",
-  "version": "1.1",
-  "status": "READY_FOR_DATA_R_FREEZE",
-  "note": "唯一机器状态源。C0-C5 业务证据均被 Data-R 接受（content-accepted），但 Closure Freeze 尚未由 Data-R 签署：data_r_freeze_signed=false，formal_day1_started=false。C1 与 legacy_inventory_v4.json status=NOT_FROZEN 保持一致（LEGACY_SET_FROZEN 待 Data-R Freeze 时签署）。",
+  "version": "1.2",
+  "status": "DATA_R_FROZEN",
+  "note": "唯一机器状态源。C0-C5 业务证据 6/6 已接受，Data-R 已签署 Closure Freeze；C1=LEGACY_SET_FROZEN；formal_day1_started=true。",
   "owner_signer": "Data-R",
-  "data_r_freeze_signed": false,
-  "updated_at": "2026-09-05",
+  "data_r_freeze_signed": true,
+  "updated_at": "2026-09-06",
   "rules_baseline_commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf",
   "closure_content_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+  "closure_head": "e8ed4370215aa767603cafbd262afe1f76683197",
+  "freeze_signed_at": "2026-09-06T09:59:00+08:00",
   "evidence_commit_rule": "evidence_commit 使用完整 40-char SHA；evidence_sha256 为各证据文件完整 SHA256",
   "gates": {
     "C0": {
@@ -20,18 +22,19 @@
       "blocker": null
     },
     "C1": {
-      "status": "READY_FOR_LEGACY_SET_FROZEN",
+      "status": "PASS",
+      "freeze_status": "LEGACY_SET_FROZEN",
       "evidence_path": "reports/legacy_inventory_v4_full.jsonl",
       "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
       "evidence_sha256": "541aa9d3b85b14b4ff01354453a4c7b08acbd1c1e64e5cf1b81a7577d8836cf2",
-      "summary_sha256": "709848f571d8e482b03e276340e0193c655e4df57f95ff1d7919399aa8f27729",
+      "summary_sha256": "97cdaffeb48be39329a2a909bf6c173d7be0e4d1a26eefc7cfd4eb5239dc0612",
       "tool_source_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
       "scan_repo_ref": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
       "full_ledger_sha256": "541aa9d3b85b14b4ff01354453a4c7b08acbd1c1e64e5cf1b81a7577d8836cf2",
-      "reviewer": "gaoyizhe934 (content accepted)",
-      "reviewed_at": "2026-09-05",
-      "blocker": "LEGACY_SET_FROZEN 待 Data-R Freeze 签署（inventory status 现为 NOT_FROZEN，保持一致）",
-      "note": "Data-R 复算一致：total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS"
+      "reviewer": "gaoyizhe934",
+      "reviewed_at": "2026-09-06T09:59:00+08:00",
+      "blocker": null,
+      "note": "Data-R Freeze：total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS"
     },
     "C2": {
       "status": "PASS",
@@ -77,8 +80,9 @@
   "summary": {
     "gates_total": 6,
     "content_accepted": 6,
-    "freeze_signed": 0,
-    "formal_day1_started": false,
-    "note": "业务证据 6/6 content-accepted；Data-R 签署 closure_freeze_record.json 后才进入 Freeze/D1"
+    "freeze_signed": 1,
+    "formal_day1_started": true,
+    "formal_day1_started_at": "2026-09-06T09:59:00+08:00",
+    "note": "Closure 已由 Data-R 冻结；D1 已启动。M1 当前仍 BLOCKED，M1 PASS 前禁止 production business truth。"
   }
 }
