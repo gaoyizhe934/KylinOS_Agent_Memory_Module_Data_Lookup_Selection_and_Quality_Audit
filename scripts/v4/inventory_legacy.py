@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """v4.1 P01 Legacy Inventory（P2-A 工具 T02，Data-B）——逐样本账本 + 优先级 logical dedup + 严格 fail-closed
 
-输出 reports/legacy_inventory_v4_full.jsonl（逐样本账本）+ legacy_inventory_v4.json（summary 由 full 派生）。
-logical dedup（明确优先级，非四字段全等）：
-  L1 stable sample/raw identity（sample_id 或 raw_id）→ 优先
-  L2 content+evidence fingerprint（input+evidence 归一化 hash）
-  L3 source/raw locator
-每个 logical group 恰好一个 canonical IN_SCOPE，其余 DUPLICATE_FILE 且 duplicate_of 指向 canonical sample_id。
-repo_ref 记录真实扫描 HEAD。
-fail-closed：任一文件 open / JSONL parse / hash 失败 -> exit 2。
-退出码：0=PASS；2=扫描/解析异常。
-用法：python scripts/v4/inventory_legacy.py [--out-dir reports]
+identity precedence（明确优先级，非元组全等）：
+  L1 稳定 sample_id（若存在）为主，raw_id 漂移不影响同组；
+  L2 raw+task+source 组合（仅 sample_id 缺失时进入），防 raw 被多任务复用时误折叠；
+  L3 content+evidence 指纹；
+  L4 source/raw locator；
+每个 logical group 恰好一个 canonical IN_SCOPE；DUPLICATE_FILE 的 duplicate_of 必须解析到该组唯一 canonical。
+输出每条含 logical_group_id；结束时强断言（组内 IN_SCOPE==1 且 duplicate_of 可解析）。
+repo_ref / scan_repo_ref 记录真实扫描 HEAD；tool_source_commit 记录工具实现 commit（外部传入）。
+fail-closed：任一文件 open / JSONL parse / hash / 断言失败 -> exit 2。
+用法：python scripts/v4/inventory_legacy.py [--out-dir reports] [--tool-source-commit <sha>]
 """
 import argparse
 import glob
@@ -76,20 +76,24 @@ def norm(s):
 
 
 def identity(r):
-    """返回优先级身份键：L1 sample/raw identity > L2 content+evidence > L3 raw locator。"""
+    """优先级身份：L1 sample_id（主）> L2 raw+task+source > L3 content+evidence > L4 locator。"""
     sid = str(r.get("sample_id") or r.get("id") or "").strip()
     raw = str(r.get("raw_id") or r.get("source_event_id") or "").strip()
+    task = str(r.get("task_type") or "").strip()
+    src = str(r.get("source") or "").strip()
     content = norm(json.dumps(r.get("input", {}), ensure_ascii=False))
     ev = norm(json.dumps(r.get("evidence", []), ensure_ascii=False))
     loc = str(r.get("source_file") or "").strip()
-    if sid or raw:
-        return ("L1", sid, raw)
+    if sid:
+        return ("L1", sid)
+    if raw and task and src:
+        return ("L2", raw, task, src)
     ck = fingerprint(content + ev)
     if ck:
-        return ("L2", ck, "")
+        return ("L3", ck)
     if loc:
-        return ("L3", fingerprint(loc), "")
-    return ("L0", fingerprint(json.dumps(r, ensure_ascii=False)), "")
+        return ("L4", fingerprint(loc))
+    return ("L5", fingerprint(json.dumps(r, ensure_ascii=False)))
 
 
 LAYERS = [
@@ -103,11 +107,14 @@ SKIP_PROCESSED = {"multiwoz"}
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default="reports")
+    ap.add_argument("--tool-source-commit", default="", help="inventory_legacy.py 实现所在 commit（如 P2-A PR#36）")
     args = ap.parse_args()
 
-    ref = git_head()
+    scan_ref = git_head()
+    tool_commit = args.tool_source_commit or scan_ref
     records = []
     groups = {}  # identity_key -> canonical record
+    group_ids = {}
     for layer, rel_dir, pattern in LAYERS:
         for p in sorted(glob.glob(os.path.join(ROOT, rel_dir, pattern), recursive=True)):
             rel = os.path.relpath(p, ROOT).replace("\\", "/")
@@ -123,14 +130,17 @@ def main():
             split = os.path.basename(os.path.dirname(p)) if layer == "gold" else ""
             for line_no, r in rows:
                 ik = identity(r)
+                if ik not in group_ids:
+                    group_ids[ik] = "g%05d" % len(group_ids)
                 rec = {
-                    "repo_ref": ref, "layer": layer, "split": split,
+                    "repo_ref": scan_ref, "layer": layer, "split": split,
                     "file_path": rel, "file_sha256": fsha, "line_no": line_no,
                     "sample_id": r.get("sample_id", ""), "task_type": r.get("task_type", ""),
                     "source": r.get("source", ""),
                     "sample_fingerprint": fingerprint(json.dumps(r, ensure_ascii=False)),
                     "label_exposed": r.get("label_exposed", "unknown"),
                     "template_family": r.get("template_family", ""),
+                    "logical_group_id": group_ids[ik],
                     "inventory_status": "IN_SCOPE", "duplicate_of": "",
                 }
                 if ik in groups:
@@ -146,14 +156,24 @@ def main():
             print("  ", e)
         sys.exit(2)
 
-    # 断言：每个 duplicate group 恰好 1 个 canonical IN_SCOPE
-    dup_groups = {}
+    # 强 canonical 断言：每组恰好 1 个 IN_SCOPE；duplicate_of 可解析到组内唯一 canonical
+    from collections import defaultdict
+    by_group = defaultdict(list)
     for r in records:
-        if r["inventory_status"] == "DUPLICATE_FILE":
-            dup_groups.setdefault(r["duplicate_of"], []).append(r["sample_id"])
-    bad = [d for d, v in dup_groups.items() if not v]
-    if bad:
-        print("FAIL_CLOSED: duplicate group without canonical", bad)
+        by_group[r["logical_group_id"]].append(r)
+    for g, recs in by_group.items():
+        in_scope = [r for r in recs if r["inventory_status"] == "IN_SCOPE"]
+        if len(in_scope) != 1:
+            ERRORS.append("canonical-assert: group %s has %d IN_SCOPE (expect 1)" % (g, len(in_scope)))
+            continue
+        canonical_sid = in_scope[0]["sample_id"]
+        for r in recs:
+            if r["inventory_status"] == "DUPLICATE_FILE" and r["duplicate_of"] != canonical_sid:
+                ERRORS.append("canonical-assert: group %s duplicate_of=%s != canonical=%s" % (g, r["duplicate_of"], canonical_sid))
+    if ERRORS:
+        print("FAIL_CLOSED:", len(ERRORS))
+        for e in ERRORS[:20]:
+            print("  ", e)
         sys.exit(2)
 
     full = os.path.join(ROOT, args.out_dir, "legacy_inventory_v4_full.jsonl")
@@ -172,13 +192,15 @@ def main():
     summary = {
         "schema": "legacy_inventory_v4", "version": "v4.1", "tool": "inventory_legacy.py",
         "generated_by": "DGXD01(Data-B)", "date": "2026-09-05", "status": "NOT_FROZEN",
-        "generator_commit": ref, "scan_repo_ref": ref,
+        "tool_source_commit": tool_commit,
+        "scan_repo_ref": scan_ref,
         "full_ledger_sha256": full_sha,
-        "dedup_policy": "L1 sample/raw identity > L2 content+evidence > L3 raw locator; 每组合一 canonical IN_SCOPE",
+        "dedup_policy": "L1 sample_id(主) > L2 raw+task+source > L3 content+evidence > L4 locator; 每组合一 canonical IN_SCOPE",
+        "canonical_assertion": "PASS (每组 IN_SCOPE==1, duplicate_of 可解析)",
         "source": "derived_from_full",
         "summary": {
             "total_records": len(records), "in_scope": n_in, "duplicate_file": n_dup,
-            "duplicate_groups": len(dup_groups),
+            "logical_groups": len(group_ids),
             "in_scope_by_task": by_task,
             "note": "N 为盘点结果非假设；IN_SCOPE 边界最终由 Data-R 判定",
         },

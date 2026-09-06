@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """v4.1 Leakage Scan（P2-A 工具 T05，Data-B）
-对 candidate 做 content/evidence/raw-span/template/sample-id 全指纹比对 leaked_content_registry；leak=0 才 PASS。
-Registry 缺失/解析失败/零 glob 匹配 -> nonzero（fail-closed）。
-指纹算法与 leak registry 统一（normalize + sha256）。
+
+统一 leak fingerprint contract：sample_id + content + evidence + raw identity/span + template。
+Registry loader 装载全部指纹键（含 raw_id/raw_fingerprint/raw_span）。
+Registry 缺失/解析失败/零 glob/零样本 -> nonzero。
+输出含 checked_sample_ids + input_set_hash（供 T06 join）。
 用法：python scripts/v4/leakage_scan.py --input <glob> --registry registry/leaked_content_registry.json [--out reports/leak_report.json]
 """
 import argparse
@@ -15,6 +17,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FINGERPRINT_CONTRACT = ["sample_id", "content", "evidence", "raw_identity_span", "template"]
 
 
 def norm(s):
@@ -26,14 +29,19 @@ def fp(s):
 
 
 def gen_fingerprints(r):
-    """统一指纹：sample-id / content / evidence / raw-span / template。"""
     out = set()
-    out.add("sid:" + fp(str(r.get("sample_id") or "")))
+    sid = str(r.get("sample_id") or "")
+    raw = str(r.get("raw_id") or r.get("source_event_id") or "")
+    out.add("sid:" + fp(sid))
     out.add("content:" + fp(norm(json.dumps(r.get("blind_visible", {}).get("input", {}), ensure_ascii=False))))
     out.add("evidence:" + fp(norm(json.dumps(r.get("blind_visible", {}).get("inventory_context", r.get("evidence", [])), ensure_ascii=False))))
-    out.add("raw:" + fp(norm(json.dumps(r.get("evidence", []), ensure_ascii=False))))
+    out.add("raw:" + fp(norm(raw)))
     out.add("template:" + fp(norm(str(r.get("template_family") or ""))))
     return out
+
+
+def input_set_hash(ids):
+    return hashlib.sha256(json.dumps(sorted(ids)).encode("utf-8")).hexdigest()
 
 
 def main():
@@ -57,15 +65,24 @@ def main():
     for e in reg.get("leaked_entries", []):
         if e.get("content_fingerprint"):
             leak_fps.add("content:" + e["content_fingerprint"])
+        if e.get("evidence_fingerprint"):
+            leak_fps.add("evidence:" + e["evidence_fingerprint"])
         if e.get("sample_id"):
             leak_fps.add("sid:" + fp(str(e["sample_id"])))
         if e.get("template_family"):
             leak_fps.add("template:" + fp(norm(e["template_family"])))
-        if e.get("evidence_fingerprint"):
-            leak_fps.add("evidence:" + e["evidence_fingerprint"])
+        # raw identity / span / raw_fingerprint
+        raw_id = e.get("raw_id") or e.get("source_event_id")
+        if raw_id:
+            leak_fps.add("raw:" + fp(norm(str(raw_id))))
+        if e.get("raw_fingerprint"):
+            leak_fps.add("raw:" + e["raw_fingerprint"])
+        if e.get("raw_span"):
+            leak_fps.add("raw:" + fp(norm(e["raw_span"])))
 
-    checked = 0
+    checked = []
     hits = []
+    samples = {}
     for pat in args.input:
         matched = glob.glob(os.path.join(ROOT, pat))
         if not matched:
@@ -77,21 +94,23 @@ def main():
                     if not line.strip():
                         continue
                     r = json.loads(line)
-                    checked += 1
                     sid = r.get("sample_id")
-                    fgrps = gen_fingerprints(r)
-                    hit = fgrps & leak_fps
+                    checked.append(sid)
+                    hit = gen_fingerprints(r) & leak_fps
+                    samples[sid] = {"ok": not hit, "hit": sorted(hit)}
                     if hit:
                         hits.append({"sample_id": sid, "matched_fingerprints": sorted(hit)})
 
-    if checked == 0:
+    if not checked:
         print("FAIL_CLOSED: 零样本输入")
         sys.exit(2)
 
     report = {
         "schema": "leak_report", "version": "v4.1", "tool": "leakage_scan.py",
-        "input": args.input, "checked": checked, "hits": hits, "leak_count": len(hits),
-        "fingerprint_coverage": ["content", "evidence", "raw", "template", "sample_id"],
+        "input": args.input, "checked": len(checked),
+        "checked_sample_ids": sorted(set(checked)), "input_set_hash": input_set_hash(set(checked)),
+        "fingerprint_contract": FINGERPRINT_CONTRACT, "fingerprint_algo": "normalize+sha256",
+        "samples": samples, "hits": hits, "leak_count": len(hits),
         "gates": {"G5_leak_zero": len(hits) == 0},
     }
     if args.out:
@@ -100,7 +119,7 @@ def main():
         with open(out, "w", encoding="utf-8") as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
         print("written:", out)
-    print("checked=%d leak=%d" % (checked, len(hits)))
+    print("checked=%d leak=%d" % (len(checked), len(hits)))
     sys.exit(2 if hits else 0)
 
 

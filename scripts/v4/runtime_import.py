@@ -45,6 +45,11 @@ def main():
                         lacks = []
                         if not build_hash:
                             lacks.append("frozen_build_hash")
+                        ev_build = ev.get("build_hash") or ev.get("frozen_build_hash")
+                        if not ev_build:
+                            lacks.append("event_build_hash")
+                        elif build_hash and ev_build != build_hash:
+                            lacks.append("BUILD_MISMATCH(event=%s manifest=%s)" % (ev_build, build_hash))
                         if not ev.get("trace_id"):
                             lacks.append("trace_id")
                         if not ev.get("tool_call_id"):
