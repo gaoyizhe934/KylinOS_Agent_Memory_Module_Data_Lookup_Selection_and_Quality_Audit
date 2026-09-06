@@ -1,0 +1,26 @@
+{
+  "schema": "closure_freeze_record",
+  "version": "1.0",
+  "status": "PENDING_REVIEW",
+  "rules_baseline_commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf",
+  "closure_content_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+  "p2a_merged_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
+  "c0_c5": {
+    "C0": {"status": "PASS", "evidence": "reports/independence_manifest.json", "evidence_commit": "737ef19"},
+    "C1": {"status": "PASS", "evidence": "reports/legacy_inventory_v4_full.jsonl", "evidence_commit": "737ef19", "full_ledger_sha256": "541aa9d3b85b14b4", "tool_source_commit": "f3cdd2a", "scan_repo_ref": "f3cdd2a"},
+    "C2": {"status": "PASS", "evidence": "reports/seal_audit_v4.1.json", "evidence_commit": "737ef19"},
+    "C3": {"status": "PASS", "evidence": "reports/tooling_bootstrap_report.json", "evidence_commit": "737ef19", "p2a_merged": "f3cdd2a"},
+    "C4": {"status": "PASS", "evidence": "reports/trial40_reuse_audit.json", "evidence_commit": "737ef19"},
+    "C5": {"status": "PASS", "evidence": "reports/main_dependency_gate.json", "evidence_commit": "737ef19"}
+  },
+  "formal_day1_started": false,
+  "main_dependency_snapshot": {
+    "M1": "BLOCKED (schema_snapshot 缺失, deadline D1 10:30)",
+    "M1_KB": "BLOCKED (kb_import_contract 缺失, deadline D2 12:00)",
+    "M2": "PENDING (deadline D3 12:00)",
+    "M3": "BLOCKED_EXTERNAL (frozen build 未就绪, deadline D3 18:00)"
+  },
+  "signed_by": "PENDING (Data-R gaoyizhe934)",
+  "signed_at": null,
+  "note": "closure_head 以本 record 签署时的 #33 HEAD 为准；Data-R 签署后 formal_day1_started 才可为 true"
+}

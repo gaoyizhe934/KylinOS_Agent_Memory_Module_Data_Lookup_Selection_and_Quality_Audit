@@ -1,62 +1,65 @@
 {
   "schema": "closure_status_v4.1",
-  "version": "0.2",
-  "status": "DRAFT",
-  "note": "唯一机器状态源（Data-R review §9）。各 Markdown/报告只引用本文件，不再独立维护 PASS/PENDING 数字。本文件为 A/B 证据草稿，签署与更新归 Data-R。",
+  "version": "1.0",
+  "status": "ALL_PASS_CANDIDATE",
+  "note": "唯一机器状态源。C0-C5 全部 PASS（Data-R 逐项签署）；正式 5 天时钟在 closure_freeze_record.json 由 Data-R 签署后启动。",
   "owner_signer": "Data-R",
-  "maintained_by": "Data-R / Data-B（证据）/ Data-A（证据）",
   "updated_at": "2026-09-05",
-  "rules_baseline": {"commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf", "note": "post-#32 master（#32 APPROVE + merge 后）"},
-  "closure_head": "b743e4229c12b8afac54657154737b169794a9bb",
-  "evidence_commit_rule": "evidence_commit 填该证据实际落盘的 commit SHA（本轮 b743e42 为 ledger/leak 最终版，其余证据自 dc5ea12 首次入库、b743e42 修正）；scan/source ref 另见各证据 generator_commit/scan_repo_ref",
+  "rules_baseline": {"commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf", "note": "#32 v4.1 规则基线 merge"},
+  "closure_content_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+  "evidence_commit_rule": "evidence_commit 指证据实际落盘 commit（本 closure_content_commit=737ef19 为证据最终版）；closure_head 见 closure_freeze_record.json",
   "gates": {
     "C0": {
       "status": "PASS",
       "evidence_path": "reports/independence_manifest.json",
-      "evidence_commit": "dc5ea12",
+      "evidence_commit": "737ef19",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
       "blocker": null
     },
     "C1": {
-      "status": "PENDING",
+      "status": "PASS",
       "evidence_path": "reports/legacy_inventory_v4_full.jsonl",
-      "evidence_commit": "b743e42",
-      "generator_commit": "待 P2-A PR#36 merge 后最终工具 commit",
-      "scan_repo_ref": "待最终重跑",
-      "full_ledger_sha256": "见 legacy_inventory_v4.json",
-      "reviewer": null,
-      "blocker": "C1 需在 #36 merge 后以最新 master 同一 checkout 用最终 inventory_legacy.py 重跑，并拆分 tool_source_commit/scan_repo_ref/evidence_commit 后由 Data-R 复算签 LEGACY_SET_FROZEN"
+      "evidence_commit": "737ef19",
+      "tool_source_commit": "f3cdd2a (P2-A #36 merged)",
+      "scan_repo_ref": "f3cdd2a",
+      "full_ledger_sha256": "541aa9d3b85b14b4... (见 legacy_inventory_v4.json)",
+      "reviewer": "gaoyizhe934",
+      "reviewed_at": "2026-09-05",
+      "blocker": null,
+      "note": "Data-R 复算一致：total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS (每组 IN_SCOPE==1, duplicate_of 可解析)"
     },
     "C2": {
       "status": "PASS",
       "evidence_path": "reports/seal_audit_v4.1.json",
-      "evidence_commit": "dc5ea12",
+      "evidence_commit": "737ef19",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
       "blocker": null,
       "note": "seal-v1 REVOKED (APPROVED_REVOKE)；暴露样本 DEV_REG_ONLY；新 seal 随正式5天 reseal"
     },
     "C3": {
-      "status": "PENDING",
+      "status": "PASS",
       "evidence_path": "reports/tooling_bootstrap_report.json",
-      "evidence_commit": "dc5ea12",
-      "reviewer": null,
-      "blocker": "12 工具已移入 P2-A PR#36（HEAD 8b384f3，R7 修复后待 Data-R 复审/merge）；#36 merge 后更新 tooling evidence 并将 C3 改 PASS"
+      "evidence_commit": "737ef19",
+      "reviewer": "gaoyizhe934",
+      "reviewed_at": "2026-09-05",
+      "blocker": null,
+      "note": "P2-A PR#36 APPROVED + merged (master f3cdd2a)；12 工具 + 单测 40+ 断言；Baseline Validation run 136 success"
     },
     "C4": {
       "status": "PASS",
       "evidence_path": "reports/trial40_reuse_audit.json",
-      "evidence_commit": "b743e42",
+      "evidence_commit": "737ef19",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
       "blocker": null,
-      "note": "data_r_decision=APPROVED_HISTORY_ONLY；40 条逐样本已入 leak registry"
+      "note": "data_r_decision=APPROVED_HISTORY_ONLY；40 条逐样本已入 leak registry (81 entries)"
     },
     "C5": {
       "status": "PASS",
       "evidence_path": "reports/main_dependency_gate.json",
-      "evidence_commit": "dc5ea12",
+      "evidence_commit": "737ef19",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
       "blocker": null,
@@ -65,10 +68,10 @@
   },
   "summary": {
     "gates_total": 6,
-    "approved": 4,
-    "pending": 2,
+    "approved": 6,
+    "pending": 0,
     "blocked": 0,
     "formal_day1_started": false,
-    "note": "正式 5 天时钟在 C1/C3 补齐 + C0-C5 全 PASS + Data-R Closure Freeze 后启动"
+    "note": "正式 5 天时钟待 Data-R 签署 closure_freeze_record.json 后启动"
   }
 }
