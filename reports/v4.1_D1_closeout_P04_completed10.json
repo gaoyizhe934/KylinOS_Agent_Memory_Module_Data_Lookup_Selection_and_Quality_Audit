@@ -1,0 +1,19 @@
+{
+ "schema": "p04_completed_signature",
+ "authority": "Data-R #40 Review 5124685158 (20b575e)",
+ "date": "2026-09-06",
+ "requalification_status": "完成",
+ "completed_sample_ids": [
+  "pref_000001",
+  "pref_000002",
+  "pref_000005",
+  "pref_000004",
+  "pref_000006",
+  "pref_000003",
+  "forg_000001",
+  "forg_000002",
+  "forg_000003",
+  "forg_000004"
+ ],
+ "completed_sample_ids_sha256": "58c838ad1611cb3ec57adfd49800c64851cb806cb5c6d473b5cd13aae82d4752"
+}

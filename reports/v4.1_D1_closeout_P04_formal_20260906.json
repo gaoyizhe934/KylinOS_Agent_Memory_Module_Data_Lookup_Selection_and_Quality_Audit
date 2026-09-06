@@ -1,0 +1,67 @@
+{
+ "schema": "p04_formal_v4.1",
+ "date": "2026-09-06",
+ "generated_by": "DGXD01(Data-B)",
+ "authority": "Data-R #40 Review 5124685158 (20b575e)",
+ "requal_sha256": "0f05f92b013ed4915c2756b7453aad60f072e23a7af4741067df668de579eb56",
+ "completed_count": 10,
+ "completed_sample_ids_sha256": "58c838ad1611cb3ec57adfd49800c64851cb806cb5c6d473b5cd13aae82d4752",
+ "accepted_legacy_effective": 10,
+ "tasks": [
+  {
+   "task": "preference_extraction",
+   "target": 225,
+   "accepted_legacy": 6,
+   "new_needed": 219,
+   "candidate_needed": 285
+  },
+  {
+   "task": "knowledge_retrieval",
+   "target": 175,
+   "accepted_legacy": 0,
+   "new_needed": 175,
+   "candidate_needed": 228
+  },
+  {
+   "task": "conflict_resolution",
+   "target": 125,
+   "accepted_legacy": 0,
+   "new_needed": 125,
+   "candidate_needed": 163
+  },
+  {
+   "task": "precise_forgetting",
+   "target": 100,
+   "accepted_legacy": 4,
+   "new_needed": 96,
+   "candidate_needed": 125
+  },
+  {
+   "task": "tool_result",
+   "target": 125,
+   "accepted_legacy": 0,
+   "new_needed": 125,
+   "candidate_needed": 125
+  },
+  {
+   "task": "end_to_end_session",
+   "target": 35,
+   "accepted_legacy": 0,
+   "new_needed": 35,
+   "candidate_needed": 35
+  }
+ ],
+ "totals": {
+  "gold_target": 785,
+  "new_needed": 775,
+  "candidate_needed": 961,
+  "kb": {
+   "target": 400,
+   "candidate_pool": 520
+  },
+  "runtime_sessions": 35,
+  "scripts": 45
+ },
+ "g4_status": "BLOCKED",
+ "accepted_note": "仅 Data-R #40 签署 10 条；#45 merge ≠ Legacy 完成重准入 ≠ Gold"
+}
