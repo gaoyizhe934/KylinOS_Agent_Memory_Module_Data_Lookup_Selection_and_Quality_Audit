@@ -1,19 +1,25 @@
 {
- "schema": "b1_machine_check_summary_v2",
+ "schema": "b1_machine_check_summary_v3",
  "version": "v4.1",
  "date": "2026-09-06",
  "generated_by": "DGXD01(Data-B)",
  "a_commit": "d62dafc42fd64cb65e086137553efcca8439ad45",
  "source_commit": "d62dafc42fd64cb65e086137553efcca8439ad45",
- "source_blob_sha": {
-  "data/interim/d1_legacy_rework_A_20260906/legacy_rework_forgetting_candidates.jsonl": "b922ebb8a40bf42993601a5eae3cdbec6f6aac4c",
-  "data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl": "0c5b335594993526521058e6bddae9dd02aa4d7b"
+ "input_hash_sha256": "ae92142cf1d9b92eacffbc09ff9a7ca12d7d25f51230f4503ace07b6540d9cb8",
+ "pinned_inputs": [
+  "pref",
+  "forg",
+  "manifest",
+  "repair_plan"
+ ],
+ "manifest_exact_input_proof_issues": [
+  "A_manifest_repair_plan_sha_mismatch(需A/Data-R同步)",
+  "B_input_hash_scope=4_pinned_inputs(A_input_hash_scope=exact-input 内容, 算法不同不作等号比较)"
+ ],
+ "canonical_tool_results": {
+  "provenance_resolver": "checked=10 unresolved=0 rc=0",
+  "dedup_scan": "rc=2 (exact/near/template 见 report)",
+  "leakage_scan": "rc=0 (checked=10 leak=0)"
  },
- "input_hash_sha256": "c85e3878c414e48899375984a68428392cbc0273cc254b7cd735ac7ef7f4d7d2",
- "n_rows": 10,
- "status_count": {
-  "COMPLETION_BLOCKED": 9,
-  "COMPLETION_BLOCKED_PENDING_RECHECK": 1
- },
- "note": "机器复核：结构+T03 通过=COMPLETION_BLOCKED（待 Data-R 逐条签 requalification_status=完成）；不直接 PASS completion"
+ "status_note": "machine_status/结构+T03+exact+leak 通过；completion_readiness=BLOCKED（requalification_status=完成 由 Data-R 逐条签）；B 不写 human_decision/final_label"
 }

@@ -1,21 +1,38 @@
 {
  "diversity_diagnostics": {
   "n_selected": 43,
-  "pairwise_sim_max": 0.0588,
-  "pairwise_sim_top5": [
-   0.0588,
-   0.0588,
-   0.0588,
-   0.0556,
-   0.0556
-  ],
-  "pairwise_sim_mean": 0.0044,
-  "query_len_min_max": [
-   6,
-   19
-  ],
-  "query_id_coverage": "分散抽样于 source（见 selected_sample_ids 对应 query_id）",
-  "algorithm": "farthest-point: score=1-max(sim to selected); seed=20260906 via random.Random"
+  "method_note": "全局 farthest-point(非稳定分层)：score=1-max(sim to selected); seed=20260906 via random.Random",
+  "pairwise_sim": {
+   "max": 0.0588,
+   "p95": 0.0455,
+   "median": 0.0,
+   "mean": 0.0044
+  },
+  "nearest_neighbor_maxsim": {
+   "max": 0.0588,
+   "p95": 0.0588,
+   "median": 0.05
+  },
+  "query_length_bins_selected": {
+   "13-16": 13,
+   "9-12": 22,
+   "<=8": 7,
+   ">16": 1
+  },
+  "template_family_share_source": {
+   "t2ranking_retrieval_v1": 1.0
+  },
+  "template_family_share_selected": {
+   "t2ranking_retrieval_v1": 1.0
+  },
+  "source_exact_duplicate_query_count": 0,
+  "query_id_sample": [
+   "10074",
+   "10114",
+   "10084",
+   "10027",
+   "10036"
+  ]
  },
  "schema": "g4_t2ranking_select",
  "version": "v4.1",
@@ -28,7 +45,7 @@
  "kept_as_candidate_history": 157,
  "input_file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
  "input_hash_sha256": "c14d109a33c964cdef8ffd974818f7bc6cfe61983ba504e8d0de76a807cf1556",
- "output_hash_sha256": "410b55c1ccbfc70f2212898429f09b46f50f08dab2af9cbc7113eea85dac4bd2",
+ "output_hash_sha256": "9eadd6601b3e235eb491d235c19cd82ce12e1232401a5384c03ac222b38840c5",
  "selected_sample_ids": [
   "retr_t2r_10",
   "retr_t2r_1001",

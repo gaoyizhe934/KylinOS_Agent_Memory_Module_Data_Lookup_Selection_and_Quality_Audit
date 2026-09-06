@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""v4.1 D1 Closeout B3：Retrieval G4 t2ranking 单源 ≤25% 分层选择（Data-B，2026-09-06）
+"""v4.1 D1 Closeout B3：Retrieval G4 t2ranking 单源 ≤25% 选择（Data-B，2026-09-06）
 
 口径（Data-R B1/B3）：admitted Retrieval Gold 单源 ≤25%；Retrieval 目标 175 → t2ranking ≤43。
 输入：200 条 t2ranking（legacy 可复用候选，license 已批）。
-方法：可复现 max-min 多样性选择（farthest-point sampling）：
+方法：可复现 **全局** farthest-point（max-min）多样性选择（不做稳定分层；如需分层见 B3 报告口径说明）：
   1) query 归一化 + token（bigram/字符）Jaccard 相似度；
   2) 贪心（正确 farthest-point）：每次取 score = 1 - max(与已选集的相似度) 最大者
      （即真正最小化“到最近已选点”的相似度 / 最大化 min-distance）；
@@ -17,6 +17,7 @@ import argparse
 import hashlib
 import json
 import math
+import collections
 import os
 import random
 import re
@@ -64,7 +65,9 @@ def main():
 
     # stable order by query_id then sample_id
     rows = sorted(rows, key=lambda r: (int(r.get("input", {}).get("query_id", -1)), r.get("sample_id", "")))
-    queries = [(r.get("input", {}).get("query", ""), r.get("sample_id", ""), r.get("input", {}).get("query_id")) for r in rows]
+    queries = [(r.get("input", {}).get("query", ""), r.get("sample_id", ""), r.get("input", {}).get("query_id"), r.get("template_family", "")) for r in rows]
+    def qfield(i, idx):
+        return queries[i][idx]
     total = len(queries)
 
     rng = random.Random(args.seed)
@@ -99,27 +102,68 @@ def main():
     out_text = "\n".join(sel_ids) + "\n"
     output_hash = hashlib.sha256(out_text.encode("utf-8")).hexdigest()
 
-    # diversity diagnostics
+    # diversity diagnostics (rich, Data-R Round2 Blocking-3)
     import statistics
-    sel_idx_set = set(selected)
-    pair_max = []
-    pair_mean = []
-    sel_queries = [queries[i][0] for i in selected]
-    for a in range(len(sel_queries)):
-        for b in range(a + 1, len(sel_queries)):
-            sim = jac(sel_queries[a], sel_queries[b])
-            pair_max.append(sim)
-            pair_mean.append(sim)
-    sims = sorted(pair_max, reverse=True)
+    sel_q = [queries[i] for i in selected]
+    pair_sims = []
+    nn_max = []
+    for a in range(len(sel_q)):
+        mx = 0.0
+        for b in range(len(sel_q)):
+            if a == b:
+                continue
+            sim = jac(sel_q[a][0], sel_q[b][0])
+            pair_sims.append(sim)
+            if sim > mx:
+                mx = sim
+        nn_max.append(mx)
+    pair_sims_sorted = sorted(pair_sims)
+    def pct(arr, p):
+        if not arr:
+            return None
+        k = int(round((len(arr) - 1) * p))
+        return arr[k]
+    # query length bins
+    len_bins = collections.Counter()
+    for q in sel_q:
+        L = len(q[0])
+        if L <= 8:
+            len_bins["<=8"] += 1
+        elif L <= 12:
+            len_bins["9-12"] += 1
+        elif L <= 16:
+            len_bins["13-16"] += 1
+        else:
+            len_bins[">16"] += 1
+    # template family coverage (source vs selected)
+    fam_all = collections.Counter(q[3] for q in queries)
+    fam_sel = collections.Counter(q[3] for q in sel_q)
+    def top_share(counter, total):
+        if not total:
+            return {}
+        return {k: round(v / total, 4) for k, v in counter.most_common(3)}
+    # exact duplicate queries in source
+    dup = len(queries) - len({q[0] for q in queries})
     result = {
         "diversity_diagnostics": {
             "n_selected": args.n,
-            "pairwise_sim_max": round(max(pair_max), 4) if pair_max else None,
-            "pairwise_sim_top5": [round(x, 4) for x in sims[:5]],
-            "pairwise_sim_mean": round(sum(pair_mean) / len(pair_mean), 4) if pair_mean else None,
-            "query_len_min_max": [min(len(q) for q in sel_queries), max(len(q) for q in sel_queries)],
-            "query_id_coverage": "分散抽样于 source（见 selected_sample_ids 对应 query_id）",
-            "algorithm": "farthest-point: score=1-max(sim to selected); seed=%d via random.Random" % args.seed,
+            "method_note": "全局 farthest-point(非稳定分层)：score=1-max(sim to selected); seed=%d via random.Random" % args.seed,
+            "pairwise_sim": {
+                "max": round(max(pair_sims), 4) if pair_sims else None,
+                "p95": round(pct(pair_sims_sorted, 0.95), 4) if pair_sims else None,
+                "median": round(pct(pair_sims_sorted, 0.5), 4) if pair_sims else None,
+                "mean": round(sum(pair_sims) / len(pair_sims), 4) if pair_sims else None,
+            },
+            "nearest_neighbor_maxsim": {
+                "max": round(max(nn_max), 4) if nn_max else None,
+                "p95": round(pct(sorted(nn_max), 0.95), 4) if nn_max else None,
+                "median": round(pct(sorted(nn_max), 0.5), 4) if nn_max else None,
+            },
+            "query_length_bins_selected": dict(len_bins),
+            "template_family_share_source": top_share(fam_all, len(queries)),
+            "template_family_share_selected": top_share(fam_sel, len(sel_q)),
+            "source_exact_duplicate_query_count": dup,
+            "query_id_sample": [q[2] for q in sel_q[:5]],
         },
     }
     result.update({
@@ -138,6 +182,9 @@ def main():
         "selected_sample_ids": sel_ids,
         "note": "G4 仍 fail-closed：最终 template 集中度在 admitted 集复算；剩余 157 保留 Candidate/History 不删除",
     })
+    # canonical output hash binds FULL result (selected + diagnostics), not just IDs
+    result["output_hash_sha256"] = hashlib.sha256(
+        json.dumps(result, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
     outp = os.path.join(ROOT, args.out)
     with open(outp, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=1)
