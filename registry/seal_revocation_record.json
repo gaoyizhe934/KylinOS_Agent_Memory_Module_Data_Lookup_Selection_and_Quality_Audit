@@ -1,0 +1,16 @@
+{
+  "schema": "seal_revocation_record",
+  "version": "v4.1",
+  "generated_by": "DGXD01(Data-B)",
+  "date": "2026-09-05",
+  "status": "APPROVED_REVOKE",
+  "seal_generation": "seal-v1",
+  "revocation_reason": "v1 模板母体污染（template_family 全部 *_v1，88~93% 规则归一化重复风险）",
+  "exposed_sample_count": 38,
+  "old_sha_and_manifest": "见 registry/split_manifest.csv / evidence/hashes/seal_record.md（历史保留，不覆盖）",
+  "fingerprints_registered": true,
+  "old_samples_destination": "DEV_REG_ONLY（经 G1-G5 后可转 dev/regression，永不再进 sealed）",
+  "parent_seal": null,
+  "replacement_seal": "seal-v2 (PENDING_REVIEW)",
+  "reviewer": "gaoyizhe934"
+}

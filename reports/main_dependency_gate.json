@@ -1,0 +1,60 @@
+{
+  "prompt_id": "P70",
+  "schema": "main_dependency_gate",
+  "version": "v4.1",
+  "generated_by": "DGXD01(Data-B)",
+  "date": "2026-09-05",
+  "c5_status": "PASS",
+  "c5_reviewer_acceptance": {
+    "reviewer": "gaoyizhe934",
+    "accepted_at": "2026-09-05",
+    "note": "Data-R R7 接受『依赖计划已登记』= PASS；不等于 M1/M1-KB/M2/M3 已绿，M1 PASS 前禁止 production business truth"
+  },
+  "c5_rule": "依赖项均已登记 owner/deadline/fallback/evidence locator -> PASS（依赖计划已登记，不要求 M1-KB/M2/M3 已全绿）",
+  "dependencies": {
+    "M1": {
+      "status": "BLOCKED",
+      "evidence_path": "interfaces/main_to_data/schema_snapshot.json",
+      "evidence_commit": "n/a (文件缺失)",
+      "owner": "Main-E/Liaison + Data-R",
+      "deadline": "D1 10:30",
+      "blocker": "schema_snapshot.json 缺失；需主仓提供 FROZEN (canonical schema/enum/scope/unknown policy)",
+      "fallback": "沿用最后批准版本；新字段推迟下一数据版本；M1 未 PASS 前只做 safe tasks，不产 production business truth"
+    },
+    "M1_KB": {
+      "status": "BLOCKED",
+      "evidence_path": "interfaces/main_to_data/kb_import_contract.json",
+      "evidence_commit": "n/a (文件缺失)",
+      "owner": "Main-B/E + Data-R",
+      "deadline": "D2 12:00",
+      "blocker": "kb_import_contract.json 缺失",
+      "fallback": "Retrieval 只用 local_candidate_id + PRODUCTION_BINDING_PENDING，禁止伪造 knowledge_id"
+    },
+    "M2": {
+      "status": "PENDING",
+      "evidence_path": "interfaces/main_to_data/ (Data RC)",
+      "evidence_commit": "n/a",
+      "owner": "Main-B/C/D/E + Data-R",
+      "deadline": "D3 12:00",
+      "blocker": "主仓能否导入小 RC 未确认",
+      "fallback": "正式跨仓 RC 阻塞；本地标注可继续"
+    },
+    "M3": {
+      "status": "BLOCKED",
+      "evidence_path": "interfaces/main_to_data/frozen_build_manifest.json",
+      "evidence_commit": "n/a (文件缺失)",
+      "owner": "Main-D/C/E + Data-R",
+      "deadline": "D3 18:00",
+      "blocker": "Frozen Build / Kylin snapshot / runner / trace 路径未就绪",
+      "fallback": "35 Runtime / 125 Tool / 35 E2E = BLOCKED_EXTERNAL；625 非 Runtime Gold + 400 KB 可继续"
+    }
+  },
+  "safe_parallel_tasks": [
+    "Closure 审计（C1/C2/C4）",
+    "P2-A 工具 PR",
+    "candidate-prep 草案",
+    "registry 完善"
+  ],
+  "production_truth_allowed": false,
+  "runtime_allowed": false
+}

@@ -1,0 +1,204 @@
+{
+  "schema": "preflight_report",
+  "version": "v4.1",
+  "tool": "preflight.py",
+  "generated_by": "DGXD01(Data-B)",
+  "git": {
+    "branch": "feat/B-stage8-v4.1-closure-rebase",
+    "head": "ccdf963ee8b236075163a665b40aacca3a4f0be2",
+    "dirty": true
+  },
+  "checks": [
+    {
+      "id": "GIT:branch",
+      "value": "feat/B-stage8-v4.1-closure-rebase",
+      "status": "PASS"
+    },
+    {
+      "id": "GIT:head",
+      "value": "ccdf963ee8b236075163a665b40aacca3a4f0be2",
+      "status": "PASS"
+    },
+    {
+      "id": "GIT:working_tree",
+      "value": "dirty",
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:data/raw",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:data/interim",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:data/processed",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:data/gold",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:registry",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:evidence",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:reports",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DIR:scripts",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DOC:麒麟OS_Agent_Memory_Data_v4.1_新人AI闭环执行SOP.docx",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DOC:麒麟OS_Agent_Memory_Data_v4.1_新人AI闭环施工台账.xlsx",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "DOC:麒麟OS_Agent_Memory_Data_v4.1_AI_Prompt_Pack.md",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "IF:schema_snapshot",
+      "path": "interfaces/main_to_data/schema_snapshot.json",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "IF:kb_import_contract",
+      "path": "interfaces/main_to_data/kb_import_contract.json",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "IF:runtime_runner_contract",
+      "path": "interfaces/main_to_data/runtime_runner_contract.md",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "IF:frozen_build_manifest",
+      "path": "interfaces/main_to_data/frozen_build_manifest.json",
+      "exists": false,
+      "status": "BLOCKED_MAIN_CONTRACT"
+    },
+    {
+      "id": "REG:source_registry",
+      "path": "registry/source_registry.csv",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "REG:license_registry",
+      "path": "registry/license_registry.csv",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "REG:leaked_registry",
+      "path": "registry/leaked_content_registry.json",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "REG:prompt_registry",
+      "path": "registry/prompt_registry.csv",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "REG:provenance_registry",
+      "path": "registry/provenance_registry_v4.json",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "Q8:Q1_legacy_inventory",
+      "path": "reports/legacy_inventory_v4_full.jsonl",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "Q8:Q2_seal_audit",
+      "path": "reports/seal_audit_v4.1.json",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "Q8:Q3_tooling",
+      "path": "reports/tooling_bootstrap_report.json",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "Q8:Q4_kb",
+      "path": "interfaces/main_to_data/kb_import_contract.json",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "Q8:Q5_runtime",
+      "path": "interfaces/main_to_data/frozen_build_manifest.json",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "Q8:Q6_trial40",
+      "path": "reports/trial40_reuse_audit.json",
+      "exists": true,
+      "status": "PASS"
+    },
+    {
+      "id": "Q8:Q7_quota",
+      "path": "reports/quota_plan_v4.1.csv",
+      "exists": false,
+      "status": "PENDING"
+    },
+    {
+      "id": "Q8:Q8_independence",
+      "path": "reports/independence_manifest.json",
+      "exists": true,
+      "status": "PASS"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "IF:schema_snapshot",
+      "reason": "interfaces/main_to_data/schema_snapshot.json 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "IF:kb_import_contract",
+      "reason": "interfaces/main_to_data/kb_import_contract.json 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "IF:runtime_runner_contract",
+      "reason": "interfaces/main_to_data/runtime_runner_contract.md 缺失（需主仓提供/FROZEN）"
+    },
+    {
+      "id": "IF:frozen_build_manifest",
+      "reason": "interfaces/main_to_data/frozen_build_manifest.json 缺失（需主仓提供/FROZEN）"
+    }
+  ],
+  "next_action": "safe_parallel: inventory_legacy / tooling bootstrap; 不产生 production Gold"
+}

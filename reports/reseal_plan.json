@@ -1,0 +1,17 @@
+{
+  "schema": "reseal_plan",
+  "version": "v4.1",
+  "generated_by": "DGXD01(Data-B)",
+  "date": "2026-09-05",
+  "status": "PLAN",
+  "steps": [
+    "1. 旧 seal-v1 REVOKED，保留 SHA/manifest/原因",
+    "2. 将 sealed v1 样本的 sample/input/evidence/template fingerprints 写入 leak registry",
+    "3. 从 Admission PASS 池重切新 sealed（seal-v2），排除已暴露 fingerprints",
+    "4. 新 group_key 整组切分，0 group 跨 split",
+    "5. 新 SHA256 + 只读封存 + manifest",
+    "6. Data-R 审批 seal-v2 PENDING_REVIEW -> APPROVED"
+  ],
+  "requires": "C1 Legacy-N frozen + 新候选 Admission PASS（正式5天内）",
+  "data_r_sign": "PENDING"
+}

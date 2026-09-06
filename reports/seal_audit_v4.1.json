@@ -1,0 +1,45 @@
+{
+  "schema": "seal_audit_v4.1",
+  "version": "v4.1",
+  "generated_by": "DGXD01(Data-B)",
+  "date": "2026-09-05",
+  "status": "AUDIT_COMPLETE",
+  "sealed_total": 38,
+  "by_task": {
+    "conflict_resolution": 8,
+    "preference_extraction": 20,
+    "tool_result": 10
+  },
+  "template_family_distribution": {
+    "conflict_time_update_v1": 8,
+    "temp_instruction_v1": 10,
+    "update_revoke_v1": 10,
+    "tool_status_success_v1": 10
+  },
+  "source_distribution": {
+    "team_authored": 38
+  },
+  "v1_template_exposed_count": 38,
+  "v1_template_share": 1.0,
+  "exact_duplicate_within_sealed": {
+    "{\"conflict_type\": \"time_update\", \"candidates\": {\"old\": \"旧记忆\", \"new\": \"新指令\"}, \"scenario\": \"旧偏好“回答详细” → 新偏好“以后简短”\"}": [
+      "conf_000001",
+      "conf_000006",
+      "conf_000011",
+      "conf_000016",
+      "conf_000021",
+      "conf_000026",
+      "conf_000031",
+      "conf_000036"
+    ]
+  },
+  "exact_duplicate_groups": 1,
+  "near_duplicate_flagged": [],
+  "pr31_exposure_check": {
+    "status": "NO_PR31_OVERLAP",
+    "note": "sealed 样本为 v1 模板母体（team_authored），与 PR31 fresh trial(v2 候选) 无交集"
+  },
+  "template_contamination": true,
+  "conclusion": "SEAL_CONTAMINATED_V1_TEMPLATE",
+  "recommendation": "REVOKE + leak registry + reseal plan"
+}

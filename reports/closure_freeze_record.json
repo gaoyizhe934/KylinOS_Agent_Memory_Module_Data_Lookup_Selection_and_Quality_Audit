@@ -1,0 +1,66 @@
+{
+  "schema": "closure_freeze_record",
+  "version": "1.2",
+  "status": "DATA_R_FROZEN",
+  "rules_baseline_commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf",
+  "closure_content_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+  "closure_head": "e8ed4370215aa767603cafbd262afe1f76683197",
+  "p2a_merged_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
+  "c0_c5": {
+    "C0": {
+      "status": "PASS",
+      "evidence_path": "reports/independence_manifest.json",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "8b9899c15a678109fe4866b03f4be9a8ff3c2682abf85d95d11048f29c58983e"
+    },
+    "C1": {
+      "status": "LEGACY_SET_FROZEN",
+      "evidence_path": "reports/legacy_inventory_v4_full.jsonl",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "full_ledger_sha256": "541aa9d3b85b14b4ff01354453a4c7b08acbd1c1e64e5cf1b81a7577d8836cf2",
+      "summary_sha256": "97cdaffeb48be39329a2a909bf6c173d7be0e4d1a26eefc7cfd4eb5239dc0612",
+      "tool_source_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
+      "scan_repo_ref": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
+      "note": "Data-R Freeze：total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS"
+    },
+    "C2": {
+      "status": "PASS",
+      "evidence_path": "reports/seal_audit_v4.1.json",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "aaa6277e58e942bfbf3d6f672bb8878141fb88c641a1bb578277a8608794fa65",
+      "revoke_sha256": "9a27775637bea3e9b9f7758426d56cd6d2c465638d9d0f612fa5a4166fdba88d",
+      "reseal_sha256": "8a2cec2078cf972683547de70cd29ed2408bd8df92b57de2b66c5bee3fd5e7e9"
+    },
+    "C3": {
+      "status": "PASS",
+      "evidence_path": "reports/tooling_bootstrap_report.json",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "76b67995e1150a19ccb7dc68f01f4d68147a599fb6b07d5c6fb74f53b82f5677",
+      "p2a_merged_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8"
+    },
+    "C4": {
+      "status": "PASS",
+      "evidence_path": "reports/trial40_reuse_audit.json",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "1f07931fa7353b650c654ad091dc36c1c259ec31a25fd1777c40ec908135dd39",
+      "leak_registry_sha256": "e172c43b34b56b7dc7c4187a9e35d3d2b1eac35d95b869b2d11f1bdb507ea507"
+    },
+    "C5": {
+      "status": "PASS",
+      "evidence_path": "reports/main_dependency_gate.json",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "4727d8c5e3e736022ffab3bd686305b982a7b1199a7b2c4d8d6db50579f4bf89"
+    }
+  },
+  "main_dependency_snapshot": {
+    "M1": "BLOCKED (schema_snapshot 缺失, deadline D1 10:30)",
+    "M1_KB": "BLOCKED (kb_import_contract 缺失, deadline D2 12:00)",
+    "M2": "PENDING (deadline D3 12:00)",
+    "M3": "BLOCKED_EXTERNAL (frozen build 未就绪, deadline D3 18:00)"
+  },
+  "formal_day1_started": true,
+  "formal_day1_started_at": "2026-09-06T09:59:00+08:00",
+  "signed_by": "gaoyizhe934 (Data-R)",
+  "signed_at": "2026-09-06T09:59:00+08:00",
+  "note": "Data-R 已完成 Closure Freeze；C0-C5 业务证据 6/6 接受，C1=LEGACY_SET_FROZEN。D1 自 signed_at 起启动；M1 PASS 前 production_truth_allowed 仍为 false。"
+}
