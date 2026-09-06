@@ -56,6 +56,7 @@ jobs:
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/repair_plan.json') != ''
         run: python scripts/v4/build_legacy_rework_A1.py --check
 
+      # B-track CI（B1 canonical + B3 G4 select）——确定性重跑+输出一致性断言
       - name: Data-B B1 canonical machine check（锁 A final SHA d62dafc4）
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl') != ''
         run: |
