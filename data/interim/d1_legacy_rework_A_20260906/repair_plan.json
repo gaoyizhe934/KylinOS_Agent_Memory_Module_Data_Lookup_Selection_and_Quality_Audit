@@ -1,0 +1,109 @@
+{
+  "schema": "v4.1_d1_legacy_rework_repair_plan",
+  "batch_id": "A_D1_CLOSEOUT_A1_20260906",
+  "date": "2026-09-06",
+  "owner": "Data-A (lyf-1213)",
+  "branch": "feat/A-v4.1-d1-closeout",
+  "repo_base": "master c21ee694",
+  "input_commit": "c21ee6940dd7d5fca348357cb0f8ff3a2f4b6f81",
+  "fix_source_commit": "c21ee6940dd7d5fca348357cb0f8ff3a2f4b6f81",
+  "scope": "10 条 Legacy REWORK/RELABEL 重构（fix_fields 来自 reports/legacy_semantic_requal_A.jsonl Rev3）",
+  "generation": {"prompt_ref": "P10-A1-rework-v4.1", "seed": 20260906, "model": "deepseek-v4-flash"},
+  "red_line_compliance": {"human_decision": false, "final_label": false, "gold": false,
+                          "dev_reg_only_preserved": ["pref_000004", "pref_000003"], "raw_gold_untouched": true},
+  "blockers": [
+    {"id": "B1_R_sign", "item": "B1 机器复核 + Data-R 逐条签 requalification_status=完成", "status": "BLOCKED_EXTERNAL"},
+    {"id": "M1", "item": "M1 FROZEN 后双盲重标为正式 Gold", "status": "BLOCKED"},
+    {"id": "PII", "item": "forg_000003 客户姓名关联 PII：Data-R 合成/脱敏口径", "status": "NEEDS_DATA_R"}
+  ],
+  "entries": [
+    {
+      "candidate_id": "req_pref_000001", "task": "preference", "legacy_sample_id": "pref_000001",
+      "gold_file": "data/gold/regression/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
+      "scenario_spec_id": "OSPREF-01", "scenario_family": "os_pref_workflow",
+      "scenario_class": "explicit_persistent", "step1": "persistent_preference", "scope": "topic",
+      "split_eligibility": "ANY"
+    },
+    {
+      "candidate_id": "req_pref_000002", "task": "preference", "legacy_sample_id": "pref_000002",
+      "gold_file": "data/gold/regression/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
+      "scenario_spec_id": "OSPREF-01", "scenario_family": "os_pref_workflow",
+      "scenario_class": "explicit_persistent", "step1": "persistent_preference", "scope": "global",
+      "split_eligibility": "ANY"
+    },
+    {
+      "candidate_id": "req_pref_000005", "task": "preference", "legacy_sample_id": "pref_000005",
+      "gold_file": "data/gold/regression/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
+      "scenario_spec_id": "OSPREF-02", "scenario_family": "os_pref_app_tool",
+      "scenario_class": "explicit_persistent_tool", "step1": "persistent_preference", "scope": "tool",
+      "split_eligibility": "ANY"
+    },
+    {
+      "candidate_id": "req_pref_000004", "task": "preference", "legacy_sample_id": "pref_000004",
+      "gold_file": "data/gold/sealed_test/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
+      "scenario_spec_id": "OSPREF-07", "scenario_family": "os_pref_withdraw",
+      "scenario_class": "update_revoke", "step1": "preference_update_withdraw", "scope": "topic",
+      "split_eligibility": "DEV_REG_ONLY"
+    },
+    {
+      "candidate_id": "req_pref_000006", "task": "preference", "legacy_sample_id": "pref_000006",
+      "gold_file": "data/gold/regression/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
+      "scenario_spec_id": "OSPREF-08", "scenario_family": "os_pref_sensitive",
+      "scenario_class": "sensitive_non_storable", "step1": "non_preference", "scope": null,
+      "split_eligibility": "ANY"
+    },
+    {
+      "candidate_id": "req_pref_000003", "task": "preference", "legacy_sample_id": "pref_000003",
+      "gold_file": "data/gold/sealed_test/preference_extraction.jsonl", "outfile": "legacy_rework_preference_candidates.jsonl",
+      "scenario_spec_id": "OSPREF-09", "scenario_family": "os_pref_task_constraint",
+      "scenario_class": "task_constraint", "step1": "task_constraint", "scope": null,
+      "split_eligibility": "DEV_REG_ONLY"
+    },
+    {
+      "candidate_id": "req_forg_000001", "task": "forgetting", "legacy_sample_id": "forg_000001",
+      "gold_file": "data/gold/dev/precise_forgetting.jsonl", "outfile": "legacy_rework_forgetting_candidates.jsonl",
+      "scenario_spec_id": "OSFORG-01", "scenario_family": "os_forg_single_item",
+      "mode": "single_item", "checkpoints": ["immediate_query", "after_restart", "after_full_reindex"],
+      "expected_residual_count": 0, "target_ids": ["pref_ui_theme_001"], "must_keep": ["pref_editor_001", "pref_language_001"],
+      "inventory": [{"memory_ref": "pref_ui_theme_001", "subject": "VSCode 深色主题偏好"},
+                    {"memory_ref": "pref_editor_001", "subject": "编辑器其他开发偏好"},
+                    {"memory_ref": "pref_language_001", "subject": "开发语言相关偏好"}],
+      "split_eligibility": "ANY"
+    },
+    {
+      "candidate_id": "req_forg_000002", "task": "forgetting", "legacy_sample_id": "forg_000002",
+      "gold_file": "data/gold/dev/precise_forgetting.jsonl", "outfile": "legacy_rework_forgetting_candidates.jsonl",
+      "scenario_spec_id": "OSFORG-04", "scenario_family": "os_forg_time_window",
+      "mode": "time_window", "checkpoints": ["immediate_query", "after_restart", "after_full_reindex"],
+      "expected_residual_count": 0, "target_ids": ["kb_path_009"], "must_keep": ["kb_path_010"],
+      "time_range": {"start": "2026-07-13T00:00:00+08:00", "end": "2026-07-19T23:59:59+08:00"},
+      "inventory": [{"memory_ref": "kb_path_009", "subject": "上周临时记录的文件路径"},
+                    {"memory_ref": "kb_path_010", "subject": "本周的记录路径"},
+                    {"memory_ref": "doc_share", "subject": "共享文档目录"}],
+      "split_eligibility": "ANY"
+    },
+    {
+      "candidate_id": "req_forg_000003", "task": "forgetting", "legacy_sample_id": "forg_000003",
+      "gold_file": "data/gold/dev/precise_forgetting.jsonl", "outfile": "legacy_rework_forgetting_candidates.jsonl",
+      "scenario_spec_id": "OSFORG-03", "scenario_family": "os_forg_topic",
+      "mode": "topic", "checkpoints": ["immediate_query", "after_restart", "after_full_reindex"],
+      "expected_residual_count": 0, "target_ids": ["kb_person_012"], "must_keep": ["kb_workflow_003", "mail_tpl"],
+      "target_topic": "客户姓名关联（个人信息）",
+      "inventory": [{"memory_ref": "kb_person_012", "subject": "某客户姓名关联记录"},
+                    {"memory_ref": "kb_workflow_003", "subject": "业务流程知识"},
+                    {"memory_ref": "mail_tpl", "subject": "邮件模板偏好"}],
+      "split_eligibility": "ANY"
+    },
+    {
+      "candidate_id": "req_forg_000004", "task": "forgetting", "legacy_sample_id": "forg_000004",
+      "gold_file": "data/gold/dev/precise_forgetting.jsonl", "outfile": "legacy_rework_forgetting_candidates.jsonl",
+      "scenario_spec_id": "OSFORG-01", "scenario_family": "os_forg_single_item",
+      "mode": "single_item", "checkpoints": ["immediate_query", "after_restart", "after_full_reindex"],
+      "expected_residual_count": 0, "target_ids": ["pref_ui_layout_021"], "must_keep": ["pref_ui_theme_001", "pref_ui_font"],
+      "inventory": [{"memory_ref": "pref_ui_layout_021", "subject": "刚才设置的桌面布局偏好"},
+                    {"memory_ref": "pref_ui_theme_001", "subject": "桌面深色主题偏好"},
+                    {"memory_ref": "pref_ui_font", "subject": "界面字号偏好"}],
+      "split_eligibility": "ANY"
+    }
+  ]
+}
