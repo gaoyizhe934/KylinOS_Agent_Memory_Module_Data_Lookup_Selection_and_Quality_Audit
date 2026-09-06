@@ -1,0 +1,116 @@
+{
+ "schema": "quota_plan_v4.1_summary",
+ "version": "v4.1",
+ "generated_by": "DGXD01(Data-B)",
+ "generated_at": "2026-09-06T16:45:00+08:00",
+ "script": "d1_closeout_p04_recompute.py (v4)",
+ "authority_pr": "40",
+ "authority_review_id": "5124685158",
+ "authority_head": "20b575e7fd9ca0b195a214ac3487e79d613a00ca",
+ "completion_authority_head": "20b575e7fd9ca0b195a214ac3487e79d613a00ca",
+ "a_source_commit": "7c59633f81b3e4474be8a422450dcc3401940749",
+ "requal_source": "reports/legacy_semantic_requal_A.jsonl",
+ "requal_sha256": "c5b217e3d93119e4cb56b06ae46772039698a56b62dc16b4c33ddfe0c1cfafd7",
+ "completed_rework_ids": [
+  "req_forg_000001",
+  "req_forg_000002",
+  "req_forg_000003",
+  "req_forg_000004",
+  "req_pref_000001",
+  "req_pref_000002",
+  "req_pref_000003",
+  "req_pref_000004",
+  "req_pref_000005",
+  "req_pref_000006"
+ ],
+ "legacy_sample_ids": [
+  "forg_000001",
+  "forg_000002",
+  "forg_000003",
+  "forg_000004",
+  "pref_000001",
+  "pref_000002",
+  "pref_000003",
+  "pref_000004",
+  "pref_000005",
+  "pref_000006"
+ ],
+ "mapping": {
+  "req_pref_000001": "pref_000001",
+  "req_pref_000002": "pref_000002",
+  "req_pref_000005": "pref_000005",
+  "req_pref_000004": "pref_000004",
+  "req_pref_000006": "pref_000006",
+  "req_pref_000003": "pref_000003",
+  "req_forg_000001": "forg_000001",
+  "req_forg_000002": "forg_000002",
+  "req_forg_000003": "forg_000003",
+  "req_forg_000004": "forg_000004"
+ },
+ "rework_set_sha256": "340d42edc16e87ec10ab630192f3e210f076af560a57fead3db934baf4a33305",
+ "legacy_set_sha256": "58c838ad1611cb3ec57adfd49800c64851cb806cb5c6d473b5cd13aae82d4752",
+ "mapping_sha256": "0df05a96ed5ef9215d21fd95ab512a09b0190b405ba2617ecce17ab1ba08cda5",
+ "accepted_legacy_effective": 10,
+ "accepted_by_task": {
+  "preference_extraction": 6,
+  "precise_forgetting": 4
+ },
+ "tasks": [
+  {
+   "task": "preference_extraction",
+   "target": 225,
+   "accepted_legacy": 6,
+   "new_needed": 219,
+   "candidate_needed": 285
+  },
+  {
+   "task": "knowledge_retrieval",
+   "target": 175,
+   "accepted_legacy": 0,
+   "new_needed": 175,
+   "candidate_needed": 228
+  },
+  {
+   "task": "conflict_resolution",
+   "target": 125,
+   "accepted_legacy": 0,
+   "new_needed": 125,
+   "candidate_needed": 163
+  },
+  {
+   "task": "precise_forgetting",
+   "target": 100,
+   "accepted_legacy": 4,
+   "new_needed": 96,
+   "candidate_needed": 125
+  },
+  {
+   "task": "tool_result",
+   "target": 125,
+   "accepted_legacy": 0,
+   "new_needed": 125,
+   "candidate_needed": 125
+  },
+  {
+   "task": "end_to_end_session",
+   "target": 35,
+   "accepted_legacy": 0,
+   "new_needed": 35,
+   "candidate_needed": 35
+  }
+ ],
+ "totals": {
+  "gold_target": 785,
+  "new_needed": 775,
+  "candidate_needed": 961,
+  "kb": {
+   "target": 400,
+   "candidate_pool": 520
+  },
+  "runtime_sessions": 35,
+  "scripts": 45,
+  "fresh_calibration": 40
+ },
+ "g4_status": "BLOCKED",
+ "note": "accepted 仅 Data-R #40 签署 10 req_*（经 #44 mapping 到 legacy pref_*/forg_*）；P04 merge ≠ Gold ≠ Admission；Data-R 冻结"
+}
