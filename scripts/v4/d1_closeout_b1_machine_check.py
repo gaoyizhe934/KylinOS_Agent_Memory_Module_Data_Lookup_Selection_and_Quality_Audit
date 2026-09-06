@@ -22,7 +22,7 @@ import re
 import subprocess
 import sys
 
-A_REF_DEFAULT = "d62dafc42fd64cb65e086137553efcca8439ad45"
+A_REF_DEFAULT = "7c59633f81b3e4474be8a422450dcc3401940749"
 INPUTS = {
     "pref": "data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl",
     "forg": "data/interim/d1_legacy_rework_A_20260906/legacy_rework_forgetting_candidates.jsonl",

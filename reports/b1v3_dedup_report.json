@@ -22,64 +22,44 @@
   "input_set_hash": "81efa32005e12e026425bbeecb11c9c263f288cc4b82c35660dd4366558110f8",
   "samples": {
     "req_pref_000001": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_pref_000002": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_pref_000005": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_pref_000004": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_pref_000006": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_pref_000003": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_forg_000001": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_forg_000002": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_forg_000003": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     },
     "req_forg_000004": {
-      "ok": false,
-      "reasons": [
-        "template_over_concentration"
-      ]
+      "ok": true,
+      "reasons": []
     }
   },
   "exact_duplicate_groups": {},
@@ -87,15 +67,21 @@
   "near_duplicate_decisions": [],
   "near_blocked": [],
   "template_family_share": {
-    "none": 1.0
+    "output_style_length_v1": 0.1,
+    "tool_choice_confirm_v1": 0.1,
+    "scope_app_v1": 0.1,
+    "legacy_exposure_rewrite_v1": 0.2,
+    "sensitive_no_store_v1": 0.1,
+    "forget_scoped_v1": 0.1,
+    "forget_time_v1": 0.1,
+    "forget_person_v1": 0.1,
+    "forget_revoke_v1": 0.1
   },
-  "template_over_concentration": [
-    "none"
-  ],
+  "template_over_concentration": [],
   "gates": {
     "G4_exact_dup_zero": true,
     "G4_near_reviewed": true,
-    "G4_template_concentration_ok": false
+    "G4_template_concentration_ok": true
   },
-  "dedup_status": "BLOCKED"
+  "dedup_status": "PASS"
 }

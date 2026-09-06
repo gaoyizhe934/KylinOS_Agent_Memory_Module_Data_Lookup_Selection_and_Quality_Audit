@@ -3,18 +3,16 @@
  "version": "v4.1",
  "date": "2026-09-06",
  "generated_by": "DGXD01(Data-B)",
- "a_commit": "d62dafc42fd64cb65e086137553efcca8439ad45",
- "source_commit": "d62dafc42fd64cb65e086137553efcca8439ad45",
- "input_hash_sha256": "ae92142cf1d9b92eacffbc09ff9a7ca12d7d25f51230f4503ace07b6540d9cb8",
+ "a_commit": "7c59633f81b3e4474be8a422450dcc3401940749",
+ "source_commit": "7c59633f81b3e4474be8a422450dcc3401940749",
+ "input_hash_sha256": "cbe9a432004db2b47cea885cc2282f176570a28d9d58445815bc683d525313d3",
  "pinned_inputs": [
   "pref",
   "forg",
   "manifest",
   "repair_plan"
  ],
- "manifest_exact_input_proof_issues": [
-  "A_manifest_repair_plan_sha_mismatch(manifest=9d7d9bd0 actual=78fe38c1, 需A/Data-R同步)"
- ],
+ "manifest_exact_input_proof_issues": [],
  "manifest_notes": [
   "B_input_hash_scope=4_pinned_inputs(raw bytes)；A manifest input_hash 为其 exact-input 内容口径，算法不同不作等号比较"
  ],
@@ -24,9 +22,9 @@
   "leak_count": 0,
   "G4_exact_dup_zero": true,
   "G4_near_reviewed": true,
-  "G4_template_concentration_ok": false,
-  "dedup_status": "BLOCKED"
+  "G4_template_concentration_ok": true,
+  "dedup_status": "PASS"
  },
- "admission_blocker": "G4_template_concentration BLOCKED（A 候选缺顶层 template_family；按 Data-R Blocking-3 归 G4/Admission，不伪装 B1 completion 已完成）",
+ "admission_blocker": null,
  "status_note": "machine_status=requalification gates(结构+T03+DEV_REG) 判定；completion_readiness 一律 BLOCKED（requalification_status=完成 由 Data-R 逐条签；manifest exact-input 未闭环前不得标 completion-ready）；required gate fail 或 manifest binding mismatch -> 脚本 exit(2)。B 不写 human_decision/final_label"
 }
