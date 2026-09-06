@@ -35,6 +35,9 @@ OS_LAYER = "os_controlled_authored"
 GEN_REQUIRED = ["generation_id", "prompt_version", "seed", "model"]
 
 
+APPROVED_REVIEWER_TOKENS = ("已批准", "APPROVED", "gaoyizhe934")
+
+
 def read_csv(path):
     if not os.path.exists(path):
         return None
@@ -47,33 +50,47 @@ def source_approved(row):
 
 
 def license_approved(row):
-    reviewer = row.get("reviewer", "")
-    verdict = row.get("verdict", "")
-    status = row.get("status", "")
-    if "待批准" in reviewer or "待" in verdict or "待" in status:
+    """显式 allowlist：reviewer 必须非空、不含『待』、且含已批准 token；否则 FAIL。"""
+    reviewer = (row.get("reviewer") or "").strip()
+    if not reviewer:
         return False
-    return True
+    if "待" in reviewer:
+        return False
+    return any(tok in reviewer for tok in APPROVED_REVIEWER_TOKENS)
 
 
-def load_prompt_ids():
+def load_prompt_refs():
+    """读取 prompt_registry.csv 的 prompt_ref 列（canonical prompt ref，如 P20-v4.1）。"""
     p = os.path.join(ROOT, "registry", "prompt_registry.csv")
     if not os.path.exists(p):
         return None
+    refs = set()
     with open(p, encoding="utf-8") as f:
-        return set((r.get("prompt_id") or "").strip() for r in csv.DictReader(f))
+        for r in csv.DictReader(f):
+            ref = (r.get("prompt_ref") or "").strip()
+            if ref:
+                refs.add(ref)
+    return refs
 
 
 def load_scenario_ids():
+    """返回 (ids, error)；目录缺失/无文件/全解析失败/0 ids -> error。"""
+    files = glob.glob(os.path.join(SCENARIO_DIR, "*.json"))
+    if not files:
+        return set(), "scenario_specs_dir_missing_or_empty"
     ids = set()
-    for sf in glob.glob(os.path.join(SCENARIO_DIR, "*.json")):
+    error = None
+    for sf in files:
         try:
             spec = json.load(open(sf, encoding="utf-8"))
             for sc in spec.get("scenarios", []):
                 if sc.get("scenario_id"):
                     ids.add(sc["scenario_id"])
-        except Exception:
-            pass
-    return ids
+        except Exception as e:
+            error = "scenario_specs_parse_error:%s" % os.path.basename(sf)
+    if not ids:
+        return set(), error or "scenario_specs_zero_ids"
+    return ids, None
 
 
 def input_set_hash(ids):
@@ -88,8 +105,8 @@ def main():
 
     src_reg = read_csv(SRC_CSV)
     lic_reg = read_csv(LIC_CSV)
-    prompt_ids = load_prompt_ids()
-    scenario_ids = load_scenario_ids()
+    prompt_refs = load_prompt_refs()
+    scenario_ids, scenario_err = load_scenario_ids()
     if src_reg is None or lic_reg is None:
         print("FAIL_CLOSED: source/license registry missing")
         sys.exit(3)
@@ -150,14 +167,19 @@ def main():
                                 if not gen.get(fld):
                                     missing.append("generation_missing:" + fld)
                             pv = gen.get("prompt_version")
-                            if pv and prompt_ids is not None and pv not in prompt_ids:
-                                missing.append("prompt_version_not_in_prompt_registry:" + str(pv))
-                            if prompt_ids is None:
+                            if prompt_refs is None:
                                 missing.append("prompt_registry_missing")
-                            if not dm.get("scenario_spec_id"):
+                            elif not pv:
+                                missing.append("prompt_version_missing")
+                            elif pv not in prompt_refs:
+                                missing.append("prompt_version_not_in_prompt_registry:" + str(pv))
+                            sid_ref = dm.get("scenario_spec_id")
+                            if not sid_ref:
                                 missing.append("design_metadata_missing:scenario_spec_id")
-                            elif scenario_ids and dm.get("scenario_spec_id") not in scenario_ids:
-                                missing.append("scenario_spec_id_not_found:" + str(dm.get("scenario_spec_id")))
+                            elif scenario_err is not None:
+                                missing.append("scenario_registry_unresolved:" + scenario_err)
+                            elif sid_ref not in scenario_ids:
+                                missing.append("scenario_spec_id_not_found:" + str(sid_ref))
                         else:
                             missing.append("source_layer_undetermined")
                         samples[sid] = {"ok": not missing, "reason": missing, "status": status}
