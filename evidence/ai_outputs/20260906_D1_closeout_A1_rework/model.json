@@ -1,0 +1,22 @@
+{
+  "session": "2026-09-06 Data-A Closeout A1 — 10 条 Legacy REWORK/RELABEL 实际改造",
+  "human_operator": "lyf-1213 (Data-A)",
+  "role": "Data-A",
+  "model": "deepseek-v4-flash",
+  "branch": "feat/A-v4.1-d1-closeout",
+  "repo_base": "master c21ee694 (#37 merged)",
+  "role_confirmation": "PR#38 comment 5556891865 (A1–A3 + branch)",
+  "outputs": [
+    "data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl (6)",
+    "data/interim/d1_legacy_rework_A_20260906/legacy_rework_forgetting_candidates.jsonl (4)",
+    "data/interim/d1_legacy_rework_A_20260906/generation_manifest_A_20260906.json",
+    "reports/v4.1_D1_A_legacy_rework_20260906.md"
+  ],
+  "verification": {
+    "script": "evidence/ai_outputs/20260906_D1_closeout_A1_rework/validate_rework.py",
+    "result": "PASS",
+    "checks": ["10 行(6/4) unique", "身份字段 candidate_only/NON_PRODUCTION/NOT_ADMISSION_APPROVED", "无 human_decision/final_label/gold", "blind 无泄漏", "timestamp 合法 ISO", "forget_mode enum 合法", "target_ids∩must_keep=∅", "DEV_REG_ONLY 保留 2"]
+  },
+  "blockers": ["B1 机器复核 + Data-R 签 requalification_status=完成", "M1 FROZEN 后双盲重标", "req_forg_000003 PII 合成/脱敏 Data-R 裁决", "RELABEL 负例去向 Data-R 口径"],
+  "ai_status": "candidate_only/NON_PRODUCTION; no human_decision/final_label written; A-track acceptance pending B1 + Data-R"
+}

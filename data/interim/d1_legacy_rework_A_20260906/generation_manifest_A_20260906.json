@@ -1,0 +1,37 @@
+{
+  "schema": "v4.1_d1_legacy_rework_manifest",
+  "batch_id": "A_D1_CLOSEOUT_A1_20260906",
+  "date": "2026-09-06",
+  "owner": "Data-A (lyf-1213)",
+  "branch": "feat/A-v4.1-d1-closeout",
+  "repo_base": "master c21ee694 (#37 merged)",
+  "status": "candidate_only",
+  "admission_status": "NOT_ADMISSION_APPROVED",
+  "id_binding_status": "NON_PRODUCTION",
+  "scope": "Data-A closeout A1：10 条 Legacy REWORK/RELABEL 实际改造（非 proposal）",
+  "decision_ref": "Data-R 终裁 41bf0e2 (accepted candidates=10) + quota amendment (accepted_legacy_effective=0) + Round3 §D D1-D4 + closeout roles a7189f9",
+  "files": [
+    {"file": "data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl", "task": "preference_extraction", "count": 6,
+     "items": ["req_pref_000001(pref_000001,persistent/topic)", "req_pref_000002(pref_000002,persistent/global)", "req_pref_000005(pref_000005,persistent/tool)", "req_pref_000004(pref_000004,update-withdraw/topic,DEV_REG_ONLY)", "req_pref_000006(pref_000006,RELABEL non_storable_negative)", "req_pref_000003(pref_000003,RELABEL task_constraint,DEV_REG_ONLY)"]},
+    {"file": "data/interim/d1_legacy_rework_A_20260906/legacy_rework_forgetting_candidates.jsonl", "task": "precise_forgetting", "count": 4,
+     "items": ["req_forg_000001(forg_000001,single_item)", "req_forg_000002(forg_000002,time_window)", "req_forg_000003(forg_000003,topic/PII-sensitive)", "req_forg_000004(forg_000004,single_item/revoke)"]}
+  ],
+  "fixes_applied": {
+    "timestamp": "全部 10 行：YYYY-MM-DDN(计数器并入日期日) → 合法 ISO 2026-07-20T10:00:00+08:00 (B-L2)",
+    "pref_scope": ["pref_000001→topic", "pref_000002→global(Round3 D1)", "pref_000005→tool", "pref_000004→topic+update/withdraw 新值优先"],
+    "relabel": ["pref_000006→non_storable_negative", "pref_000003→task_constraint"],
+    "forget_mode": ["forg_000001 single_item", "forg_000002 time_window(+时间窗边界)", "forg_000003 topic+敏感PII标注", "forg_000004 single_item(无 full_reset 歧义, Round3 D2)"],
+    "structure": "v4.1 双层：blind_visible(无答案)+design_metadata(含 legacy_ref/generation/applied_fixes)"
+  },
+  "red_line_compliance": {
+    "human_decision": false, "final_label": false, "gold": false,
+    "dev_reg_only_preserved": ["pref_000004", "pref_000003"],
+    "raw_gold_untouched": true,
+    "note": "修复产物均 candidate_only/NON_PRODUCTION；requalification_status=完成 需 Data-R 逐条验收(B1 机器复核后)"
+  },
+  "blockers": [
+    {"id": "B1_R_sign", "item": "10 条 completion 需 B1 机器复核 + Data-R 逐条签 requalification_status=完成 后才计 P04", "status": "BLOCKED_EXTERNAL", "owner": "Data-B/Data-R"},
+    {"id": "M1", "item": "正式 Gold 双盲重标需 M1 schema FROZEN", "status": "BLOCKED", "owner": "Main-E/Data-R"},
+    {"id": "PII", "item": "req_forg_000003 客户姓名关联(PII)：正式集需 Data-R 复核 + 合成/脱敏", "status": "NEEDS_DATA_R", "owner": "Data-R"}
+  ]
+}
