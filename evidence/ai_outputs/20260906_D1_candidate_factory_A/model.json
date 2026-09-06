@@ -1,0 +1,37 @@
+{
+  "model": "deepseek-v4-flash",
+  "model_id": "opencode-go/deepseek-v4-flash",
+  "prompt_version": "P20-v4.1 / P22-v4.1 / P23-v4.1",
+  "session": "2026-09-06 Data-A D1 candidate factory (OS-authored slice)",
+  "human_operator": "lyf-1213 (Data-A)",
+  "role": "Data-A",
+  "inputs": [
+    "worklog/20260906_dataA_day1_session_handoff.md",
+    "reports/legacy_semantic_requal_A.jsonl (A P10, c85bbad)",
+    "reports/v4.1_D1_execution_steps_ABR.md",
+    "reports/legacy_machine_audit_v4.1.jsonl (B P11)",
+    "data/interim/candidates_v4/scenario_specs/{preference,conflict,forgetting}_scenarios.json",
+    "data/interim/candidates_v4/exemplar_candidates/*.jsonl",
+    "data/interim/candidates_v4/factory_config.json",
+    "reports/v4.1_scope_review_standard_A.md",
+    "麒麟OS_Agent_Memory_Data_v4.1_AI_Prompt_Pack.md (P20/P22/P23)",
+    "麒麟OS_Agent_Memory_Data_v4.1_新人AI闭环执行SOP.docx (D1/§14)",
+    "施工台账 15_五天执行 / 04_动态配额 / 17_AI会话日志"
+  ],
+  "outputs": [
+    "data/interim/d1_candidates_A_20260906/preference_candidates.jsonl (98)",
+    "data/interim/d1_candidates_A_20260906/conflict_candidates.jsonl (64)",
+    "data/interim/d1_candidates_A_20260906/forgetting_candidates.jsonl (56)",
+    "data/interim/d1_candidates_A_20260906/generation_manifest_A_20260906.json",
+    "reports/v4.1_D1_A_candidate_factory_20260906.md",
+    "evidence/ai_outputs/20260906_D1_candidate_factory_A/ (prompt/model/validation + build_*.py + validate_batch.py)"
+  ],
+  "ai_status": "candidate_only / NON_PRODUCTION / NOT_ADMISSION_APPROVED / not reviewable as Gold",
+  "review_status": {
+    "A_review_status": "GENERATED_AND_SELF_CHECKED",
+    "A_adopted_outputs": ["preference_candidates(98)", "conflict_candidates(64)", "forgetting_candidates(56)", "manifest", "report"],
+    "A_remaining_needs_review": ["OSPREF-05 implicit 需 G2 NEEDS_REVIEW", "OSCONF-04 scope 消解判定需 A/B/R 抽验", "scope 提案逐条确认"],
+    "B_review_status": "PENDING",
+    "R_review_status": "PENDING"
+  }
+}
