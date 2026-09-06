@@ -1,0 +1,75 @@
+{
+  "schema": "v4.1_candidate_factory_config",
+  "version": "0.1",
+  "owner": "Data-A (lyf-1213)",
+  "date": "2026-09-05",
+  "status": "DRAFT_INPUT_PACKAGE",
+  "admission_status": "NOT_ADMISSION_APPROVED",
+  "note": "P20/P22/P23 候选工厂输入包（A 侧预处理，全部 candidate_only，非 Gold，不写 human_decision/final_label；未通过 Admission G1-G5，不得作为任何 Gold/Closure 证据）。正式量产等待：C1 Legacy-N 冻结(Data-R 签 LEGACY_SET_FROZEN) + 动态配额(Q7/P04) + P2-A 工具(admission_gate/validate_labels)。",
+  "pr_relationship": {"candidate_prep": "#34", "closure_status_owner": "#33", "note": "Closure 状态由 #33 管理，本文件不引用尚未进入 master 的 closure_status_v4.1.json；#32 合并后本 PR 改绑 master 基线"},
+  "blind_leakage_assertion": "P40/validator 必须断言：blind packet 禁止出现 expected / design / target label / negative / hard_negative / conflict resolution hint / preference_scope_target / design_scope_target / peer / reviewer / gold 字段；candidate 结构分层：blind_visible（无答案）+ design_metadata（含设计答案）",
+  "quota": {
+    "note": "以下为 provisional_max_pool（pre-C1 planning number），非 P04 最终配额。v4.1 P04 正式口径：candidate_needed = ceil((target - accepted_legacy) * 1.30)。C1 LEGACY_SET_FROZEN + Legacy 重准入完成后必须重算正式缺口。",
+    "status": "PROVISIONAL",
+    "preference": {
+      "target": 225,
+      "provisional_max_pool": 293,
+      "legacy_offset": true,
+      "gold_source_composition": {"public": 75, "os_controlled": 150}
+    },
+    "conflict": {
+      "target": 125,
+      "provisional_max_pool": 163,
+      "legacy_offset": true,
+      "gold_source_composition": {"public": 30, "os_controlled": 95}
+    },
+    "forgetting": {
+      "target": 100,
+      "provisional_max_pool": 130,
+      "legacy_offset": true,
+      "gold_source_composition": {"public": 25, "os_controlled": 75}
+    }
+  },
+  "source_layer_map": {
+    "public_direct": {
+      "note": "公开数据原样作为来源事实；eligibility 以 Registry 为唯一真源（source_registry.csv / license_registry.csv）。license 当前均 Reviewer（待批准），admission_eligible 一律 false；仅 Reviewer 批准对应 Registry 后才同步切换 eligible。",
+      "candidates": [
+        {"layer": "public_direct", "dataset": "longmemeval_cleaned_2025", "source_registry_status": "SOURCE_VERIFIED", "license_status": "REVIEWER_PENDING", "admission_eligible": false, "usable_for": ["preference", "conflict", "forgetting"]},
+        {"layer": "public_direct", "dataset": "longmemeval_v2_2026", "source_registry_status": "SOURCE_VERIFIED", "license_status": "REVIEWER_PENDING", "admission_eligible": false, "usable_for": ["conflict", "forgetting"]},
+        {"layer": "public_direct", "dataset": "personachat_2018", "source_registry_status": "SOURCE_PENDING_REVIEW", "license_status": "LICENSE_PENDING", "admission_eligible": false, "usable_for": ["preference"], "note": "source 部分核验/待核验；license 待人工/法务确认；Reviewer 待批准"},
+        {"layer": "public_direct", "dataset": "multiwoz_2_2_2020", "source_registry_status": "SOURCE_VERIFIED", "license_status": "REVIEWER_PENDING", "admission_eligible": false, "usable_for": ["preference"]}
+      ]
+    },
+    "public_controlled_derived": {
+      "note": "公开事实改写/改写为 OS 语境；必须保留 generation manifest 回溯到 raw（G9）；eligibility 同源 Registry",
+      "candidates": []
+    },
+    "os_controlled_authored": {
+      "note": "A 依据 OS scenario spec 手写/生成的中文场景；必须带 scenario_spec_id + generation manifest；用户/事件 ID 为设计占位（id_binding_status=NON_PRODUCTION），production binding 时 fail-closed",
+      "scenario_spec_dir": "data/interim/candidates_v4/scenario_specs/"
+    }
+  },
+  "template_family_plan": {
+    "rule": "单一 template_family 不得超过该任务候选池的 25%（G4）；exact dup=0；Jaccard>0.85 必须送审",
+    "preference_families": ["os_pref_workflow", "os_pref_app_tool", "os_pref_topic_style", "os_pref_time_window", "os_pref_global_rule", "os_pref_contradict", "os_pref_withdraw", "os_pref_sensitive", "lme_pref_persona"],
+    "conflict_families": ["os_conf_contradiction", "os_conf_temporal_update", "os_conf_pref_change", "os_conf_scope_ambiguity", "os_conf_source_conflict", "lme_conf_knowledge_update", "lme_conf_temporal"],
+    "forgetting_families": ["os_forg_single_item", "os_forg_session", "os_forg_topic", "os_forg_time_window", "os_forg_restart", "os_forg_reindex", "lme_forg_item"]
+  },
+  "generation_manifest_template": {
+    "fields": ["generation_id", "prompt_version", "seed", "model", "source", "scenario_spec_id", "template_family", "language"],
+    "required": true,
+    "note": "G9 溯源：候选必须带 generation_id/prompt/seed/model/source，否则 Admission G1/G5 无法通过"
+  },
+  "scope_review": {
+    "owner": "Data-A",
+    "gate": "G2",
+    "rule": "Preference 逐条判 preference_scope ∈ {global, topic, tool, session, time_window}（KMA 5.8）；禁止默认 tool；不确定输出 NEEDS_REVIEW",
+    "standard_doc": "reports/v4.1_scope_review_standard_A.md"
+  },
+  "blockers": [
+    {"id": "C1", "item": "Legacy-N 冻结", "status": "NOT_FROZEN", "owner": "Data-R", "impact": "P10 重准入与 accepted_legacy 未知 → 新缺口/候选池未定稿"},
+    {"id": "C4", "item": "fresh 40 Calibration 来源", "status": "PENDING", "owner": "Data-R", "impact": "盲包与校准在 D2"},
+    {"id": "P2A", "item": "admission_gate.py / validate_labels.py / build_blind_packets.py", "status": "NEEDS_IMPLEMENTATION", "owner": "Data-B/R", "impact": "候选无法走 G1-G5 自动化验收"},
+    {"id": "M1-KB", "item": "KB Import Contract FROZEN", "status": "BLOCKED_MAIN_CONTRACT", "owner": "Data-R/Main-E", "impact": "仅影响 Retrieval，非 A 的 Pref/Conflict/Forget"}
+  ]
+}
