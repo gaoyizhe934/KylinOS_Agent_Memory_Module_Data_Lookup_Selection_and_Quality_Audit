@@ -1,0 +1,47 @@
+{
+  "schema": "v4.1_label_schema",
+  "version": "0.1",
+  "note": "A/B blind label 的 task_type->label 枚举注册表（依据 v4.1 台账 10_任务判定矩阵 PASS/RELABELED 类别）。validate_labels.py 消费；缺 schema/task 未知/label 非法 -> fail-closed。结构化 gold 子字段校验不在本层，由 Admission/Reviewer 语义裁决。",
+  "task_label_enums": {
+    "preference_extraction": [
+      "persistent_preference",
+      "temporary_preference",
+      "task_constraint",
+      "ordinary_request",
+      "non_preference"
+    ],
+    "knowledge_retrieval": [
+      "positive_answerable",
+      "negative_guardrail",
+      "stale_version",
+      "cross_user",
+      "sensitive",
+      "removed",
+      "unresolved_conflict",
+      "hard_negative"
+    ],
+    "conflict_resolution": [
+      "actual_conflict",
+      "non_conflict_hard_negative",
+      "coexist_history"
+    ],
+    "precise_forgetting": [
+      "single_item",
+      "session",
+      "topic",
+      "time_window",
+      "full_reset"
+    ],
+    "tool_result": [
+      "success",
+      "failed",
+      "cancelled",
+      "timeout",
+      "partial_success"
+    ],
+    "end_to_end_session": [
+      "runtime_verified_e2e",
+      "runtime_unverified_candidate_only"
+    ]
+  }
+}

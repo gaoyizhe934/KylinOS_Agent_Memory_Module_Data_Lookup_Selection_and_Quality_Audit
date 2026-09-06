@@ -36,6 +36,8 @@ GEN_REQUIRED = ["generation_id", "prompt_version", "seed", "model"]
 
 
 APPROVED_REVIEWER_TOKENS = ("已批准", "APPROVED", "gaoyizhe934")
+APPROVED_VERDICT = {"已确认", "APPROVED"}
+APPROVED_STATUS = {"已批准", "APPROVED"}
 
 
 def read_csv(path):
@@ -50,19 +52,22 @@ def source_approved(row):
 
 
 def license_approved(row):
-    """approved-state contract：reviewer + verdict + status 全部达到 canonical APPROVED。
-    reviewer 非空、不含『待』、含已批准 token；verdict 不含『待』（已确认）；
-    status 不含『待』/draft/history（已批准）。任一 blank/unknown/pending/history -> FAIL。"""
+    """canonical allowlist：reviewer + verdict + status 三者必须全部命中明确 allowlist。
+    reviewer：非空、无『待』、含已批准 token；
+    verdict ∈ {已确认, APPROVED}；status ∈ {已批准, APPROVED}；
+    其余任意值（blank/unknown/待/draft/history/archived/reviewed 等）一律 FAIL。"""
     reviewer = (row.get("reviewer") or "").strip()
     verdict = (row.get("verdict") or "").strip()
     status = (row.get("status") or "").strip()
-    if not reviewer or not verdict or not status:
+    if not reviewer or "待" in reviewer:
         return False
-    if "待" in reviewer or "待" in verdict or "待" in status:
+    if not any(tok in reviewer for tok in APPROVED_REVIEWER_TOKENS):
         return False
-    if "draft" in status.lower() or "history" in status.lower() or "pending" in status.lower():
+    if verdict not in APPROVED_VERDICT:
         return False
-    return any(tok in reviewer for tok in APPROVED_REVIEWER_TOKENS)
+    if status not in APPROVED_STATUS:
+        return False
+    return True
 
 
 def load_prompt_refs(path=None):

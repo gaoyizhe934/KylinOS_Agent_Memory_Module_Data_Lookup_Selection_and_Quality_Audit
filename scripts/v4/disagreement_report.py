@@ -78,7 +78,10 @@ def main():
     for d in disagreements:
         key = d["label_a"] + "|" + d["label_b"]
         same_rule.setdefault(key, []).append(d["sample_id"])
-    stop_the_line = [k for k, v in same_rule.items() if len(v) >= 3]
+    stop_rule = [k for k, v in same_rule.items() if len(v) >= 3]
+    rate = len(disagreements) / len(A) if A else 0.0
+    # 手册 25 条微批红线 >20%：即分歧条数 >5（rate>0.20 且条数达红线量级才 STOP，避免小批误触发）
+    batch_red_line = len(disagreements) > 5 and rate > 0.20
 
     lines = ["sample_id,label_a,label_b"]
     for d in disagreements:
@@ -88,12 +91,16 @@ def main():
     with open(out, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     print("written:", out)
-    print("A=%d B=%d disagreements=%d stop_the_line_groups=%d" % (len(A), len(B), len(disagreements), len(stop_the_line)))
-    if stop_the_line:
-        print("STOP_THE_LINE_GUIDELINE_DEFECT:", stop_the_line)
+    print("A=%d B=%d disagreements=%d disagreement_rate=%.3f same_rule_groups>=3=%d" %
+          (len(A), len(B), len(disagreements), rate, len(stop_rule)))
+    if stop_rule:
+        print("STOP_THE_LINE_GUIDELINE_DEFECT:", stop_rule)
         sys.exit(2)
-    if disagreements:
+    if batch_red_line:
+        print("STOP_THE_LINE_BATCH_RED_LINE: 分歧率>20%%")
         sys.exit(2)
+    # 普通 disagreement 进入 reviewer queue，正常完成（exit 0）
+    print("REVIEWER_QUEUE: %d disagreements to adjudicate" % len(disagreements))
     sys.exit(0)
 
 

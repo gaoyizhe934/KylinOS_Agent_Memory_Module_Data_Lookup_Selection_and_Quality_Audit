@@ -311,26 +311,39 @@ def test_t12_seal():
 
 
 # ---------- T08 validate_labels ----------
+def _lab(sid, label, task="preference_extraction", conf=0.9, reason="r"):
+    return '{"sample_id": "%s", "label": "%s", "task_type": "%s", "confidence": %s, "reason": "%s"}\n' % (sid, label, task, conf, reason)
+
+
 def test_t08_validate():
     cleanup()
     fixture("tmp_p2a_test/empty.jsonl", "")
     r = run("validate_labels.py", "--input", "tmp_p2a_test/empty.jsonl", "--role", "A")
     check("t08_empty_fail", r.returncode == 2)
-    fixture("tmp_p2a_test/dup.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 0.9, "reason": "r"}\n' * 2)
+    fixture("tmp_p2a_test/dup.jsonl", _lab("s1", "persistent_preference") * 2)
     r = run("validate_labels.py", "--input", "tmp_p2a_test/dup.jsonl", "--role", "A")
     check("t08_dup_fail", r.returncode == 2, "rc=%d" % r.returncode)
-    fixture("tmp_p2a_test/badconf.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 1.5, "reason": "r"}\n')
+    fixture("tmp_p2a_test/badconf.jsonl", _lab("s1", "persistent_preference", conf=1.5))
     r = run("validate_labels.py", "--input", "tmp_p2a_test/badconf.jsonl", "--role", "A")
     check("t08_bad_conf_fail", r.returncode == 2, "rc=%d" % r.returncode)
-    fixture("tmp_p2a_test/noconf.jsonl", '{"sample_id": "s1", "label": "x", "confidence": "high", "reason": "r"}\n')
+    fixture("tmp_p2a_test/noconf.jsonl", '{"sample_id": "s1", "label": "persistent_preference", "task_type": "preference_extraction", "confidence": "high", "reason": "r"}\n')
     r = run("validate_labels.py", "--input", "tmp_p2a_test/noconf.jsonl", "--role", "A")
     check("t08_conf_not_numeric_fail", r.returncode == 2, "rc=%d" % r.returncode)
-    fixture("tmp_p2a_test/noreason.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 0.9, "reason": "  "}\n')
+    fixture("tmp_p2a_test/noreason.jsonl", _lab("s1", "persistent_preference", reason="  "))
     r = run("validate_labels.py", "--input", "tmp_p2a_test/noreason.jsonl", "--role", "A")
     check("t08_empty_reason_fail", r.returncode == 2, "rc=%d" % r.returncode)
-    fixture("tmp_p2a_test/good.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 0.9, "reason": "r"}\n')
+    # invalid enum / unknown task / missing schema
+    fixture("tmp_p2a_test/badenum.jsonl", _lab("s1", "banana"))
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/badenum.jsonl", "--role", "A")
+    check("t08_invalid_enum_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
+    fixture("tmp_p2a_test/unk.jsonl", _lab("s1", "persistent_preference", task="made_up_task"))
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/unk.jsonl", "--role", "A")
+    check("t08_unknown_task_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/empty.jsonl", "--role", "A", "--schema", "registry/nope.json")
+    check("t08_missing_schema_fail", r.returncode == 3, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/good.jsonl", _lab("s1", "persistent_preference") + _lab("s2", "task_constraint"))
     r = run("validate_labels.py", "--input", "tmp_p2a_test/good.jsonl", "--role", "A")
-    check("t08_good_pass", r.returncode == 0, "rc=%d" % r.returncode)
+    check("t08_good_pass", r.returncode == 0, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
 
 
 # ---------- T09 disagreement ----------
@@ -350,13 +363,25 @@ def test_t09_disagreement():
     fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "s1", "label": "w"}\n')
     r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
     check("t09_dup_id_fail", r.returncode == 2, "rc=%d" % r.returncode)
-    fixture("tmp_p2a_test/A.jsonl", '{"sample_id": "s1", "label": "x"}\n')
-    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n')
+    # 1 条分歧 -> non-STOP（exit 0，进 reviewer queue）
+    fixture("tmp_p2a_test/A.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "s2", "label": "y"}\n')
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "s2", "label": "z"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_one_disagree_nonstop", r.returncode == 0, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
+    # 2 条分歧不同规则 -> non-STOP
+    fixture("tmp_p2a_test/A.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "s2", "label": "y"}\n{"sample_id": "s3", "label": "p"}\n')
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "s2", "label": "z"}\n{"sample_id": "s3", "label": "q"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_two_disagree_diff_rule_nonstop", r.returncode == 0, "rc=%d" % r.returncode)
+    # 同规则 3 条 -> STOP（exit 2）
+    fixture("tmp_p2a_test/A.jsonl", '{"sample_id": "s1", "label": "a"}\n{"sample_id": "s2", "label": "a"}\n{"sample_id": "s3", "label": "a"}\n')
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "b"}\n{"sample_id": "s2", "label": "b"}\n{"sample_id": "s3", "label": "b"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_same_rule_3_stop", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
+    # 完全一致 -> PASS
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "a"}\n{"sample_id": "s2", "label": "a"}\n{"sample_id": "s3", "label": "a"}\n')
     r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
     check("t09_agree_pass", r.returncode == 0, "rc=%d" % r.returncode)
-    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "y"}\n')
-    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
-    check("t09_disagree_fail", r.returncode == 2, "rc=%d" % r.returncode)
 
 
 # ---------- T03 license/prompt approval ----------
@@ -364,10 +389,17 @@ def test_t03_license_verdict_pending_fail():
     m = load_mod("provenance_resolver")
     # reviewer approved 但 verdict 仍 pending -> FAIL
     check("t03_reviewer_ok_verdict_pending_fail", m.license_approved({"reviewer": "已批准 gaoyizhe934", "verdict": "待人工/法务确认", "status": "已批准"}) is False)
-    # reviewer approved 但 status history -> FAIL
+    # reviewer approved 但 status history/draft -> FAIL
     check("t03_status_history_fail", m.license_approved({"reviewer": "已批准", "verdict": "已确认", "status": "history/draft"}) is False)
+    # status=已存档（archived）-> FAIL（不在 allowlist）
+    check("t03_status_archived_fail", m.license_approved({"reviewer": "已批准", "verdict": "已确认", "status": "已存档/待确认"}) is False)
+    # status=reviewed（仅 reviewer 审查过）-> FAIL
+    check("t03_status_reviewed_only_fail", m.license_approved({"reviewer": "已批准", "verdict": "已确认", "status": "reviewed"}) is False)
+    # verdict=unknown -> FAIL
+    check("t03_verdict_unknown_fail", m.license_approved({"reviewer": "已批准", "verdict": "whatever", "status": "已批准"}) is False)
     # 全 approved -> PASS
     check("t03_full_approved_pass", m.license_approved({"reviewer": "已批准 gaoyizhe934", "verdict": "已确认", "status": "已批准"}) is True)
+    check("t03_full_approved_english_pass", m.license_approved({"reviewer": "APPROVED gaoyizhe934", "verdict": "APPROVED", "status": "APPROVED"}) is True)
 
 
 def test_t03_prompt_inactive_fail():
