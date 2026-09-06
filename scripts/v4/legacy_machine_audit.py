@@ -1,22 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""v4.1 D1 P11 Legacy Machine Auditor（Data-B，2026-09-06，v0.2）
+"""v4.1 D1 P11 Legacy Machine Auditor（Data-B，2026-09-06，v0.3）
 
 基于 C1 冻结账本(legacy_inventory_v4_full.jsonl) 与 P2-A 机器工具输出
 (prov/dedup/leak report)，对 465 IN_SCOPE 逐样本聚合机器审计结果。
 
-v0.2 变更（响应 Data-A #37 comment 建议 1/2，非阻塞优化）：
-  1) 每行新增 machine_triage_hint（机器初筛信号，不代语义裁决）：
-     - template_is_v1          template_family 以 _v1 结尾（模板源提示）
-     - counter_family_count    同 template_family 在 IN_SCOPE 的条数（批量/计数器规模提示）
-     - in_near_dup_pair        该样本出现在 dedup near(>0.85) 对中（模板膨胀候选提示）
-     - placeholder_suspect     input/evidence 含占位特征 token（启发式，提示非判定）
-  2) __summary__ 独立输出为 legacy_machine_audit_v4.1_summary.json；
-     主 jsonl 保持纯 465 行（逐行消费无需特判末行）。
+v0.3 变更（响应 Data-R D1 Review #37：B-M1/M2/M3 + B-L1/L2）：
+  M1) summary.json 新增 batch_gate（status=BLOCKED + 未决原因清单 + owner=Data-R）；
+      audit jsonl 逐样本维持 NEEDS_HUMAN_REVIEW。
+  M2) machine_checks 新增 license_status：team_authored -> N/A_TEAM_AUTHORED；
+      public_derived(t2ranking) -> PENDING_LICENSE_REVIEW（license_registry 未批准，如实标 PENDING）。
+  M3) 哈希口径统一并注明算法：
+      input_file_sha256      = sha256(legacy_in_scope_465.jsonl 文件字节)
+      input_sample_id_set_sha= sha256(json.dumps(sorted(sample_id), ensure_ascii=False))
+      （不再混称；修正 worklog/报告一致引用）。
+  L1) 幂等/规范化 hash：summary 增加 canonical_hash = sha256(逐行 rstrip 后按 \\n 拼接 + \\n)，
+      避免行尾/EOF 差异导致 Reviewer 复算不一致。
+  L2) timestamp 缺陷登记：machine_checks.timestamp_defect 检测 `YYYY-MM-DDN` 非法日期，
+      summary 计数 timestamp_defect_total；明细另出登记报告（见生成侧）。
 
-机器可判项：provenance / license / exact-dup / near-dup / template 集中度 / leakage。
-语义裁决(REUSE/REWORK/RELABEL/DROP)归 P10(A)+Data-R；本脚本不写 human_decision、
-不产 Gold、不修改 data/raw。
+机器可判项：provenance / license / exact-dup / near-dup / template / leakage / timestamp。
+语义裁决归 P10(A)+Data-R；本脚本不写 human_decision、不产 Gold、不改 data/raw。
 
 用法：
   python scripts/v4/legacy_machine_audit.py \
@@ -28,12 +32,17 @@ v0.2 变更（响应 Data-A #37 comment 建议 1/2，非阻塞优化）：
     --summary-out reports/legacy_machine_audit_v4.1_summary.json
 """
 import argparse
+import csv
+import hashlib
 import json
 import os
+import re
 import sys
 
 APPROVED_TEMPLATE_MAX = 0.25
 PLACEHOLDER_TOKENS = ("旧记忆", "新指令", "待补充", "待填充", "<...>", "xxx", "XXX", "示例")
+# 465 IN_SCOPE 中 public_derived 文件 -> dataset_id（唯一：processed t2ranking）
+PUBLIC_FILE_TO_DATASET = {"data/processed/knowledge_retrieval_t2ranking.jsonl": "t2ranking_2023"}
 
 
 def load_jsonl(p):
@@ -41,7 +50,6 @@ def load_jsonl(p):
 
 
 def read_actual_row(root, inv):
-    """按 ledger file_path/line_no 读取实际样本行。"""
     p = os.path.join(root, inv.get("file_path", ""))
     if not os.path.exists(p):
         return None
@@ -62,6 +70,44 @@ def placeholder_suspect(row):
     return any(tok in blob for tok in PLACEHOLDER_TOKENS)
 
 
+def timestamp_defect(ts):
+    """检测 YYYY-MM-DDN（日字段 3 位，计数器拼入日期）等非法时间戳。"""
+    if not ts or not isinstance(ts, str):
+        return False
+    return bool(re.match(r"^\d{4}-\d{2}-\d{3}T", ts))
+
+
+def license_status_for(inv, lic_map):
+    src = inv.get("source") or ""
+    if src == "team_authored":
+        return "N/A_TEAM_AUTHORED", None
+    if src == "public_derived":
+        ds = PUBLIC_FILE_TO_DATASET.get((inv.get("file_path") or "").replace("\\", "/"))
+        if ds is None:
+            return "PENDING_DATASET_UNRESOLVED", None
+        row = lic_map.get(ds)
+        if row is None:
+            return "PENDING_LICENSE_NO_REGISTRY", ds
+        reviewer = (row.get("reviewer") or "").strip()
+        status = (row.get("status") or "").strip()
+        verdict = (row.get("verdict") or "").strip()
+        if "待" in reviewer or "待" in status or "待" in verdict:
+            return "PENDING_LICENSE_REVIEW", ds
+        return "LICENSE_OK", ds
+    return "PENDING_SOURCE_UNKNOWN", None
+
+
+def canonical_hash_of_file(path):
+    """逐行 rstrip 后按 \\n 拼接 + \\n 再 sha256（消除行尾/EOF 差异）。"""
+    with open(path, "rb") as f:
+        raw = f.read()
+    text = raw.decode("utf-8")
+    norm = "\n".join(line.rstrip("\r\n") for line in text.split("\n"))
+    if not norm.endswith("\n"):
+        norm += "\n"
+    return hashlib.sha256(norm.encode("utf-8")).hexdigest()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ledger", required=True)
@@ -70,13 +116,22 @@ def main():
     ap.add_argument("--leak", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--summary-out", default="reports/legacy_machine_audit_v4.1_summary.json")
+    ap.add_argument("--input-file", default="data/interim/v4.1_d1_audit/legacy_in_scope_465.jsonl")
     args = ap.parse_args()
-    root = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     ledger = load_jsonl(args.ledger)
     prov = json.load(open(args.prov, encoding="utf-8"))
     dedup = json.load(open(args.dedup, encoding="utf-8"))
     leak = json.load(open(args.leak, encoding="utf-8"))
+
+    # license registry
+    lic_map = {}
+    lic_csv = os.path.join(root, "registry", "license_registry.csv")
+    if os.path.exists(lic_csv):
+        with open(lic_csv, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                lic_map[r["dataset_id"]] = r
 
     inscope = [r for r in ledger if r.get("inventory_status") == "IN_SCOPE"]
     if not inscope:
@@ -113,7 +168,9 @@ def main():
     rows_out = []
     counters = {"provenance_unresolved": 0, "leak_clean": 0, "leak_registered": 0,
                 "leak_fp_collision": 0, "near_dup_samples": 0, "template_over": 0,
-                "triage_template_v1": 0, "triage_in_near_dup": 0, "triage_placeholder": 0}
+                "triage_template_v1": 0, "triage_in_near_dup": 0, "triage_placeholder": 0,
+                "license_na_team": 0, "license_pending": 0, "license_ok": 0,
+                "timestamp_defect": 0}
     for inv in inscope:
         sid = inv.get("sample_id")
         fam = inv.get("template_family") or "none"
@@ -121,6 +178,8 @@ def main():
         row = read_actual_row(root, inv)
         leak_status, leak_reason = classify_leak(sid, inv)
         prov_st = "UNRESOLVED" if sid in prov_status else "RESOLVED"
+        lic_st, lic_ds = license_status_for(inv, lic_map)
+        ts_def = timestamp_defect((row or {}).get("timestamp"))
 
         reasons = []
         if prov_st == "UNRESOLVED":
@@ -140,8 +199,17 @@ def main():
             reasons.append("leak_rawid_collision_review")
         elif leak_status == "CLEAN":
             counters["leak_clean"] += 1
+        if lic_st.startswith("N/A"):
+            counters["license_na_team"] += 1
+        elif lic_st == "LICENSE_OK":
+            counters["license_ok"] += 1
+        else:
+            counters["license_pending"] += 1
+            reasons.append("license_" + lic_st.lower())
+        if ts_def:
+            counters["timestamp_defect"] += 1
+            reasons.append("timestamp_defect_yyyymmddN")
 
-        # machine triage hints (初筛信号，不代语义裁决)
         t_v1 = fam.endswith("_v1")
         t_near = sid in near_member
         t_ph = placeholder_suspect(row)
@@ -173,12 +241,15 @@ def main():
             "label_exposed": inv.get("label_exposed"),
             "machine_checks": {
                 "provenance_status": prov_st,
+                "license_status": lic_st,
+                "license_dataset": lic_ds,
                 "exact_duplicate": "NONE",
                 "near_duplicate_pairs": (1 if t_near else 0),
                 "template_share": round(share, 4),
                 "template_concentration_ok": fam not in over_conc,
                 "leak_status": leak_status,
                 "leak_reason": leak_reason,
+                "timestamp_defect": ts_def,
             },
             "machine_triage_hint": triage,
             "split_eligibility": split_elig,
@@ -186,22 +257,59 @@ def main():
             "review_owner": "Data-A(P10 semantic)/Data-R(final)",
         })
 
+    # batch gate（fail-closed：机器阈值未过即 BLOCKED，不因逐样本 NEEDS_HUMAN_REVIEW 而放行）
+    gate_reasons = []
+    if counters["provenance_unresolved"] > 0:
+        gate_reasons.append("G1_provenance_unresolved=%d(>0)" % counters["provenance_unresolved"])
+    if counters["near_dup_samples"] > 0:
+        gate_reasons.append("G4_near_dup_unreviewed(>0.85, %d samples)" % counters["near_dup_samples"])
+    if counters["template_over"] > 0:
+        gate_reasons.append("G4_template_concentration>25%%(%d samples)" % counters["template_over"])
+    if counters["leak_registered"] + counters["leak_fp_collision"] > 0:
+        gate_reasons.append("G5_leak(registered=%d/fp_collision=%d)" % (counters["leak_registered"], counters["leak_fp_collision"]))
+    if counters["license_pending"] > 0:
+        gate_reasons.append("license_pending_review=%d" % counters["license_pending"])
+    batch_gate = {
+        "status": "BLOCKED" if gate_reasons else "PASS",
+        "reasons": gate_reasons,
+        "owner": "Data-R (final adjudication)",
+        "note": "逐样本 NEEDS_HUMAN_REVIEW 不代表批次可放行；batch_gate 为聚合层 fail-closed 状态",
+    }
+
+    # canonical hashes
+    input_path = os.path.join(root, args.input_file.replace("/", os.sep))
+    input_file_sha256 = None
+    canonical_input_hash = None
+    if os.path.exists(input_path):
+        input_file_sha256 = hashlib.sha256(open(input_path, "rb").read()).hexdigest()
+        canonical_input_hash = canonical_hash_of_file(input_path)
+    ids = sorted(r["sample_id"] for r in inscope)
+    sample_id_set_sha = hashlib.sha256(json.dumps(ids, ensure_ascii=False).encode("utf-8")).hexdigest()
+
     summary = {
         "schema": "legacy_machine_audit_v4.1_summary",
         "version": "v4.1",
         "date": "2026-09-06",
         "generated_by": "DGXD01(Data-B)",
-        "tool": "legacy_machine_audit.py (v0.2)",
+        "tool": "legacy_machine_audit.py (v0.3)",
         "input_ledger": args.ledger,
-        "input_set_sha256": leak.get("input_set_hash"),
+        "input_hashes": {
+            "input_file_sha256": input_file_sha256,
+            "input_file_sha256_algorithm": "sha256(file bytes)",
+            "input_sample_id_set_sha": sample_id_set_sha,
+            "input_sample_id_set_sha_algorithm": "sha256(json.dumps(sorted(sample_id), ensure_ascii=False))",
+            "canonical_input_hash": canonical_input_hash,
+            "canonical_input_hash_algorithm": "sha256(逐行 rstrip 后 \\n 拼接 + \\n)",
+        },
         "total_in_scope": len(inscope),
         "counters": counters,
+        "batch_gate": batch_gate,
         "thresholds": {
             "near_dup_similarity": 0.85,
             "template_max_share": APPROVED_TEMPLATE_MAX,
             "rule": "unresolved_provenance>0->FAIL; exact_dup>0->FAIL; leak>0->FAIL; sim>0.85->Reviewer; single_template>25%->FAIL"
         },
-        "machine_conclusion": "legacy 465 为 v1 模板/旧格式源，机器可判项见 counters；machine_triage_hint 为初筛信号；语义处置归 P10(A)+Data-R，本报告不代判",
+        "machine_conclusion": "legacy 465 为 v1 模板/旧格式源；batch_gate=BLOCKED（G1/G4/G5/license 待 Data-R）；machine_triage_hint 为初筛信号；语义处置归 P10(A)+Data-R，本报告不代判",
         "tool_evidence": [args.prov, args.dedup, args.leak],
     }
     with open(args.out, "w", encoding="utf-8") as f:
@@ -210,6 +318,7 @@ def main():
     with open(args.summary_out, "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
     print("rows=", len(rows_out), "summary=", args.summary_out)
+    print("batch_gate=", batch_gate["status"], batch_gate["reasons"])
     print(json.dumps(counters, ensure_ascii=False))
 
 

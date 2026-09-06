@@ -3,9 +3,16 @@
   "version": "v4.1",
   "date": "2026-09-06",
   "generated_by": "DGXD01(Data-B)",
-  "tool": "legacy_machine_audit.py (v0.2)",
+  "tool": "legacy_machine_audit.py (v0.3)",
   "input_ledger": "reports/legacy_inventory_v4_full.jsonl",
-  "input_set_sha256": "5322511f093bc0430e3fc51c844637b1d8037a12b406b11031c71e917d382191",
+  "input_hashes": {
+    "input_file_sha256": "4698f5ca6bff06ce751da8e65bed4b13fd69a7ef3b0e4723b2fc8324f36c8c2f",
+    "input_file_sha256_algorithm": "sha256(file bytes)",
+    "input_sample_id_set_sha": "5322511f093bc0430e3fc51c844637b1d8037a12b406b11031c71e917d382191",
+    "input_sample_id_set_sha_algorithm": "sha256(json.dumps(sorted(sample_id), ensure_ascii=False))",
+    "canonical_input_hash": "c1572217af360eacc8e3fd839433e76901427cfd62537f7cc5928c727c04c223",
+    "canonical_input_hash_algorithm": "sha256(逐行 rstrip 后 \\n 拼接 + \\n)"
+  },
   "total_in_scope": 465,
   "counters": {
     "provenance_unresolved": 465,
@@ -16,14 +23,30 @@
     "template_over": 200,
     "triage_template_v1": 465,
     "triage_in_near_dup": 265,
-    "triage_placeholder": 40
+    "triage_placeholder": 40,
+    "license_na_team": 265,
+    "license_pending": 200,
+    "license_ok": 0,
+    "timestamp_defect": 265
+  },
+  "batch_gate": {
+    "status": "BLOCKED",
+    "reasons": [
+      "G1_provenance_unresolved=465(>0)",
+      "G4_near_dup_unreviewed(>0.85, 265 samples)",
+      "G4_template_concentration>25%(200 samples)",
+      "G5_leak(registered=38/fp_collision=2)",
+      "license_pending_review=200"
+    ],
+    "owner": "Data-R (final adjudication)",
+    "note": "逐样本 NEEDS_HUMAN_REVIEW 不代表批次可放行；batch_gate 为聚合层 fail-closed 状态"
   },
   "thresholds": {
     "near_dup_similarity": 0.85,
     "template_max_share": 0.25,
     "rule": "unresolved_provenance>0->FAIL; exact_dup>0->FAIL; leak>0->FAIL; sim>0.85->Reviewer; single_template>25%->FAIL"
   },
-  "machine_conclusion": "legacy 465 为 v1 模板/旧格式源，机器可判项见 counters；machine_triage_hint 为初筛信号；语义处置归 P10(A)+Data-R，本报告不代判",
+  "machine_conclusion": "legacy 465 为 v1 模板/旧格式源；batch_gate=BLOCKED（G1/G4/G5/license 待 Data-R）；machine_triage_hint 为初筛信号；语义处置归 P10(A)+Data-R，本报告不代判",
   "tool_evidence": [
     "reports/prov_report_v4.1_d1.json",
     "reports/dedup_report_v4.1_d1.json",

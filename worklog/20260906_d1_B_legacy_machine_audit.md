@@ -10,7 +10,7 @@
 - 不做：不产 Gold、不写 human_decision、不代 A（P10 语义归 A）、不改 raw、不伪造 knowledge_id
 
 ## 执行记录
-- 抽取 465 IN_SCOPE → data/interim/v4.1_d1_audit/legacy_in_scope_465.jsonl（sha256 4698f5ca6bff06ce751da8e65bed4b13fd69a7ef3b0e4723b2fc8324f36c8c2f）
+- 抽取 465 IN_SCOPE → data/interim/v4.1_d1_audit/legacy_in_scope_465.jsonl（哈希口径统一，见 summary input_hashes：file-bytes sha256=4698f5ca…；canonical(逐行rstrip+\n) sha256=c1572217…=Data-R 复算值；sample_id 集 sha=5322511f…）
 - provenance_resolver：465/465 UNRESOLVED（rc=2，符合 legacy 无新契约溯源预期）
 - dedup_scan：exact dup=0；near 1250 对/265 样本；template 集中度 t2ranking 43% FAIL（rc=2）
 - leakage_scan：checked=465；38 sealed 命中（C2 已登记 DEV_REG_ONLY）；2 t2ranking raw_id 碰撞（假阳性）；425 CLEAN（rc=2）
@@ -23,3 +23,7 @@
 
 ## 阻塞/外部依赖
 - M1（schema_snapshot）deadline D1 10:30 仍 BLOCKED（主仓 Liaison）；M1 PASS 前 production_truth_allowed=false → B 侧仅做非 Gold 审计/准备
+
+## v0.3 补记（响应 Data-R D1 Review B-M1/M2/M3+L1/L2）
+- batch_gate=BLOCKED 已入 summary；license 265 N/A + 200 PENDING；timestamp 缺陷 265 条已登记（reports/v4.1_D1_timestamp_defect_20260906.md）。
+- 哈希口径统一：input_file(4698f5ca file-bytes) / canonical(c1572217) / sample_id_set(5322511f)，算法均注明。
