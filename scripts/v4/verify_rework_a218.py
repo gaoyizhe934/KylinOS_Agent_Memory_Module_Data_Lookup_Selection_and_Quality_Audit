@@ -80,9 +80,10 @@ def main():
         sum(o["count"] for o in r["outputs"]), r["manifest"]["input_manifest_payload_sha256"],
         r["manifest"]["mapping_payload"]["sha256"], r["manifest"]["output_set_aggregate_sha256"]))
     if a.require_clean:
-        st = subprocess.run(["git", "-C", root, "status", "--porcelain"], capture_output=True).stdout.decode("utf-8", "replace").strip()
+        st = subprocess.run(["git", "-C", root, "status", "--porcelain", "--", a.dst],
+                            capture_output=True).stdout.decode("utf-8", "replace").strip()
         if st:
-            fails.append("worktree not clean after --check:\n%s" % st)
+            fails.append("dst (%s) not clean after --check:\n%s" % (a.dst, st))
     if fails:
         print("RESULT: FAIL (%d)" % len(fails))
         for f in fails[:40]:
