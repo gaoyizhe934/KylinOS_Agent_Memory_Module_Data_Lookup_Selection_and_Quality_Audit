@@ -29,7 +29,5 @@
   "req_forg_000003": "forg_000003",
   "req_forg_000004": "forg_000004"
  },
- "rework_set_sha256": "340d42edc16e87ec10ab630192f3e210f076af560a57fead3db934baf4a33305",
- "legacy_set_sha256": "58c838ad1611cb3ec57adfd49800c64851cb806cb5c6d473b5cd13aae82d4752",
- "mapping_sha256": "0df05a96ed5ef9215d21fd95ab512a09b0190b405ba2617ecce17ab1ba08cda5"
+ "note": "completed 签名清单（authority/双 id/mapping）；canonical hashes 由 d1_closeout_p04_recompute.py 重算输出于 quota_plan_v4.1_summary.json（脚本消费校验 mapping 一致性）"
 }
