@@ -106,14 +106,11 @@ def test_t03_os_wrong_prompt_fail():
 
 def test_t03_license_blank_reviewer_fail():
     # blank reviewer 不得被判 approved
-    lic_path = os.path.join(ROOT, "registry", "license_registry.csv")
-    bak = open(lic_path, encoding="utf-8").read() if os.path.exists(lic_path) else None
-    # 临时造一个已核验 dataset 但 blank reviewer 的 license 行？不修改真实 registry——直接单测 license_approved
     m = load_mod("provenance_resolver")
-    check("t03_license_blank_fail", m.license_approved({"reviewer": "  ", "verdict": "已确认"}) is False)
-    check("t03_license_pending_fail", m.license_approved({"reviewer": "Reviewer（待批准）", "verdict": "已确认"}) is False)
-    check("t03_license_approved_ok", m.license_approved({"reviewer": "已批准 gaoyizhe934", "verdict": "已确认"}) is True)
-    check("t03_license_unknown_fail", m.license_approved({"reviewer": "Main-B", "verdict": "已确认"}) is False)
+    check("t03_license_blank_fail", m.license_approved({"reviewer": "  ", "verdict": "已确认", "status": "已批准"}) is False)
+    check("t03_license_pending_fail", m.license_approved({"reviewer": "Reviewer（待批准）", "verdict": "已确认", "status": "已批准"}) is False)
+    check("t03_license_approved_ok", m.license_approved({"reviewer": "已批准 gaoyizhe934", "verdict": "已确认", "status": "已批准"}) is True)
+    check("t03_license_unknown_fail", m.license_approved({"reviewer": "Main-B", "verdict": "已确认", "status": "已批准"}) is False)
 
 
 def test_t03_scenario_missing_fail():
@@ -313,6 +310,77 @@ def test_t12_seal():
     check("t12_wrong_split_fail", r.returncode == 2)
 
 
+# ---------- T08 validate_labels ----------
+def test_t08_validate():
+    cleanup()
+    fixture("tmp_p2a_test/empty.jsonl", "")
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/empty.jsonl", "--role", "A")
+    check("t08_empty_fail", r.returncode == 2)
+    fixture("tmp_p2a_test/dup.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 0.9, "reason": "r"}\n' * 2)
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/dup.jsonl", "--role", "A")
+    check("t08_dup_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/badconf.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 1.5, "reason": "r"}\n')
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/badconf.jsonl", "--role", "A")
+    check("t08_bad_conf_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/noconf.jsonl", '{"sample_id": "s1", "label": "x", "confidence": "high", "reason": "r"}\n')
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/noconf.jsonl", "--role", "A")
+    check("t08_conf_not_numeric_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/noreason.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 0.9, "reason": "  "}\n')
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/noreason.jsonl", "--role", "A")
+    check("t08_empty_reason_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/good.jsonl", '{"sample_id": "s1", "label": "x", "confidence": 0.9, "reason": "r"}\n')
+    r = run("validate_labels.py", "--input", "tmp_p2a_test/good.jsonl", "--role", "A")
+    check("t08_good_pass", r.returncode == 0, "rc=%d" % r.returncode)
+
+
+# ---------- T09 disagreement ----------
+def test_t09_disagreement():
+    cleanup()
+    fixture("tmp_p2a_test/A.jsonl", "")
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_empty_a_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/A.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "s2", "label": "y"}\n')
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_missing_id_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "sX", "label": "z"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_extra_id_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n{"sample_id": "s1", "label": "w"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_dup_id_fail", r.returncode == 2, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/A.jsonl", '{"sample_id": "s1", "label": "x"}\n')
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "x"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_agree_pass", r.returncode == 0, "rc=%d" % r.returncode)
+    fixture("tmp_p2a_test/B.jsonl", '{"sample_id": "s1", "label": "y"}\n')
+    r = run("disagreement_report.py", "--a", "tmp_p2a_test/A.jsonl", "--b", "tmp_p2a_test/B.jsonl")
+    check("t09_disagree_fail", r.returncode == 2, "rc=%d" % r.returncode)
+
+
+# ---------- T03 license/prompt approval ----------
+def test_t03_license_verdict_pending_fail():
+    m = load_mod("provenance_resolver")
+    # reviewer approved 但 verdict 仍 pending -> FAIL
+    check("t03_reviewer_ok_verdict_pending_fail", m.license_approved({"reviewer": "已批准 gaoyizhe934", "verdict": "待人工/法务确认", "status": "已批准"}) is False)
+    # reviewer approved 但 status history -> FAIL
+    check("t03_status_history_fail", m.license_approved({"reviewer": "已批准", "verdict": "已确认", "status": "history/draft"}) is False)
+    # 全 approved -> PASS
+    check("t03_full_approved_pass", m.license_approved({"reviewer": "已批准 gaoyizhe934", "verdict": "已确认", "status": "已批准"}) is True)
+
+
+def test_t03_prompt_inactive_fail():
+    m = load_mod("provenance_resolver")
+    d = tempfile.mkdtemp()
+    p = os.path.join(d, "pr.csv")
+    with open(p, "w", encoding="utf-8") as f:
+        f.write("prompt_ref,prompt_id,version,role,status\nP20-v4.1,P20,v4.1,A/B/R,inactive\nP21-v4.1,P21,v4.1,A/B/R,active\n")
+    refs = m.load_prompt_refs(p)
+    check("t03_prompt_inactive_excluded", "P20-v4.1" not in refs and "P21-v4.1" in refs, "refs=%s" % refs)
+    shutil.rmtree(d)
+
+
 def main():
     test_t01_preflight()
     test_t02_inventory()
@@ -330,6 +398,10 @@ def main():
     test_t10_runtime()
     test_t11_invariant()
     test_t12_seal()
+    test_t08_validate()
+    test_t09_disagreement()
+    test_t03_license_verdict_pending_fail()
+    test_t03_prompt_inactive_fail()
     cleanup()
     if FAILURES:
         print("\nRESULT: FAIL (%d)" % len(FAILURES))

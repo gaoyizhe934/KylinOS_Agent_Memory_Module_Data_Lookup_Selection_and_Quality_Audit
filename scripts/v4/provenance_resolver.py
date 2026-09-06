@@ -50,25 +50,32 @@ def source_approved(row):
 
 
 def license_approved(row):
-    """显式 allowlist：reviewer 必须非空、不含『待』、且含已批准 token；否则 FAIL。"""
+    """approved-state contract：reviewer + verdict + status 全部达到 canonical APPROVED。
+    reviewer 非空、不含『待』、含已批准 token；verdict 不含『待』（已确认）；
+    status 不含『待』/draft/history（已批准）。任一 blank/unknown/pending/history -> FAIL。"""
     reviewer = (row.get("reviewer") or "").strip()
-    if not reviewer:
+    verdict = (row.get("verdict") or "").strip()
+    status = (row.get("status") or "").strip()
+    if not reviewer or not verdict or not status:
         return False
-    if "待" in reviewer:
+    if "待" in reviewer or "待" in verdict or "待" in status:
+        return False
+    if "draft" in status.lower() or "history" in status.lower() or "pending" in status.lower():
         return False
     return any(tok in reviewer for tok in APPROVED_REVIEWER_TOKENS)
 
 
-def load_prompt_refs():
-    """读取 prompt_registry.csv 的 prompt_ref 列（canonical prompt ref，如 P20-v4.1）。"""
-    p = os.path.join(ROOT, "registry", "prompt_registry.csv")
+def load_prompt_refs(path=None):
+    """读取 prompt_registry.csv 的 prompt_ref 列；仅接受 status=active。path 可覆盖（测试用）。"""
+    p = path or os.path.join(ROOT, "registry", "prompt_registry.csv")
     if not os.path.exists(p):
         return None
     refs = set()
     with open(p, encoding="utf-8") as f:
         for r in csv.DictReader(f):
+            status = (r.get("status") or "").strip().lower()
             ref = (r.get("prompt_ref") or "").strip()
-            if ref:
+            if ref and status == "active":
                 refs.add(ref)
     return refs
 
