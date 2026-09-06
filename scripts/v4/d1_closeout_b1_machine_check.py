@@ -32,8 +32,8 @@ INPUTS = {
 
 
 def git_show(repo, commit, path):
-    r = subprocess.run(["git", "-C", repo, "show", "%s:%s" % (commit, path)],
-                       capture_output=True, text=True, encoding="utf-8", errors="replace")
+    # raw bytes：避免 Windows newline normalization 破坏 hash（Data-R Blocking-2）
+    r = subprocess.run(["git", "-C", repo, "show", "%s:%s" % (commit, path)], capture_output=True)
     return r.stdout if r.returncode == 0 else None
 
 
@@ -65,32 +65,42 @@ def main():
     os.makedirs(work_dir, exist_ok=True)
     content = {}
     for key, path in INPUTS.items():
-        txt = git_show(repo, full, path)
-        if txt is None:
+        data = git_show(repo, full, path)
+        if data is None:
             print("FAIL: cannot read", path, "from", full[:12])
             sys.exit(2)
-        content[key] = txt
-        with open(os.path.join(work_dir, os.path.basename(path)), "w", encoding="utf-8", newline="") as f:
-            f.write(txt)
-    # input_hash over 4 contents
+        content[key] = data
+        with open(os.path.join(work_dir, os.path.basename(path)), "wb") as f:
+            f.write(data)
+    # input_hash over raw bytes of 4 inputs
     h = hashlib.sha256()
     for key in ("pref", "forg", "manifest", "repair_plan"):
-        h.update(key.encode()); h.update(b"\0"); h.update(content[key].encode("utf-8"))
+        h.update(key.encode()); h.update(b"\0"); h.update(content[key])
     input_hash = h.hexdigest()
 
-    # manifest exact_input_proof check
-    man = json.loads(content["manifest"])
+    # manifest exact_input_proof full binding check (raw bytes)
+    man = json.loads(content["manifest"].decode("utf-8"))
     eip = man.get("exact_input_proof", {}) or {}
     man_issues = []
+    notes = ["B_input_hash_scope=4_pinned_inputs(raw bytes)；A manifest input_hash 为其 exact-input 内容口径，算法不同不作等号比较"]
     ic = eip.get("input_commit") or man.get("input_commit")
     if not (ic and git_rev_parse(repo, ic)):
         man_issues.append("manifest_input_commit_unresolvable:" + str(ic))
     rp_sha = eip.get("repair_plan_sha256") or man.get("repair_plan_sha256")
-    rp_actual = hashlib.sha256(content["repair_plan"].encode("utf-8")).hexdigest()
+    rp_actual = hashlib.sha256(content["repair_plan"]).hexdigest()
     if rp_sha and rp_sha != rp_actual:
-        man_issues.append("A_manifest_repair_plan_sha_mismatch(需A/Data-R同步)")
-    # input_hash 算法 scope 不同（A=exact-input 内容；B=4 pinned 内容）→ 记录不判错
-    man_issues.append("B_input_hash_scope=4_pinned_inputs(A_input_hash_scope=exact-input 内容, 算法不同不作等号比较)")
+        man_issues.append("A_manifest_repair_plan_sha_mismatch(manifest=%s actual=%s, 需A/Data-R同步)" % (rp_sha[:8], rp_actual[:8]))
+    # candidate output_files sha binding
+    for of in man.get("output_files", []):
+        rel = of.get("file", "")
+        key = None
+        for k, path in INPUTS.items():
+            if path == rel and k in ("pref", "forg"):
+                key = k
+        if key:
+            actual = hashlib.sha256(content[key]).hexdigest()
+            if of.get("output_sha256") != actual:
+                man_issues.append("manifest_output_sha_mismatch:" + os.path.basename(rel))
 
     # canonical tools on materialized candidates
     can = work_dir
@@ -100,6 +110,38 @@ def main():
     prov = run_tool(repo, "provenance_resolver.py", ["--input"] + inp + ["--out", "reports/b1v3_prov_report.json"])
     dedup = run_tool(repo, "dedup_scan.py", ["--input"] + inp + ["--out", "reports/b1v3_dedup_report.json"])
     leak = run_tool(repo, "leakage_scan.py", ["--input"] + inp + ["--registry", "registry/leaked_content_registry.json", "--out", "reports/b1v3_leak_report.json"])
+
+    # parse canonical gate reports (Data-R Blocking-1/3)
+    prov_gates = {}
+    try:
+        pr = json.load(open(os.path.join(repo, "reports", "b1v3_prov_report.json"), encoding="utf-8"))
+        prov_gates["unresolved_count"] = pr.get("unresolved_count", len(pr.get("unresolved", [])))
+    except Exception:
+        prov_gates["unresolved_count"] = -1
+    leak_gates = {}
+    try:
+        lk = json.load(open(os.path.join(repo, "reports", "b1v3_leak_report.json"), encoding="utf-8"))
+        leak_gates["leak_count"] = lk.get("leak_count", len(lk.get("hits", [])))
+    except Exception:
+        leak_gates["leak_count"] = -1
+    dd_gates = {}
+    try:
+        dd = json.load(open(os.path.join(repo, "reports", "b1v3_dedup_report.json"), encoding="utf-8"))
+        dd_gates = dd.get("gates", {})
+        dd_gates["dedup_status"] = dd.get("dedup_status")
+    except Exception:
+        dd_gates = {"dedup_status": "PARSE_FAIL"}
+    required_gate_fail = []
+    if prov_gates.get("unresolved_count", 0) > 0:
+        required_gate_fail.append("provenance_unresolved=%s" % prov_gates.get("unresolved_count"))
+    if leak_gates.get("leak_count", 0) > 0:
+        required_gate_fail.append("leak=%s" % leak_gates.get("leak_count"))
+    if dd_gates.get("G4_exact_dup_zero") is False:
+        required_gate_fail.append("exact_dup_present")
+    if dd_gates.get("G4_near_reviewed") is False:
+        required_gate_fail.append("near_dup_unreviewed")
+    # G4 template concentration = admission blocker (不使 B1 requalification machine gate FAIL)
+    g4_template_ok = dd_gates.get("G4_template_concentration_ok", False)
 
     # load rows for per-sample structure checks
     rows = []
@@ -131,7 +173,10 @@ def main():
         if not gen.get("source_file"): iss.append("source_file")
         if (gen.get("source_layer")) != "os_controlled_authored": iss.append("source_layer")
         se = dm.get("split_eligibility")
-        if sid in ("req_pref_000003", "req_pref_000004") and se != "DEV_REG_ONLY": iss.append("split_expected_dev_reg_only")
+        if sid in ("req_pref_000003", "req_pref_000004"):
+            if se != "DEV_REG_ONLY": iss.append("split_expected_dev_reg_only")
+        elif se == "DEV_REG_ONLY":
+            iss.append("split_dev_reg_only_not_allowed_on_" + sid)  # 其它 8 条不得误标（Data-R Blocking-3）
         # A 候选顶层缺 template_family -> 单独 blocker 提示（影响 G4 template 判定，不否定结构本身）
         tf_missing = "template_family" not in r
         machine_status = "PASS" if not iss else "FAIL"
@@ -151,26 +196,34 @@ def main():
             "machine_status": machine_status,
             "completion_readiness": completion,
             "review_blocker": rb,
+            "admission_blocker": ("G4_template_concentration(BLOCKED; A 候选缺顶层 template_family)" if not g4_template_ok else None),
             "issues": iss,
             "checks": {"structure": "PASS" if not iss else "FAIL",
                        "provenance_T03": "PASS" if prov.returncode == 0 else "FAIL(rc=%d)" % prov.returncode,
-                       "exact_dup": "PASS" if dedup.returncode in (0, 2) else "FAIL",
-                       "leakage": "PASS" if leak.returncode == 0 else "FAIL"},
+                       "exact_dup": "PASS" if dd_gates.get("G4_exact_dup_zero") is True else "FAIL",
+                       "near_reviewed": "PASS" if dd_gates.get("G4_near_reviewed") is True else "FAIL",
+                       "leakage": "PASS" if leak.returncode == 0 else "FAIL(rc=%d)" % leak.returncode},
             "source_commit": full,
             "input_hash": input_hash,
         })
 
     summary = {
-        "schema": "b1_machine_check_summary_v3", "version": "v4.1", "date": "2026-09-06",
+        "schema": "b1_machine_check_summary_v4", "version": "v4.1", "date": "2026-09-06",
         "generated_by": "DGXD01(Data-B)", "a_commit": full, "source_commit": full,
         "input_hash_sha256": input_hash, "pinned_inputs": list(INPUTS.keys()),
         "manifest_exact_input_proof_issues": man_issues,
-        "canonical_tool_results": {
-            "provenance_resolver": "checked=10 unresolved=0 rc=%d" % prov.returncode,
-            "dedup_scan": "rc=%d (exact/near/template 见 report)" % dedup.returncode,
-            "leakage_scan": "rc=%d (checked=10 leak=0)" % leak.returncode,
+        "manifest_notes": notes,
+        "required_gate_fail": required_gate_fail,
+        "canonical_gates": {
+            "provenance_unresolved": prov_gates.get("unresolved_count"),
+            "leak_count": leak_gates.get("leak_count"),
+            "G4_exact_dup_zero": dd_gates.get("G4_exact_dup_zero"),
+            "G4_near_reviewed": dd_gates.get("G4_near_reviewed"),
+            "G4_template_concentration_ok": g4_template_ok,
+            "dedup_status": dd_gates.get("dedup_status"),
         },
-        "status_note": "machine_status/结构+T03+exact+leak 通过；completion_readiness=BLOCKED（requalification_status=完成 由 Data-R 逐条签）；B 不写 human_decision/final_label",
+        "admission_blocker": ("G4_template_concentration BLOCKED（A 候选缺顶层 template_family；按 Data-R Blocking-3 归 G4/Admission，不伪装 B1 completion 已完成）" if not g4_template_ok else None),
+        "status_note": "machine_status=requalification gates(结构+T03+DEV_REG) 判定；completion_readiness 一律 BLOCKED（requalification_status=完成 由 Data-R 逐条签；manifest exact-input 未闭环前不得标 completion-ready）；required gate fail 或 manifest binding mismatch -> 脚本 exit(2)。B 不写 human_decision/final_label",
     }
     with open(args.out, "w", encoding="utf-8") as f:
         for r in out: f.write(json.dumps(r, ensure_ascii=False) + "\n")
@@ -179,8 +232,17 @@ def main():
     print("rows:", len(out))
     print("machine_status:", {x["machine_status"] for x in out})
     print("manifest issues:", man_issues)
+    print("required_gate_fail:", required_gate_fail)
     print("canonical rc: prov=%d dedup=%d leak=%d" % (prov.returncode, dedup.returncode, leak.returncode))
     print("input_hash:", input_hash[:16])
+    # fail-closed: manifest exact-input 未闭环 或 canonical required gate fail -> nonzero
+    if man_issues:
+        print("FAIL_CLOSED: manifest exact-input binding mismatch -> exit 2")
+        sys.exit(2)
+    if required_gate_fail:
+        print("FAIL_CLOSED: canonical required gate fail -> exit 2")
+        sys.exit(2)
+    print("EXIT 0: B1 requalification machine gates PASS (completion 仍 BLOCKED 待 Data-R)")
 
 
 if __name__ == "__main__":

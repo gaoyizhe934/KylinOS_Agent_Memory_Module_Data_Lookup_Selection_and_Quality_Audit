@@ -1,5 +1,5 @@
 {
- "schema": "b1_machine_check_summary_v3",
+ "schema": "b1_machine_check_summary_v4",
  "version": "v4.1",
  "date": "2026-09-06",
  "generated_by": "DGXD01(Data-B)",
@@ -13,13 +13,20 @@
   "repair_plan"
  ],
  "manifest_exact_input_proof_issues": [
-  "A_manifest_repair_plan_sha_mismatch(需A/Data-R同步)",
-  "B_input_hash_scope=4_pinned_inputs(A_input_hash_scope=exact-input 内容, 算法不同不作等号比较)"
+  "A_manifest_repair_plan_sha_mismatch(manifest=9d7d9bd0 actual=78fe38c1, 需A/Data-R同步)"
  ],
- "canonical_tool_results": {
-  "provenance_resolver": "checked=10 unresolved=0 rc=0",
-  "dedup_scan": "rc=2 (exact/near/template 见 report)",
-  "leakage_scan": "rc=0 (checked=10 leak=0)"
+ "manifest_notes": [
+  "B_input_hash_scope=4_pinned_inputs(raw bytes)；A manifest input_hash 为其 exact-input 内容口径，算法不同不作等号比较"
+ ],
+ "required_gate_fail": [],
+ "canonical_gates": {
+  "provenance_unresolved": 0,
+  "leak_count": 0,
+  "G4_exact_dup_zero": true,
+  "G4_near_reviewed": true,
+  "G4_template_concentration_ok": false,
+  "dedup_status": "BLOCKED"
  },
- "status_note": "machine_status/结构+T03+exact+leak 通过；completion_readiness=BLOCKED（requalification_status=完成 由 Data-R 逐条签）；B 不写 human_decision/final_label"
+ "admission_blocker": "G4_template_concentration BLOCKED（A 候选缺顶层 template_family；按 Data-R Blocking-3 归 G4/Admission，不伪装 B1 completion 已完成）",
+ "status_note": "machine_status=requalification gates(结构+T03+DEV_REG) 判定；completion_readiness 一律 BLOCKED（requalification_status=完成 由 Data-R 逐条签；manifest exact-input 未闭环前不得标 completion-ready）；required gate fail 或 manifest binding mismatch -> 脚本 exit(2)。B 不写 human_decision/final_label"
 }
