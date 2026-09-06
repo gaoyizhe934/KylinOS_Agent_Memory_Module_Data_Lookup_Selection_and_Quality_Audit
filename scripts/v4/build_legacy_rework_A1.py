@@ -144,7 +144,10 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
                                 "proposed_action": "semantic-preserving rewrite per repair_plan (%s)" % e.get("rewrite_strategy")})
             blind = {"user_message": blind_user}
             rec = base_rec(e["candidate_id"], "preference_extraction", fixed_ts, blind, dm)
-            rec["template_family"] = gr.get("template_family")
+            tf = gr.get("template_family")
+            if not tf:
+                raise SystemExit("template_family missing in pinned legacy row %s (fail-closed)" % lid)
+            rec["template_family"] = tf
             pref_recs.append(rec)
         else:
             dm["forget_mode"] = e["mode"]
@@ -158,7 +161,10 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
                 dm["target_topic"] = e["target_topic"]
             blind = {"forget_instruction": gr["input"]["forget_instruction"], "inventory_context": e["inventory"]}
             rec = base_rec(e["candidate_id"], "precise_forgetting", fixed_ts, blind, dm)
-            rec["template_family"] = gr.get("template_family")
+            tf = gr.get("template_family")
+            if not tf:
+                raise SystemExit("template_family missing in pinned legacy row %s (fail-closed)" % lid)
+            rec["template_family"] = tf
             forg_recs.append(rec)
     selected_rows_sha = sha("\n".join(sorted(selected)).encode("utf-8"))
     requal_blob_sha = sha(requal_text.encode("utf-8") if isinstance(requal_text, str) else requal_text)
@@ -197,6 +203,8 @@ def write_manifest(plan, outdir, input_hash, output_hashes, root, extra):
         "schema": "v4.1_d1_legacy_rework_manifest",
         "batch_id": plan["batch_id"], "date": plan["date"], "owner": plan["owner"],
         "branch": plan["branch"], "repo_base": plan["repo_base"],
+        "hash_contract": "sha256(lf_normalized_raw_bytes)  // repair_plan/source_files/requal/candidate 均按 LF-normalized raw bytes",
+        "template_family_source": "pinned legacy row template_family（lineage；缺失 fail-closed）",
         "input_commit": plan["input_commit"], "fix_source_commit": plan["fix_source_commit"],
         "requal_source": REQUAL_DEFAULT.replace("\\", "/"),
         "input_hash": input_hash,
