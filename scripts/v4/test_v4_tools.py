@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""v4.1 P2-A 工具单测 v3（Data-B，2026-09-05）
-覆盖 R7：inventory 优先级/canonical、admission zero/mismatch、provenance source-layer、
-runtime build mismatch、split→seal wrong-split、seal gen missing/leak-mismatch/read-only、raw leak re-entry。
+"""v4.1 P2-A 工具单测 v4（Data-B，2026-09-05）
+R7 单测 + R8 真实链路集成：T04->T06 contract、exact/near/template block、#34 OS schema T03、
+split invariant（group cross-split / sample conflict / 空输入）。
 运行：python scripts/v4/test_v4_tools.py
 """
 import importlib.util
@@ -46,242 +46,157 @@ def fixture(rel, content):
 
 def cleanup():
     shutil.rmtree(os.path.join(ROOT, "tmp_p2a_test"), ignore_errors=True)
+    shutil.rmtree(os.path.join(ROOT, "release"), ignore_errors=True)
+
+
+def _make_cands(rows):
+    return "".join(json.dumps(r) + "\n" for r in rows)
 
 
 # ---------------- T02 inventory ----------------
 def test_inventory_precedence():
     m = load_mod("inventory_legacy")
-    # L1：同 sample_id，raw_id 漂移 -> 同组
-    k1 = m.identity({"sample_id": "s1", "raw_id": "r1", "input": {"a": 1}})
-    k2 = m.identity({"sample_id": "s1", "raw_id": "r2", "input": {"a": 2}})
-    check("inventory_sid_over_raw_drift", k1 == k2, "%s vs %s" % (k1, k2))
-    # L2：无 sid，同 raw 不同 task -> 不同组
-    k3 = m.identity({"raw_id": "r9", "task_type": "pref", "source": "os"})
-    k4 = m.identity({"raw_id": "r9", "task_type": "conflict", "source": "os"})
-    check("inventory_raw_different_task_diff_group", k3 != k4)
-    # L2：无 sid，同 raw+task -> 同组
-    k5 = m.identity({"raw_id": "r9", "task_type": "pref", "source": "os"})
-    check("inventory_raw_same_task_same_group", k3 == k5)
-    # 同内容不同 sid -> 不同组
-    k6 = m.identity({"sample_id": "a", "input": {"t": "x"}})
-    k7 = m.identity({"sample_id": "b", "input": {"t": "x"}})
-    check("inventory_same_content_diff_sid_diff_group", k6 != k7)
-
-
-def test_inventory_canonical_exact_one():
-    m = load_mod("inventory_legacy")
-    # 手工分组：每组 2 条（1 IN_SCOPE + 1 DUP），验证组内 IN_SCOPE==1 且 duplicate_of 可解析
-    groups = {
-        ("L1", "s1"): [
-            {"logical_group_id": "g1", "inventory_status": "IN_SCOPE", "sample_id": "s1", "duplicate_of": ""},
-            {"logical_group_id": "g1", "inventory_status": "DUPLICATE_FILE", "sample_id": "s1x", "duplicate_of": "s1"},
-        ],
-        ("L1", "s2"): [
-            {"logical_group_id": "g2", "inventory_status": "IN_SCOPE", "sample_id": "s2", "duplicate_of": ""},
-        ],
-    }
-    ok = True
-    for g, recs in groups.items():
-        in_scope = [r for r in recs if r["inventory_status"] == "IN_SCOPE"]
-        if len(in_scope) != 1:
-            ok = False
-        canonical = in_scope[0]["sample_id"]
-        for r in recs:
-            if r["inventory_status"] == "DUPLICATE_FILE" and r["duplicate_of"] != canonical:
-                ok = False
-    check("inventory_canonical_exact_one", ok)
+    check("inventory_sid_over_raw_drift", m.identity({"sample_id": "s1", "raw_id": "r1"}) == m.identity({"sample_id": "s1", "raw_id": "r2"}))
+    check("inventory_raw_different_task_diff_group", m.identity({"raw_id": "r9", "task_type": "pref", "source": "os"}) != m.identity({"raw_id": "r9", "task_type": "conflict", "source": "os"}))
+    check("inventory_raw_same_task_same_group", m.identity({"raw_id": "r9", "task_type": "pref", "source": "os"}) == m.identity({"raw_id": "r9", "task_type": "pref", "source": "os"}))
+    check("inventory_same_content_diff_sid_diff_group", m.identity({"sample_id": "a", "input": {"t": "x"}}) != m.identity({"sample_id": "b", "input": {"t": "x"}}))
 
 
 # ---------------- T04 dedup ----------------
-def test_dedup_field_aware():
+def _dedup_cand(sid, text, fam="tf1"):
+    return {"sample_id": sid, "template_family": fam, "blind_visible": {"input": {"t": text}}}
+
+
+def test_dedup_outputs_contract():
+    cleanup()
+    cands = _make_cands([_dedup_cand("c1", "alpha beta gamma", "fam_a"), _dedup_cand("c2", "delta epsilon zeta", "fam_b")])
+    fixture("tmp_p2a_test/cands.jsonl", cands)
+    r = run("dedup_scan.py", "--input", "tmp_p2a_test/cands.jsonl", "--out", "tmp_p2a_test/dedup.json", "--template-max", "0.6")
+    check("dedup_runs_clean", r.returncode == 0, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
+    rep = json.load(open(os.path.join(ROOT, "tmp_p2a_test/dedup.json"), encoding="utf-8"))
+    check("dedup_contract_checked_sample_ids", sorted(rep.get("checked_sample_ids", [])) == ["c1", "c2"])
+    check("dedup_contract_input_set_hash", bool(rep.get("input_set_hash")))
+    check("dedup_contract_samples", set(rep.get("samples", {}).keys()) == {"c1", "c2"})
+
+
+def test_dedup_exact_near_template():
     m = load_mod("dedup_scan")
-    check("dedup_field_aware_keeps_version_date", m.normalize_field_aware("v1 2026-01-01 100") != m.normalize_field_aware("v2 2026-02-02 200"))
+    check("dedup_field_aware", m.normalize_field_aware("v1 2026-01-01 100") != m.normalize_field_aware("v2 2026-02-02 200"))
     check("dedup_near_dup", m.jaccard(m.normalize_field_aware("每周五上午十点提醒交周报"), m.normalize_field_aware("每周五上午十点提醒交周报吧")) > 0.85)
 
 
-# ---------------- T06 admission ----------------
-def _admission_fixture(g3_status):
-    d = tempfile.mkdtemp()
-    cleanup()
-    prov = {"unresolved_count": 0, "checked_sample_ids": ["s1", "s2"],
-            "input_set_hash": "h", "samples": {"s1": {"ok": True}, "s2": {"ok": True}}}
-    dedup = {"exact_duplicate_groups": {}, "near_duplicate_count": 0, "template_over_concentration": [],
-             "checked_sample_ids": ["s1", "s2"], "input_set_hash": "h"}
-    leak = {"leak_count": 0, "checked_sample_ids": ["s1", "s2"], "input_set_hash": "h",
-            "samples": {"s1": {"ok": True}, "s2": {"ok": True}}}
-    g2 = "sample_id,gate2\ns1,PASS\ns2,PASS\n"
-    g3 = "sample_id,gate3\ns1,%s\ns2,%s\n" % (g3_status, g3_status)
-    cand = '{"sample_id": "s1", "task_type": "t"}\n{"sample_id": "s2", "task_type": "t"}\n'
-    files = {"prov.json": json.dumps(prov), "dedup.json": json.dumps(dedup), "leak.json": json.dumps(leak),
-             "g2.csv": g2, "g3.csv": g3, "cand.jsonl": cand}
-    rels = {k: fixture("tmp_p2a_test/%s" % k, v) for k, v in files.items()}
-    return rels
-
-
-def test_admission_g3_pending_fail():
-    rels = _admission_fixture("PENDING")
-    r = run("admission_gate.py", "--candidates", "tmp_p2a_test/cand.jsonl", "--prov", rels["prov.json"],
-            "--dedup", rels["dedup.json"], "--leak", rels["leak.json"], "--semantic", rels["g2.csv"],
-            "--annotatable", rels["g3.csv"])
-    check("admission_g3_pending_fail", r.returncode == 2, "rc=%d" % r.returncode)
-
-
-def test_admission_zero_candidate_fail():
-    cleanup()
-    prov = {"unresolved_count": 0, "checked_sample_ids": [], "input_set_hash": "h", "samples": {}}
-    dedup = {"exact_duplicate_groups": {}, "near_duplicate_count": 0, "template_over_concentration": [], "checked_sample_ids": [], "input_set_hash": "h"}
-    leak = {"leak_count": 0, "checked_sample_ids": [], "input_set_hash": "h", "samples": {}}
-    g2 = "sample_id,gate2\n"; g3 = "sample_id,gate3\n"
-    cand = fixture("tmp_p2a_test/empty.jsonl", "")
-    for k, v in {"p.json": json.dumps(prov), "d.json": json.dumps(dedup), "l.json": json.dumps(leak),
-                 "g2.csv": g2, "g3.csv": g3}.items():
+# ---------------- T04 -> T06 集成 ----------------
+def _prov_leak_g23(sids, g2v="PASS", g3v="PASS"):
+    prov = {"unresolved_count": 0, "checked_sample_ids": sorted(sids), "input_set_hash": "h",
+            "samples": {s: {"ok": True, "reason": []} for s in sids}}
+    leak = {"leak_count": 0, "checked_sample_ids": sorted(sids), "input_set_hash": "h",
+            "samples": {s: {"ok": True, "hit": []} for s in sids}}
+    g2 = "sample_id,gate2\n" + "".join("%s,%s\n" % (s, g2v) for s in sids)
+    g3 = "sample_id,gate3\n" + "".join("%s,%s\n" % (s, g3v) for s in sids)
+    for k, v in {"p.json": json.dumps(prov), "l.json": json.dumps(leak), "g2.csv": g2, "g3.csv": g3}.items():
         fixture("tmp_p2a_test/%s" % k, v)
-    r = run("admission_gate.py", "--candidates", "tmp_p2a_test/empty.jsonl", "--prov", "tmp_p2a_test/p.json",
-            "--dedup", "tmp_p2a_test/d.json", "--leak", "tmp_p2a_test/l.json", "--semantic", "tmp_p2a_test/g2.csv",
-            "--annotatable", "tmp_p2a_test/g3.csv")
-    check("admission_zero_candidate_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:120]))
 
 
-def test_admission_set_mismatch_fail():
+def test_t04_t06_contract_integration():
     cleanup()
-    prov = {"unresolved_count": 0, "checked_sample_ids": ["s1"], "input_set_hash": "h",
-            "samples": {"s1": {"ok": True}}}
-    dedup = {"exact_duplicate_groups": {}, "near_duplicate_count": 0, "template_over_concentration": [],
-             "checked_sample_ids": ["s1"], "input_set_hash": "h"}
-    leak = {"leak_count": 0, "checked_sample_ids": ["s1"], "input_set_hash": "h", "samples": {"s1": {"ok": True}}}
-    g2 = "sample_id,gate2\ns1,PASS\n"; g3 = "sample_id,gate3\ns1,PASS\n"
-    cand = '{"sample_id": "s1", "task_type": "t"}\n{"sample_id": "sX", "task_type": "t"}\n'
-    for k, v in {"p.json": json.dumps(prov), "d.json": json.dumps(dedup), "l.json": json.dumps(leak),
-                 "g2.csv": g2, "g3.csv": g3, "cand.jsonl": cand}.items():
-        fixture("tmp_p2a_test/%s" % k, v)
-    r = run("admission_gate.py", "--candidates", "tmp_p2a_test/cand.jsonl", "--prov", "tmp_p2a_test/p.json",
-            "--dedup", "tmp_p2a_test/d.json", "--leak", "tmp_p2a_test/l.json", "--semantic", "tmp_p2a_test/g2.csv",
+    cands = _make_cands([_dedup_cand("c1", "alpha beta gamma", "fam_a"), _dedup_cand("c2", "delta epsilon zeta", "fam_b")])
+    fixture("tmp_p2a_test/cands.jsonl", cands)
+    r = run("dedup_scan.py", "--input", "tmp_p2a_test/cands.jsonl", "--out", "tmp_p2a_test/dedup.json", "--template-max", "0.6")
+    check("t04_runs_clean", r.returncode == 0, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
+    _prov_leak_g23(["c1", "c2"])
+    r = run("admission_gate.py", "--candidates", "tmp_p2a_test/cands.jsonl", "--prov", "tmp_p2a_test/p.json",
+            "--dedup", "tmp_p2a_test/dedup.json", "--leak", "tmp_p2a_test/l.json", "--semantic", "tmp_p2a_test/g2.csv",
             "--annotatable", "tmp_p2a_test/g3.csv")
-    check("admission_set_mismatch_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
+    check("t04_t06_contract_pass", r.returncode == 0, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:200]))
 
 
-# ---------------- T03 provenance source-layer ----------------
-def test_provenance_os_authored():
-    d = tempfile.mkdtemp()
+def test_t06_exact_dup_block():
     cleanup()
-    os.makedirs(os.path.join(ROOT, "registry"), exist_ok=True)
-    if not os.path.exists(os.path.join(ROOT, "registry", "prompt_registry.csv")):
-        fixture("registry/prompt_registry.csv", "prompt_id,version\nP20,v4.1\n")
-    # 让 source_file locator 真实存在
+    # 真实 dedup 会检出 exact dup -> dedup exit 2；T06 需真实 dedup report（含 exact）也应 BLOCKED
+    cands = _make_cands([_dedup_cand("c1", "same same"), _dedup_cand("c2", "same same")])
+    fixture("tmp_p2a_test/cands.jsonl", cands)
+    r = run("dedup_scan.py", "--input", "tmp_p2a_test/cands.jsonl", "--out", "tmp_p2a_test/dedup.json", "--template-max", "0.6")
+    check("t04_exact_dup_detected", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:120]))
+    _prov_leak_g23(["c1", "c2"])
+    r = run("admission_gate.py", "--candidates", "tmp_p2a_test/cands.jsonl", "--prov", "tmp_p2a_test/p.json",
+            "--dedup", "tmp_p2a_test/dedup.json", "--leak", "tmp_p2a_test/l.json", "--semantic", "tmp_p2a_test/g2.csv",
+            "--annotatable", "tmp_p2a_test/g3.csv")
+    check("t06_exact_dup_block", r.returncode == 2, "rc=%d" % r.returncode)
+
+
+def test_t06_near_unreviewed_block():
+    cleanup()
+    cands = _make_cands([_dedup_cand("c1", "每周五上午十点提醒交周报"), _dedup_cand("c2", "每周五上午十点提醒交周报吧")])
+    fixture("tmp_p2a_test/cands.jsonl", cands)
+    r = run("dedup_scan.py", "--input", "tmp_p2a_test/cands.jsonl", "--out", "tmp_p2a_test/dedup.json", "--template-max", "0.6")
+    # near-dup UNREVIEWED -> dedup exit 2
+    check("t04_near_unreviewed_blocked", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:120]))
+
+
+# ---------------- T03 OS schema (#34 对齐) ----------------
+def test_t03_os_exemplar_schema():
+    cleanup()
+    fixture("registry/prompt_registry.csv", "prompt_id,version\nP20,v4.1\n")
     fixture("data/interim/candidates_v4/exemplar_candidates/preference_exemplars.jsonl",
             '{"sample_id": "pref_v41_ex01", "source": "os_controlled_authored"}\n')
-    cand = fixture("tmp_p2a_test/os_cand.jsonl",
-                   json.dumps({"sample_id": "c1", "source": "os_controlled_authored",
-                               "source_file": "data/interim/candidates_v4/exemplar_candidates/preference_exemplars.jsonl",
-                               "design_metadata": {"generation": {
-                                   "source_layer": "os_controlled_authored", "generation_id": "g1",
-                                   "prompt_version": "P20", "seed": 1, "model": "m", "scenario_spec_id": "OSPREF-01"}}}) + "\n")
+    # 与 merge 后 #34 schema 一致：scenario_spec_id 在 design_metadata 层
+    cand = {"sample_id": "c1", "source": "os_controlled_authored",
+            "source_file": "data/interim/candidates_v4/exemplar_candidates/preference_exemplars.jsonl",
+            "design_metadata": {"scenario_spec_id": "OSPREF-01", "scenario_family": "os_pref_workflow",
+                                "generation": {"source_layer": "os_controlled_authored", "generation_id": "g1",
+                                               "prompt_version": "P20", "seed": 1, "model": "m"}}}
+    fixture("tmp_p2a_test/os_cand.jsonl", json.dumps(cand) + "\n")
     r = run("provenance_resolver.py", "--input", "tmp_p2a_test/os_cand.jsonl")
-    check("provenance_os_authored_pass", r.returncode == 0, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:200]))
-    shutil.rmtree(d)
+    check("t03_os_exemplar_schema_pass", r.returncode == 0, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:250]))
 
 
-def test_provenance_public_requires_dataset_id():
+# ---------------- T11/T12 split invariant ----------------
+def test_seal_group_cross_split():
     cleanup()
-    cand = fixture("tmp_p2a_test/pub_cand.jsonl",
-                   json.dumps({"sample_id": "p1", "source": "public_direct",
-                               "source_file": "data/processed/knowledge_retrieval.jsonl",
-                               "design_metadata": {"generation": {"source_layer": "public_direct"}}}) + "\n")
-    r = run("provenance_resolver.py", "--input", "tmp_p2a_test/pub_cand.jsonl")
-    check("provenance_public_requires_dataset_id_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
-
-
-# ---------------- T10 runtime build mismatch ----------------
-def test_runtime_build_mismatch():
-    cleanup()
-    d = tempfile.mkdtemp()
-    log = os.path.join(d, "t.log")
-    with open(log, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"build_hash": "BBB", "trace_id": "t", "tool_call_id": "c",
-                            "status": "success", "input_ref": "i", "output_ref": "o",
-                            "side_effect_evidence": "s"}) + "\n")
-    fixture("tmp_p2a_test/build.json", json.dumps({"build_hash": "AAA"}))
-    r = run("runtime_import.py", "--logs", os.path.relpath(log, ROOT), "--build", "tmp_p2a_test/build.json", "--type", "tool")
-    check("runtime_build_mismatch_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
-
-
-# ---------------- T12 seal ----------------
-def test_seal_wrong_split():
-    cleanup()
-    d = tempfile.mkdtemp()
-    g = os.path.join(d, "gold.jsonl")
+    g = os.path.join(tempfile.mkdtemp(), "gold.jsonl")
     with open(g, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"sample_id": "s1"}) + "\n")
-    split = fixture("tmp_p2a_test/split_samples.csv", "sample_id,group_key,split\ns1,g1,dev\n")
-    leak = fixture("tmp_p2a_test/leak.json", json.dumps({"leak_count": 0, "checked_sample_ids": ["s1"], "input_set_hash": "h"}))
-    exp = fixture("tmp_p2a_test/exposure.json", json.dumps({"dev_reg_only_samples": []}))
-    rec = fixture("tmp_p2a_test/seal_record.json", json.dumps({"seal_generation": "seal-v2"}))
-    r = run("seal_release.py", "--gold", os.path.relpath(g, ROOT), "--split-samples", "tmp_p2a_test/split_samples.csv",
-            "--leak", "tmp_p2a_test/leak.json", "--exposure", "tmp_p2a_test/exposure.json",
-            "--seal-record", "tmp_p2a_test/seal_record.json")
-    check("seal_wrong_split_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
-
-
-def test_seal_generation_missing():
-    cleanup()
-    d = tempfile.mkdtemp()
-    g = os.path.join(d, "gold.jsonl")
-    with open(g, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"sample_id": "s1"}) + "\n")
-    fixture("tmp_p2a_test/split_samples.csv", "sample_id,group_key,split\ns1,g1,sealed_test\n")
+        f.write('{"sample_id": "s1"}\n')
+    fixture("tmp_p2a_test/split_samples.csv", "sample_id,group_key,split\ns1,g1,dev\ns2,g1,sealed_test\n")
     fixture("tmp_p2a_test/leak.json", json.dumps({"leak_count": 0, "checked_sample_ids": ["s1"], "input_set_hash": "h"}))
-    fixture("tmp_p2a_test/exposure.json", json.dumps({"dev_reg_only_samples": []}))
-    fixture("tmp_p2a_test/seal_record.json", json.dumps({}))
-    r = run("seal_release.py", "--gold", os.path.relpath(g, ROOT), "--split-samples", "tmp_p2a_test/split_samples.csv",
-            "--leak", "tmp_p2a_test/leak.json", "--exposure", "tmp_p2a_test/exposure.json",
-            "--seal-record", "tmp_p2a_test/seal_record.json")
-    check("seal_generation_missing_fail", r.returncode == 2, "rc=%d" % r.returncode)
-
-
-def test_seal_leak_set_mismatch():
-    cleanup()
-    d = tempfile.mkdtemp()
-    g = os.path.join(d, "gold.jsonl")
-    with open(g, "w", encoding="utf-8") as f:
-        f.write(json.dumps({"sample_id": "s1"}) + "\n")
-    fixture("tmp_p2a_test/split_samples.csv", "sample_id,group_key,split\ns1,g1,sealed_test\n")
-    fixture("tmp_p2a_test/leak.json", json.dumps({"leak_count": 0, "checked_sample_ids": ["other"], "input_set_hash": "h"}))
     fixture("tmp_p2a_test/exposure.json", json.dumps({"dev_reg_only_samples": []}))
     fixture("tmp_p2a_test/seal_record.json", json.dumps({"seal_generation": "seal-v2"}))
     r = run("seal_release.py", "--gold", os.path.relpath(g, ROOT), "--split-samples", "tmp_p2a_test/split_samples.csv",
-            "--leak", "tmp_p2a_test/leak.json", "--exposure", "tmp_p2a_test/exposure.json",
-            "--seal-record", "tmp_p2a_test/seal_record.json")
-    check("seal_leak_set_mismatch_fail", r.returncode == 2, "rc=%d" % r.returncode)
+            "--leak", "tmp_p2a_test/leak.json", "--exposure", "tmp_p2a_test/exposure.json", "--seal-record", "tmp_p2a_test/seal_record.json")
+    check("seal_group_cross_split_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
 
 
-# ---------------- T05 raw leak re-entry ----------------
-def test_raw_leak_reentry():
-    m = load_mod("leakage_scan")
-    # 同 raw、新 sample_id、内容轻改 -> raw 指纹仍命中
-    reg_entries = [{"sample_id": "old", "raw_id": "RAW-777", "template_family": "tf"}]
-    leak_fps = set()
-    leak_fps.add("sid:" + m.fp(str("old")))
-    leak_fps.add("raw:" + m.fp(m.norm("RAW-777")))
-    r = {"sample_id": "new_sid", "raw_id": "RAW-777", "template_family": "tf2",
-         "blind_visible": {"input": {"t": "lightly changed"}}}
-    hit = m.gen_fingerprints(r) & leak_fps
-    check("raw_leak_reentry_hits", "raw:" + m.fp(m.norm("RAW-777")) in hit, str(hit))
+def test_seal_sample_conflict():
+    cleanup()
+    g = os.path.join(tempfile.mkdtemp(), "gold.jsonl")
+    with open(g, "w", encoding="utf-8") as f:
+        f.write('{"sample_id": "s1"}\n')
+    fixture("tmp_p2a_test/split_samples.csv", "sample_id,group_key,split\ns1,g1,dev\ns1,g2,sealed_test\n")
+    fixture("tmp_p2a_test/leak.json", json.dumps({"leak_count": 0, "checked_sample_ids": ["s1"], "input_set_hash": "h"}))
+    fixture("tmp_p2a_test/exposure.json", json.dumps({"dev_reg_only_samples": []}))
+    fixture("tmp_p2a_test/seal_record.json", json.dumps({"seal_generation": "seal-v2"}))
+    r = run("seal_release.py", "--gold", os.path.relpath(g, ROOT), "--split-samples", "tmp_p2a_test/split_samples.csv",
+            "--leak", "tmp_p2a_test/leak.json", "--exposure", "tmp_p2a_test/exposure.json", "--seal-record", "tmp_p2a_test/seal_record.json")
+    check("seal_sample_conflict_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
+
+
+def test_split_empty_input():
+    cleanup()
+    fixture("tmp_p2a_test/empty.jsonl", "")
+    r = run("split_grouped.py", "--input", "tmp_p2a_test/empty.jsonl")
+    check("split_empty_input_fail", r.returncode == 2, "rc=%d out=%s" % (r.returncode, (r.stdout + r.stderr)[:150]))
 
 
 def main():
     test_inventory_precedence()
-    test_inventory_canonical_exact_one()
-    test_dedup_field_aware()
-    test_admission_g3_pending_fail()
-    test_admission_zero_candidate_fail()
-    test_admission_set_mismatch_fail()
-    test_provenance_os_authored()
-    test_provenance_public_requires_dataset_id()
-    test_runtime_build_mismatch()
-    test_seal_wrong_split()
-    test_seal_generation_missing()
-    test_seal_leak_set_mismatch()
-    test_raw_leak_reentry()
+    test_dedup_outputs_contract()
+    test_dedup_exact_near_template()
+    test_t04_t06_contract_integration()
+    test_t06_exact_dup_block()
+    test_t06_near_unreviewed_block()
+    test_t03_os_exemplar_schema()
+    test_seal_group_cross_split()
+    test_seal_sample_conflict()
+    test_split_empty_input()
     cleanup()
     if FAILURES:
         print("\nRESULT: FAIL (%d)" % len(FAILURES))

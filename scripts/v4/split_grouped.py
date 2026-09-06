@@ -36,11 +36,18 @@ def main():
 
     rows = []
     for pat in args.input:
-        for p in glob.glob(os.path.join(ROOT, pat)):
+        matched = glob.glob(os.path.join(ROOT, pat))
+        if not matched:
+            print("FAIL_CLOSED: glob 零匹配", pat)
+            sys.exit(2)
+        for p in matched:
             with open(p, encoding="utf-8") as f:
                 for line in f:
                     if line.strip():
                         rows.append(json.loads(line))
+    if not rows:
+        print("FAIL_CLOSED: 零样本输入")
+        sys.exit(2)
 
     groups = {}
     for r in rows:

@@ -92,8 +92,9 @@ def main():
                             for fld in GEN_REQUIRED:
                                 if not gen.get(fld):
                                     missing.append("generation_missing:" + fld)
-                            if not gen.get("scenario_spec_id"):
-                                missing.append("generation_missing:scenario_spec_id")
+                            # scenario_spec_id 以已合并 #34 schema 为准：design_metadata.scenario_spec_id
+                            if not dm.get("scenario_spec_id"):
+                                missing.append("design_metadata_missing:scenario_spec_id")
                             if not os.path.exists(os.path.join(ROOT, "registry", "prompt_registry.csv")):
                                 missing.append("prompt_registry_missing")
                         else:

@@ -61,9 +61,11 @@ def main():
         if field not in rpt:
             print("FAIL_CLOSED: %s missing field %s" % (name, field))
             sys.exit(2)
-    if "near_duplicate_count" not in dedup or "exact_duplicate_groups" not in dedup or "template_over_concentration" not in dedup:
-        print("FAIL_CLOSED: dedup missing required fields")
-        sys.exit(2)
+    # dedup schema（与 T04 输出一致）
+    for field in ["exact_duplicate_groups", "near_duplicate_review", "template_over_concentration", "samples", "checked_sample_ids"]:
+        if field not in dedup:
+            print("FAIL_CLOSED: dedup missing required field %s" % field)
+            sys.exit(2)
 
     # 候选集
     cands = []
@@ -92,6 +94,13 @@ def main():
         print("FAIL_CLOSED: set mismatch candidates=%d prov=%d dedup=%d leak=%d" % (len(cset), len(pset), len(dset), len(lset)))
         sys.exit(2)
 
+    # G4 显式判定（不硬编码）：exact / near / template 三项
+    dgates = dedup.get("gates", {})
+    if not (dgates.get("G4_exact_dup_zero") and dgates.get("G4_near_reviewed") and dgates.get("G4_template_concentration_ok")):
+        print("FAIL_CLOSED: dedup G4 gates not clean", dgates)
+        sys.exit(2)
+    dedup_s = dedup.get("samples", {})
+
     # 逐样本 join
     prov_s = prov.get("samples", {})
     leak_s = leak.get("samples", {})
@@ -100,9 +109,9 @@ def main():
     for sid in sorted(cset):
         g1 = "PASS" if prov_s.get(sid, {}).get("ok") else "FAIL"
         g5 = "PASS" if leak_s.get(sid, {}).get("ok") else "FAIL"
+        g4 = "PASS" if dedup_s.get(sid, {}).get("ok") else "FAIL"
         g2s = g2.get(sid) or "MISSING"
         g3s = g3.get(sid) or "MISSING"
-        g4 = "PASS"  # dedup 报告按集合一致；near 已由全局 near_duplicate_count==0 保证
         ok = (g1 == "PASS" and g2s == "PASS" and g3s == "PASS" and g4 == "PASS" and g5 == "PASS")
         lines.append("%s,%s,%s,%s,%s,%s,%s" % (sid, g1, g2s, g3s, g4, g5, "PASS" if ok else "FAIL"))
         if ok:

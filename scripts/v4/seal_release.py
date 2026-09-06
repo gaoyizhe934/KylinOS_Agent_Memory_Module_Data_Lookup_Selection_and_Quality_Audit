@@ -44,18 +44,32 @@ def main():
     ap.add_argument("--out", default="release")
     args = ap.parse_args()
 
-    # 1) split_samples 解析
+    # 1) split_samples 解析 + 全表 invariant 校验
     sp_path = os.path.join(ROOT, args.split_samples)
     if not os.path.exists(sp_path):
         print("FAIL_CLOSED: split_samples manifest missing")
         sys.exit(3)
+    rows = list(csv.DictReader(open(sp_path, encoding="utf-8")))
+    if not rows:
+        print("FAIL_CLOSED: split_samples manifest empty")
+        sys.exit(2)
     sample_split = {}
     group_split = {}
-    with open(sp_path, encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            sample_split[row["sample_id"]] = row["split"]
-            gk = row["group_key"]
-            group_split[gk] = row["split"]
+    seen_sample = {}
+    for row in rows:
+        sid, gk, sp = row.get("sample_id"), row.get("group_key"), row.get("split")
+        if not sid or not gk or not sp:
+            print("FAIL_CLOSED: malformed split_samples row", row)
+            sys.exit(2)
+        if sid in seen_sample and seen_sample[sid] != (gk, sp):
+            print("FAIL_CLOSED: sample_id %s has conflicting (group,split)" % sid)
+            sys.exit(2)
+        seen_sample[sid] = (gk, sp)
+        sample_split[sid] = sp
+        if gk in group_split and group_split[gk] != sp:
+            print("FAIL_CLOSED: group %s spans multiple splits (%s,%s)" % (gk, group_split[gk], sp))
+            sys.exit(2)
+        group_split[gk] = sp
 
     # 2) exposure eligibility
     exp = json.load(open(os.path.join(ROOT, args.exposure), encoding="utf-8"))
@@ -75,13 +89,11 @@ def main():
         sys.exit(2)
 
     # 收集 gold sealed 样本 + 校验 split/exposure/cross
-    sealed_samples = []
     sealed_ids = []
     out_dir = os.path.join(ROOT, args.out, "sealed_" + gen)
     if os.path.isdir(out_dir):
         shutil.rmtree(out_dir)
     os.makedirs(out_dir, exist_ok=True)
-    cross = 0
     for pat in args.gold:
         for p in glob.glob(os.path.join(ROOT, pat)):
             with open(p, encoding="utf-8") as f:
@@ -108,14 +120,12 @@ def main():
     if not sealed_ids:
         print("FAIL_CLOSED: no sealed samples")
         sys.exit(2)
-    # group 跨 split 校验
-    seen_g = {}
-    for row in csv.DictReader(open(sp_path, encoding="utf-8")):
-        if row["sample_id"] in sealed_ids:
-            gk = row["group_key"]
-            if gk in seen_g and seen_g[gk] != "sealed_test":
-                cross += 1
-            seen_g[gk] = "sealed_test"
+    # group 跨 split 校验（全表 invariant 已在解析时保证；此处按 group_split 复核 sealed 样本所在组均为 sealed_test）
+    cross = 0
+    for row in rows:
+        if row["sample_id"] in sealed_ids and row["split"] != "sealed_test":
+            print("FAIL_CLOSED: sealed sample %s group %s mapped to %s" % (row["sample_id"], row["group_key"], row["split"]))
+            sys.exit(2)
 
     # leak 绑定 sealed set
     if set(leak.get("checked_sample_ids", [])) != set(sealed_ids):
