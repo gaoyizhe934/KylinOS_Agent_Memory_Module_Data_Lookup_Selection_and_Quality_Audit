@@ -1,0 +1,56 @@
+{
+ "schema": "candidate_inventory_retrieval_v4.1",
+ "version": "v4.1",
+ "date": "2026-09-06",
+ "generated_by": "DGXD01(Data-B)",
+ "purpose": "Retrieval/KB 候选盘存（Data-R #49 P0/P1 分层口径，fail-closed）",
+ "snapshot": {
+  "master": "78349334 (#46/#48 merged)",
+  "p04_frozen": "accepted_legacy=0(Retrieval)/new175/cand228 (Review 5124879366)"
+ },
+ "retrieval": {
+  "verified_v4.1_candidate_count": 0,
+  "verified_note": "当前无 canonical v4.1 retrieval candidate-only artifact（无 requalification completion/Admission 证据）",
+  "historical_retrieval_reps": {
+   "count": 5,
+   "ids": [
+    "retr_000001",
+    "retr_000002",
+    "retr_000003",
+    "retr_000004",
+    "retr_000005"
+   ],
+   "status": "REQUALIFICATION_REQUIRED / NOT_COUNTED",
+   "file": "data/gold/dev/knowledge_retrieval.jsonl(历史 kylin_memory_gold_v1.0 candidate_only)",
+   "note": "历史文件第 6 条起重复前 5 查询模板；无 v4.1 requal completion/Admission 证据；不可抵扣 228"
+  },
+  "t2ranking": {
+   "source_file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
+   "source_count": 200,
+   "selection_manifest": "reports/v4.1_D1_closeout_G4_t2ranking_select_20260906.json (PR #40)",
+   "selected_count": 43,
+   "selected_ids_sha256": "250004899ad951ecba40ae9294b34ef3ce525a1f4c299587eb38c6658daf46d2",
+   "materialized_v4.1_subset": false,
+   "note": "43 是 selection manifest（200 源中选出）；非该 jsonl 有 43 条；未 materialize v4.1 candidate-only 子集前不计 verified；43 全 t2ranking_retrieval_v1，非 G4 PASS（source-cap prep）"
+  },
+  "target_candidate_pool": 228,
+  "deficit": {
+   "verified": 228,
+   "conditional_after_43_normalized": 185,
+   "not_approved_180": "历史 gold5 不可计，180 不批准"
+  }
+ },
+ "kb": {
+  "verified_candidate_count": 0,
+  "gross_pool_target": 520,
+  "seed_inventory_not_counted": {
+   "count": 0,
+   "note": "无 canonical v4.1 KB artifact；历史/已有 KB 对象仅 seed 待规范化，规范化前不减少生成量"
+  },
+  "binding": "M1-KB BLOCKED -> local_candidate_id + PRODUCTION_BINDING_PENDING"
+ },
+ "gates_notes": {
+  "g4": "t2ranking 43 source-cap/diversity prep 非 G4 PASS；P30 admitted Retrieval 全集复算",
+  "p70": "M1/M1-KB/M3 BLOCKED；production_truth_allowed=false；public 仅已批源(t2ranking_2023)"
+ }
+}
