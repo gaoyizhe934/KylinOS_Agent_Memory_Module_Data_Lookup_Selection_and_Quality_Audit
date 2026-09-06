@@ -5,7 +5,7 @@
 
 ## 正式 P04（Data-R #40 Review 5124685158 签署 10 条）
 - authority：Data-R #40 APPROVE（20b575e）Requalification Completion Signature（10 条 `requalification_status=完成`）
-- requal source：master `reports/legacy_semantic_requal_A.jsonl`（sha256 `0f05f92b013ed4915c2756b7453aad60f072e23a7af4741067df668de579eb56`）
+- requal source：master `reports/legacy_semantic_requal_A.jsonl`（sha256 `c5b217e3d93119e4cb56b06ae46772039698a56b62dc16b4c33ddfe0c1cfafd7`）
 - completed 10 条 sha256：`58c838ad1611cb3ec57adfd49800c64851cb806cb5c6d473b5cd13aae82d4752`
 
 | task | target | accepted | new_needed | candidate |
