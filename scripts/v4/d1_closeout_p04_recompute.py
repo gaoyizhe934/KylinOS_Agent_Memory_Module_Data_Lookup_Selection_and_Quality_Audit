@@ -112,7 +112,7 @@ def main():
                "authority_pr": args.authority_pr, "authority_review_id": args.authority_review_id,
                "authority_head": args.authority_head,
                "authority": "Data-R #40 Requalification Completion Signature (Review %s)" % args.authority_review_id,
-               "requal_source": args.requal, "requal_sha256": requal_sha,
+               "requal_source": "reports/legacy_semantic_requal_A.jsonl", "requal_sha256": requal_sha,
                "completed_count": len(completed), "completed_sample_ids": sorted(completed),
                "completed_sample_ids_sha256": signed_sha,
                "accepted_legacy_effective": total_accepted, "accepted_by_task": acc_by_task,

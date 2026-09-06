@@ -8,7 +8,7 @@
  "authority_review_id": "5124685158",
  "authority_head": "20b575e7fd9ca0b195a214ac3487e79d613a00ca",
  "authority": "Data-R #40 Requalification Completion Signature (Review 5124685158)",
- "requal_source": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\requal_LF.jsonl",
+ "requal_source": "reports/legacy_semantic_requal_A.jsonl",
  "requal_sha256": "c5b217e3d93119e4cb56b06ae46772039698a56b62dc16b4c33ddfe0c1cfafd7",
  "completed_count": 10,
  "completed_sample_ids": [
