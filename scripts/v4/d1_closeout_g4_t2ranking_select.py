@@ -6,8 +6,9 @@
 输入：200 条 t2ranking（legacy 可复用候选，license 已批）。
 方法：可复现 max-min 多样性选择（farthest-point sampling）：
   1) query 归一化 + token（bigram/字符）Jaccard 相似度；
-  2) 贪心：seed 固定，首条取 query_id 中位；每次取与已选集最小最大相似度最大的样本；
-     tie 按 query_id 升序 → 完全确定性；
+  2) 贪心（正确 farthest-point）：每次取 score = 1 - max(与已选集的相似度) 最大者
+     （即真正最小化“到最近已选点”的相似度 / 最大化 min-distance）；
+     seed 通过 random.Random(seed) 决定首条随机选择与 tie 打破 → 完全确定性可复现；
   3) 选 N=43 代表；其余 157 保留 Candidate/History（不删除）。
 输出：选择包 json（含 seed/algo/input_hash/output_hash/sample 清单）。
 G4 结论保持 fail-closed：不因本选择将 G4 改 PASS（t2ranking 集中度最终在 admitted 集复算）。
@@ -17,6 +18,7 @@ import hashlib
 import json
 import math
 import os
+import random
 import re
 import sys
 
@@ -65,24 +67,26 @@ def main():
     queries = [(r.get("input", {}).get("query", ""), r.get("sample_id", ""), r.get("input", {}).get("query_id")) for r in rows]
     total = len(queries)
 
-    # first: query_id median index
-    mid = sorted(range(total), key=lambda i: int(queries[i][2]))[total // 2]
-    selected = [mid]
-    # tie-breaker deterministic: prefer larger min-distance; tie by original index asc (already query_id sorted)
+    rng = random.Random(args.seed)
+    # first: seeded random start (deterministic given seed)
+    selected = [rng.randrange(total)]
+    # farthest-point: score = 1 - max(similarity to selected)  (minimize max-sim)
     for _ in range(1, args.n):
         best_i, best_score = -1, -1.0
+        best_tie = []
         for i in range(total):
             if i in selected:
                 continue
-            # min similarity to selected
-            mn = min(jac(queries[i][0], queries[j][0]) for j in selected)
-            # maximize min-distance (1 - similarity) => minimize max similarity; maximize (1-mn)
-            score = 1.0 - mn
+            mx = max(jac(queries[i][0], queries[j][0]) for j in selected)
+            score = 1.0 - mx
             if score > best_score + 1e-12:
-                best_score, best_i = score, i
-            elif abs(score - best_score) <= 1e-12 and best_i != -1:
-                # tie: lower query_id first (already sorted -> keep earlier)
-                pass
+                best_score, best_i, best_tie = score, i, [i]
+            elif abs(score - best_score) <= 1e-12:
+                best_tie.append(i)
+        # tie-break by seeded shuffle
+        if len(best_tie) > 1:
+            rng.shuffle(best_tie)
+            best_i = best_tie[0]
         selected.append(best_i)
 
     chosen = [queries[i] for i in selected]
@@ -95,7 +99,30 @@ def main():
     out_text = "\n".join(sel_ids) + "\n"
     output_hash = hashlib.sha256(out_text.encode("utf-8")).hexdigest()
 
+    # diversity diagnostics
+    import statistics
+    sel_idx_set = set(selected)
+    pair_max = []
+    pair_mean = []
+    sel_queries = [queries[i][0] for i in selected]
+    for a in range(len(sel_queries)):
+        for b in range(a + 1, len(sel_queries)):
+            sim = jac(sel_queries[a], sel_queries[b])
+            pair_max.append(sim)
+            pair_mean.append(sim)
+    sims = sorted(pair_max, reverse=True)
     result = {
+        "diversity_diagnostics": {
+            "n_selected": args.n,
+            "pairwise_sim_max": round(max(pair_max), 4) if pair_max else None,
+            "pairwise_sim_top5": [round(x, 4) for x in sims[:5]],
+            "pairwise_sim_mean": round(sum(pair_mean) / len(pair_mean), 4) if pair_mean else None,
+            "query_len_min_max": [min(len(q) for q in sel_queries), max(len(q) for q in sel_queries)],
+            "query_id_coverage": "分散抽样于 source（见 selected_sample_ids 对应 query_id）",
+            "algorithm": "farthest-point: score=1-max(sim to selected); seed=%d via random.Random" % args.seed,
+        },
+    }
+    result.update({
         "schema": "g4_t2ranking_select",
         "version": "v4.1",
         "date": "2026-09-06",
@@ -110,7 +137,7 @@ def main():
         "output_hash_sha256": output_hash,
         "selected_sample_ids": sel_ids,
         "note": "G4 仍 fail-closed：最终 template 集中度在 admitted 集复算；剩余 157 保留 Candidate/History 不删除",
-    }
+    })
     outp = os.path.join(ROOT, args.out)
     with open(outp, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=1)

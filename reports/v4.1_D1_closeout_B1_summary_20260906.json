@@ -1,0 +1,19 @@
+{
+ "schema": "b1_machine_check_summary_v2",
+ "version": "v4.1",
+ "date": "2026-09-06",
+ "generated_by": "DGXD01(Data-B)",
+ "a_commit": "d62dafc42fd64cb65e086137553efcca8439ad45",
+ "source_commit": "d62dafc42fd64cb65e086137553efcca8439ad45",
+ "source_blob_sha": {
+  "data/interim/d1_legacy_rework_A_20260906/legacy_rework_forgetting_candidates.jsonl": "b922ebb8a40bf42993601a5eae3cdbec6f6aac4c",
+  "data/interim/d1_legacy_rework_A_20260906/legacy_rework_preference_candidates.jsonl": "0c5b335594993526521058e6bddae9dd02aa4d7b"
+ },
+ "input_hash_sha256": "c85e3878c414e48899375984a68428392cbc0273cc254b7cd735ac7ef7f4d7d2",
+ "n_rows": 10,
+ "status_count": {
+  "COMPLETION_BLOCKED": 9,
+  "COMPLETION_BLOCKED_PENDING_RECHECK": 1
+ },
+ "note": "机器复核：结构+T03 通过=COMPLETION_BLOCKED（待 Data-R 逐条签 requalification_status=完成）；不直接 PASS completion"
+}
