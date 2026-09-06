@@ -1,0 +1,30 @@
+{
+  "schema": "v4.1_A_A218_template_family_mapping_contract_draft",
+  "status": "DRAFT_FOR_R_REVIEW", 
+  "not_approved": true,
+  "carrier": "A 独立 rework PR（待开，不在 #51 批准）",
+  "date": "2026-09-06",
+  "role": "Data-A (lyf-1213)",
+  "base_commit": "535ebad3db47e87bbb30f26b86b3193803d81a1b",
+  "scope": "A218 OS-authored factory candidates（preference98/conflict64/forgetting56）",
+  "problem": "A218 缺 top-level template_family → canonical dedup G4_template_concentration BLOCKED（exact=0/near=0，template_share none=1.0）",
+  "mapping_rule": "top-level template_family := design_metadata.scenario_family（identity，确定性，逐候选可机检）",
+  "mapping_basis": [
+    "候选按 scenario_specs（#34 candidate-prep）生成，design_metadata.scenario_family 记录生成场景族；",
+    "factory_config.template_family_plan 枚举同族（os_pref_workflow/os_pref_app_tool/...、os_conf_*/os_forg_*）——即本批候选的当前 generation template family 就是 scenario_family；",
+    "每条候选可在 scenario_spec 中找到对应 scenario（含 family），映射逐条可审计、非机械复制未知语义。"
+  ],
+  "distribution_across_218": {
+    "max_share_global_pct": 5.5,
+    "max_share_within_task_pct": {"preference": 12.2, "conflict": 18.75, "forgetting": 17.9},
+    "note": "任一 scenario_family 全局占比 <=5.5%；task 内 <=18.75%；均 < 25% template 阈值",
+    "family_counts": {"os_conf_temporal_update": 12, "os_pref_workflow": 12, "os_pref_app_tool": 12, "os_pref_topic_style": 12, "os_conf_contradiction": 10, "os_conf_non_conflict_negative": 10, "os_forg_single_item": 10, "os_pref_time_window": 10, "os_pref_global_rule": 10, "os_pref_task_constraint": 10, "os_conf_pref_change": 8, "os_conf_scope_ambiguity": 8, "os_conf_source_conflict": 8, "os_conf_version": 8, "os_forg_session": 8, "os_forg_topic": 8, "os_forg_time_window": 8, "os_pref_contradict": 8, "os_pref_withdraw": 8, "os_pref_sensitive": 8, "os_pref_session": 8, "os_forg_restart": 6, "os_forg_reindex": 6, "os_forg_ambiguous_negative": 6, "os_forg_full_reset": 4}
+  },
+  "expected_g4_after": {"exact_duplicate": 0, "near_pairs": 0, "template_concentration_ok": true, "dedup_status": "PASS(待重跑确认)"},
+  "boundary_notes": [
+    "本 mapping contract 为提案，未经 Data-R 批准；Data-R #51 P1 要求独立 rework PR 提供 contract+distribution 再复核",
+    "rework 10 条（req_*）已有 top-level template_family（lineage/current 双轨），不在本 A218 集合内",
+    "G2 human 100% 仍 PENDING；本自检不替代 B2 canonical machine precheck"
+  ],
+  "next_a": ["开 A 独立 rework PR（需用户允许）：给出 mapping contract + distribution → Data-R 复核；随后补 template_family 重生成 A218 → machine self-check → G2"]
+}
