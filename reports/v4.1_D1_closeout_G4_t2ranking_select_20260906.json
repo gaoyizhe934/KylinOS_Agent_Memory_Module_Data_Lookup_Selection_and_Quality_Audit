@@ -1,0 +1,97 @@
+{
+ "diversity_diagnostics": {
+  "n_selected": 43,
+  "method_note": "全局 farthest-point(非稳定分层)：score=1-max(sim to selected); seed=20260906 via random.Random",
+  "pairwise_sim": {
+   "max": 0.0588,
+   "p95": 0.0455,
+   "median": 0.0,
+   "mean": 0.0044
+  },
+  "nearest_neighbor_maxsim": {
+   "max": 0.0588,
+   "p95": 0.0588,
+   "median": 0.05
+  },
+  "query_length_bins_selected": {
+   "13-16": 13,
+   "9-12": 22,
+   "<=8": 7,
+   ">16": 1
+  },
+  "template_family_share_source": {
+   "t2ranking_retrieval_v1": 1.0
+  },
+  "template_family_share_selected": {
+   "t2ranking_retrieval_v1": 1.0
+  },
+  "source_exact_duplicate_query_count": 0,
+  "query_id_sample": [
+   "10074",
+   "10114",
+   "10084",
+   "10027",
+   "10036"
+  ]
+ },
+ "schema": "g4_t2ranking_select",
+ "version": "v4.1",
+ "date": "2026-09-06",
+ "generated_by": "DGXD01(Data-B)",
+ "basis": "Data-R B1/B3：admitted Retrieval Gold 单源≤25%（175→≤43）",
+ "method": "max-min diversity (farthest-point sampling); seed=20260906",
+ "n_selected": 43,
+ "total_source": 200,
+ "kept_as_candidate_history": 157,
+ "input_file": "data/processed/knowledge_retrieval_t2ranking.jsonl",
+ "input_hash_sha256": "c1e4ce1e30233d17838bf3d4536acdb8f9e5f4b6d6f4c819cd8d3eab435c7ec7",
+ "output_hash_sha256": "3b2f2188eef27e67eb8973f56001b9f75e5980993427bd05e4f28f5a11ae7c42",
+ "selected_sample_ids": [
+  "retr_t2r_10",
+  "retr_t2r_1001",
+  "retr_t2r_1006",
+  "retr_t2r_1013",
+  "retr_t2r_10007",
+  "retr_t2r_10009",
+  "retr_t2r_10018",
+  "retr_t2r_10027",
+  "retr_t2r_10028",
+  "retr_t2r_10031",
+  "retr_t2r_10036",
+  "retr_t2r_10038",
+  "retr_t2r_10046",
+  "retr_t2r_10047",
+  "retr_t2r_10048",
+  "retr_t2r_10051",
+  "retr_t2r_10057",
+  "retr_t2r_10062",
+  "retr_t2r_10064",
+  "retr_t2r_10067",
+  "retr_t2r_10070",
+  "retr_t2r_10074",
+  "retr_t2r_10075",
+  "retr_t2r_10077",
+  "retr_t2r_10078",
+  "retr_t2r_10084",
+  "retr_t2r_10093",
+  "retr_t2r_10095",
+  "retr_t2r_10099",
+  "retr_t2r_10104",
+  "retr_t2r_10106",
+  "retr_t2r_10109",
+  "retr_t2r_10114",
+  "retr_t2r_10115",
+  "retr_t2r_10118",
+  "retr_t2r_10140",
+  "retr_t2r_10144",
+  "retr_t2r_10147",
+  "retr_t2r_10153",
+  "retr_t2r_10156",
+  "retr_t2r_10164",
+  "retr_t2r_10172",
+  "retr_t2r_10179"
+ ],
+ "note": "G4 仍 fail-closed：最终 template 集中度在 admitted 集复算；剩余 157 保留 Candidate/History 不删除",
+ "selection_ids_sha256": "250004899ad951ecba40ae9294b34ef3ce525a1f4c299587eb38c6658daf46d2",
+ "evidence_payload_sha256": "3b2f2188eef27e67eb8973f56001b9f75e5980993427bd05e4f28f5a11ae7c42"
+}

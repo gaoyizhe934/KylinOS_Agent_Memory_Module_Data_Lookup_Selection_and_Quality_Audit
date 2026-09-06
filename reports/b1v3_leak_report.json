@@ -1,0 +1,78 @@
+{
+  "schema": "leak_report",
+  "version": "v4.1",
+  "tool": "leakage_scan.py",
+  "input": [
+    "F:\\麒麟OS记忆\\.wt_v41_B_closeout\\data\\interim\\b1v3_pinned\\legacy_rework_preference_candidates.jsonl",
+    "F:\\麒麟OS记忆\\.wt_v41_B_closeout\\data\\interim\\b1v3_pinned\\legacy_rework_forgetting_candidates.jsonl"
+  ],
+  "checked": 10,
+  "checked_sample_ids": [
+    "req_forg_000001",
+    "req_forg_000002",
+    "req_forg_000003",
+    "req_forg_000004",
+    "req_pref_000001",
+    "req_pref_000002",
+    "req_pref_000003",
+    "req_pref_000004",
+    "req_pref_000005",
+    "req_pref_000006"
+  ],
+  "input_set_hash": "81efa32005e12e026425bbeecb11c9c263f288cc4b82c35660dd4366558110f8",
+  "fingerprint_contract": [
+    "sample_id",
+    "content",
+    "evidence",
+    "raw_identity_span",
+    "template"
+  ],
+  "fingerprint_algo": "normalize+sha256",
+  "samples": {
+    "req_pref_000001": {
+      "ok": true,
+      "hit": []
+    },
+    "req_pref_000002": {
+      "ok": true,
+      "hit": []
+    },
+    "req_pref_000005": {
+      "ok": true,
+      "hit": []
+    },
+    "req_pref_000004": {
+      "ok": true,
+      "hit": []
+    },
+    "req_pref_000006": {
+      "ok": true,
+      "hit": []
+    },
+    "req_pref_000003": {
+      "ok": true,
+      "hit": []
+    },
+    "req_forg_000001": {
+      "ok": true,
+      "hit": []
+    },
+    "req_forg_000002": {
+      "ok": true,
+      "hit": []
+    },
+    "req_forg_000003": {
+      "ok": true,
+      "hit": []
+    },
+    "req_forg_000004": {
+      "ok": true,
+      "hit": []
+    }
+  },
+  "hits": [],
+  "leak_count": 0,
+  "gates": {
+    "G5_leak_zero": true
+  }
+}

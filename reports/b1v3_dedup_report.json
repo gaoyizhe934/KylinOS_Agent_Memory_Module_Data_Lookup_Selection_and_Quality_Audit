@@ -1,0 +1,87 @@
+{
+  "schema": "dedup_report",
+  "version": "v4.1",
+  "tool": "dedup_scan.py",
+  "input": [
+    "F:\\麒麟OS记忆\\.wt_v41_B_closeout\\data\\interim\\b1v3_pinned\\legacy_rework_preference_candidates.jsonl",
+    "F:\\麒麟OS记忆\\.wt_v41_B_closeout\\data\\interim\\b1v3_pinned\\legacy_rework_forgetting_candidates.jsonl"
+  ],
+  "checked": 10,
+  "checked_sample_ids": [
+    "req_forg_000001",
+    "req_forg_000002",
+    "req_forg_000003",
+    "req_forg_000004",
+    "req_pref_000001",
+    "req_pref_000002",
+    "req_pref_000003",
+    "req_pref_000004",
+    "req_pref_000005",
+    "req_pref_000006"
+  ],
+  "input_set_hash": "81efa32005e12e026425bbeecb11c9c263f288cc4b82c35660dd4366558110f8",
+  "samples": {
+    "req_pref_000001": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_pref_000002": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_pref_000005": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_pref_000004": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_pref_000006": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_pref_000003": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_forg_000001": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_forg_000002": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_forg_000003": {
+      "ok": true,
+      "reasons": []
+    },
+    "req_forg_000004": {
+      "ok": true,
+      "reasons": []
+    }
+  },
+  "exact_duplicate_groups": {},
+  "near_duplicate_pairs": [],
+  "near_duplicate_decisions": [],
+  "near_blocked": [],
+  "template_family_share": {
+    "output_style_length_v1": 0.1,
+    "tool_choice_confirm_v1": 0.1,
+    "scope_app_v1": 0.1,
+    "legacy_exposure_rewrite_v1": 0.2,
+    "sensitive_no_store_v1": 0.1,
+    "forget_scoped_v1": 0.1,
+    "forget_time_v1": 0.1,
+    "forget_person_v1": 0.1,
+    "forget_revoke_v1": 0.1
+  },
+  "template_over_concentration": [],
+  "gates": {
+    "G4_exact_dup_zero": true,
+    "G4_near_reviewed": true,
+    "G4_template_concentration_ok": true
+  },
+  "dedup_status": "PASS"
+}

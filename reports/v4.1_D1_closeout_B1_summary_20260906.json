@@ -1,0 +1,30 @@
+{
+ "schema": "b1_machine_check_summary_v4",
+ "version": "v4.1",
+ "date": "2026-09-06",
+ "generated_by": "DGXD01(Data-B)",
+ "a_commit": "7c59633f81b3e4474be8a422450dcc3401940749",
+ "source_commit": "7c59633f81b3e4474be8a422450dcc3401940749",
+ "input_hash_sha256": "cbe9a432004db2b47cea885cc2282f176570a28d9d58445815bc683d525313d3",
+ "pinned_inputs": [
+  "pref",
+  "forg",
+  "manifest",
+  "repair_plan"
+ ],
+ "manifest_exact_input_proof_issues": [],
+ "manifest_notes": [
+  "B_input_hash_scope=4_pinned_inputs(raw bytes)；A manifest input_hash 为其 exact-input 内容口径，算法不同不作等号比较"
+ ],
+ "required_gate_fail": [],
+ "canonical_gates": {
+  "provenance_unresolved": 0,
+  "leak_count": 0,
+  "G4_exact_dup_zero": true,
+  "G4_near_reviewed": true,
+  "G4_template_concentration_ok": true,
+  "dedup_status": "PASS"
+ },
+ "admission_blocker": null,
+ "status_note": "machine_status=requalification gates(结构+T03+DEV_REG) 判定；completion_readiness 一律 BLOCKED（requalification_status=完成 由 Data-R 逐条签；manifest exact-input 未闭环前不得标 completion-ready）；required gate fail 或 manifest binding mismatch -> 脚本 exit(2)。B 不写 human_decision/final_label"
+}
