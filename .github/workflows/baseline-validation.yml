@@ -52,6 +52,14 @@ jobs:
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/*.jsonl') != ''
         run: python scripts/v4/provenance_resolver.py --input "data/interim/d1_legacy_rework_A_20260906/*.jsonl" --out reports/prov_report_A1_ci.json
 
+      - name: Data-A A1 canonical dedup（exact=0/near=0/template 分布）
+        if: hashFiles('data/interim/d1_legacy_rework_A_20260906/*.jsonl') != ''
+        run: python scripts/v4/dedup_scan.py --input "data/interim/d1_legacy_rework_A_20260906/*.jsonl" --out reports/dedup_report_A1_ci.json
+
+      - name: Data-A A1 canonical leakage（G5，须 leak_count=0 / exit0）
+        if: hashFiles('data/interim/d1_legacy_rework_A_20260906/*.jsonl') != ''
+        run: python scripts/v4/leakage_scan.py --input "data/interim/d1_legacy_rework_A_20260906/*.jsonl" --out reports/leak_report_A1_ci.json
+
       - name: Data-A A1 builder 确定性复现（--check）
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/repair_plan.json') != ''
         run: python scripts/v4/build_legacy_rework_A1.py --check
