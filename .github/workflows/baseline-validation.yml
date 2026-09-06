@@ -56,11 +56,9 @@ jobs:
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/*.jsonl') != ''
         run: python scripts/v4/dedup_scan.py --input "data/interim/d1_legacy_rework_A_20260906/*.jsonl" --out reports/dedup_report_A1_ci.json
 
-      - name: Data-A A1 canonical leakage（无意外泄漏；2 条 exposed-lineage 登记为 Option2 BLOCKED，非 completion）
+      - name: Data-A A1 canonical leakage（G5，须 leak_count=0 / exit0）
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/*.jsonl') != ''
-        run: |
-          python scripts/v4/leakage_scan.py --input "data/interim/d1_legacy_rework_A_20260906/*.jsonl" --out reports/leak_report_A1_ci.json || true
-          python scripts/v4/validate_legacy_rework_leak_expect.py --leak reports/leak_report_A1_ci.json --manifest data/interim/d1_legacy_rework_A_20260906/generation_manifest_A_20260906.json
+        run: python scripts/v4/leakage_scan.py --input "data/interim/d1_legacy_rework_A_20260906/*.jsonl" --out reports/leak_report_A1_ci.json
 
       - name: Data-A A1 builder 确定性复现（--check）
         if: hashFiles('data/interim/d1_legacy_rework_A_20260906/repair_plan.json') != ''

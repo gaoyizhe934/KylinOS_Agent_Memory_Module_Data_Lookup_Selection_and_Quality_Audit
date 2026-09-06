@@ -93,6 +93,18 @@ def parse_jsonl_text(text):
     return rows
 
 
+def resolve_template_family(e, gr, lid):
+    if e.get("rewrite_required"):
+        current = e.get("current_template_family")
+        if not current:
+            raise SystemExit("rewrite candidate %s missing current_template_family (fail-closed)" % lid)
+        return current
+    tf = gr.get("template_family")
+    if not tf:
+        raise SystemExit("template_family missing in pinned legacy row %s (fail-closed)" % lid)
+    return tf
+
+
 def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix_commit, root):
     pref_recs, forg_recs = [], []
     selected = []
@@ -144,10 +156,7 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
                                 "proposed_action": "semantic-preserving rewrite per repair_plan (%s)" % e.get("rewrite_strategy")})
             blind = {"user_message": blind_user}
             rec = base_rec(e["candidate_id"], "preference_extraction", fixed_ts, blind, dm)
-            tf = gr.get("template_family")
-            if not tf:
-                raise SystemExit("template_family missing in pinned legacy row %s (fail-closed)" % lid)
-            rec["template_family"] = tf
+            rec["template_family"] = resolve_template_family(e, gr, lid)
             pref_recs.append(rec)
         else:
             dm["forget_mode"] = e["mode"]
@@ -161,10 +170,7 @@ def build_records(plan, outdir, gold_rows_by_file, requal_rows, requal_text, fix
                 dm["target_topic"] = e["target_topic"]
             blind = {"forget_instruction": gr["input"]["forget_instruction"], "inventory_context": e["inventory"]}
             rec = base_rec(e["candidate_id"], "precise_forgetting", fixed_ts, blind, dm)
-            tf = gr.get("template_family")
-            if not tf:
-                raise SystemExit("template_family missing in pinned legacy row %s (fail-closed)" % lid)
-            rec["template_family"] = tf
+            rec["template_family"] = resolve_template_family(e, gr, lid)
             forg_recs.append(rec)
     selected_rows_sha = sha("\n".join(sorted(selected)).encode("utf-8"))
     requal_blob_sha = sha(requal_text.encode("utf-8") if isinstance(requal_text, str) else requal_text)
@@ -204,7 +210,8 @@ def write_manifest(plan, outdir, input_hash, output_hashes, root, extra):
         "batch_id": plan["batch_id"], "date": plan["date"], "owner": plan["owner"],
         "branch": plan["branch"], "repo_base": plan["repo_base"],
         "hash_contract": "sha256(lf_normalized_raw_bytes)  // repair_plan/source_files/requal/candidate 均按 LF-normalized raw bytes",
-        "template_family_source": "pinned legacy row template_family（lineage；缺失 fail-closed）",
+        "template_family_policy": plan.get("template_family_policy"),
+        "template_family_source": "rewrite_required ? repair_plan.current_template_family : pinned legacy row template_family",
         "input_commit": plan["input_commit"], "fix_source_commit": plan["fix_source_commit"],
         "requal_source": REQUAL_DEFAULT.replace("\\", "/"),
         "input_hash": input_hash,
@@ -215,7 +222,7 @@ def write_manifest(plan, outdir, input_hash, output_hashes, root, extra):
         ],
         "regeneration_deterministic": {"builder": "scripts/v4/build_legacy_rework_A1.py", "verify": "python scripts/v4/build_legacy_rework_A1.py --check (CI)", "state": "VERIFY_VIA_CHECK"},
         "scope": plan["scope"], "red_line_compliance": plan["red_line_compliance"], "blockers": plan["blockers"],
-        "exposed_lineage_blocked": plan.get("exposed_lineage_blocked"),
+        "historical_exposure": plan.get("historical_exposure"),
     }
     with open(os.path.join(outdir, "generation_manifest_A_20260906.json"), "w", encoding="utf-8") as f:
         f.write(canon(mf) + "\n")
