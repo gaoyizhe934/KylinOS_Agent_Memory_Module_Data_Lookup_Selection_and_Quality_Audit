@@ -1,77 +1,84 @@
 {
   "schema": "closure_status_v4.1",
-  "version": "1.0",
-  "status": "ALL_PASS_CANDIDATE",
-  "note": "唯一机器状态源。C0-C5 全部 PASS（Data-R 逐项签署）；正式 5 天时钟在 closure_freeze_record.json 由 Data-R 签署后启动。",
+  "version": "1.1",
+  "status": "READY_FOR_DATA_R_FREEZE",
+  "note": "唯一机器状态源。C0-C5 业务证据均被 Data-R 接受（content-accepted），但 Closure Freeze 尚未由 Data-R 签署：data_r_freeze_signed=false，formal_day1_started=false。C1 与 legacy_inventory_v4.json status=NOT_FROZEN 保持一致（LEGACY_SET_FROZEN 待 Data-R Freeze 时签署）。",
   "owner_signer": "Data-R",
+  "data_r_freeze_signed": false,
   "updated_at": "2026-09-05",
-  "rules_baseline": {"commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf", "note": "#32 v4.1 规则基线 merge"},
+  "rules_baseline_commit": "5f904092b383d6e4ab2657bd0c8757ed8c7fecdf",
   "closure_content_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
-  "evidence_commit_rule": "evidence_commit 指证据实际落盘 commit（本 closure_content_commit=737ef19 为证据最终版）；closure_head 见 closure_freeze_record.json",
+  "evidence_commit_rule": "evidence_commit 使用完整 40-char SHA；evidence_sha256 为各证据文件完整 SHA256",
   "gates": {
     "C0": {
       "status": "PASS",
       "evidence_path": "reports/independence_manifest.json",
-      "evidence_commit": "737ef19",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "8b9899c15a678109fe4866b03f4be9a8ff3c2682abf85d95d11048f29c58983e",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
       "blocker": null
     },
     "C1": {
-      "status": "PASS",
+      "status": "READY_FOR_LEGACY_SET_FROZEN",
       "evidence_path": "reports/legacy_inventory_v4_full.jsonl",
-      "evidence_commit": "737ef19",
-      "tool_source_commit": "f3cdd2a (P2-A #36 merged)",
-      "scan_repo_ref": "f3cdd2a",
-      "full_ledger_sha256": "541aa9d3b85b14b4... (见 legacy_inventory_v4.json)",
-      "reviewer": "gaoyizhe934",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "541aa9d3b85b14b4ff01354453a4c7b08acbd1c1e64e5cf1b81a7577d8836cf2",
+      "summary_sha256": "709848f571d8e482b03e276340e0193c655e4df57f95ff1d7919399aa8f27729",
+      "tool_source_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
+      "scan_repo_ref": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
+      "full_ledger_sha256": "541aa9d3b85b14b4ff01354453a4c7b08acbd1c1e64e5cf1b81a7577d8836cf2",
+      "reviewer": "gaoyizhe934 (content accepted)",
       "reviewed_at": "2026-09-05",
-      "blocker": null,
-      "note": "Data-R 复算一致：total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS (每组 IN_SCOPE==1, duplicate_of 可解析)"
+      "blocker": "LEGACY_SET_FROZEN 待 Data-R Freeze 签署（inventory status 现为 NOT_FROZEN，保持一致）",
+      "note": "Data-R 复算一致：total=895 IN_SCOPE=465 DUPLICATE=430 logical_groups=465; canonical assertion PASS"
     },
     "C2": {
       "status": "PASS",
       "evidence_path": "reports/seal_audit_v4.1.json",
-      "evidence_commit": "737ef19",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "aaa6277e58e942bfbf3d6f672bb8878141fb88c641a1bb578277a8608794fa65",
+      "revoke_sha256": "9a27775637bea3e9b9f7758426d56cd6d2c465638d9d0f612fa5a4166fdba88d",
+      "reseal_sha256": "8a2cec2078cf972683547de70cd29ed2408bd8df92b57de2b66c5bee3fd5e7e9",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
-      "blocker": null,
-      "note": "seal-v1 REVOKED (APPROVED_REVOKE)；暴露样本 DEV_REG_ONLY；新 seal 随正式5天 reseal"
+      "blocker": null
     },
     "C3": {
       "status": "PASS",
       "evidence_path": "reports/tooling_bootstrap_report.json",
-      "evidence_commit": "737ef19",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "76b67995e1150a19ccb7dc68f01f4d68147a599fb6b07d5c6fb74f53b82f5677",
+      "p2a_merged_commit": "f3cdd2aa4da52785c6086a2e9eaeadcf19f417c8",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
-      "blocker": null,
-      "note": "P2-A PR#36 APPROVED + merged (master f3cdd2a)；12 工具 + 单测 40+ 断言；Baseline Validation run 136 success"
+      "blocker": null
     },
     "C4": {
       "status": "PASS",
       "evidence_path": "reports/trial40_reuse_audit.json",
-      "evidence_commit": "737ef19",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "1f07931fa7353b650c654ad091dc36c1c259ec31a25fd1777c40ec908135dd39",
+      "leak_registry_sha256": "e172c43b34b56b7dc7c4187a9e35d3d2b1eac35d95b869b2d11f1bdb507ea507",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
-      "blocker": null,
-      "note": "data_r_decision=APPROVED_HISTORY_ONLY；40 条逐样本已入 leak registry (81 entries)"
+      "blocker": null
     },
     "C5": {
       "status": "PASS",
       "evidence_path": "reports/main_dependency_gate.json",
-      "evidence_commit": "737ef19",
+      "evidence_commit": "737ef190745646e75d7dc9c84d8160028e2db6cf",
+      "evidence_sha256": "4727d8c5e3e736022ffab3bd686305b982a7b1199a7b2c4d8d6db50579f4bf89",
       "reviewer": "gaoyizhe934",
       "reviewed_at": "2026-09-05",
-      "blocker": null,
-      "note": "依赖计划已登记=c5_status PASS；M1/M1-KB/M3=BLOCKED、M2=PENDING 保留；M1 PASS 前禁止 production business truth"
+      "blocker": null
     }
   },
   "summary": {
     "gates_total": 6,
-    "approved": 6,
-    "pending": 0,
-    "blocked": 0,
+    "content_accepted": 6,
+    "freeze_signed": 0,
     "formal_day1_started": false,
-    "note": "正式 5 天时钟待 Data-R 签署 closure_freeze_record.json 后启动"
+    "note": "业务证据 6/6 content-accepted；Data-R 签署 closure_freeze_record.json 后才进入 Freeze/D1"
   }
 }

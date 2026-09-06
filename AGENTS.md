@@ -29,11 +29,11 @@
 - **旧 PR#31 试标 40 条按 v4.1 C4 规则 = HISTORY_ONLY**，不复用为新正式 Calibration。
 
 ### v4.1 执行状态（2026-09-05 晚）
-- **Closure C0-C5 全 PASS（6/6），正式 5 天时钟未启动**（待 Data-R 签 `reports/closure_freeze_record.json`）。
+- **Closure 证据 6/6 content-accepted → READY_FOR_DATA_R_FREEZE**，正式 5 天时钟未启动（待 Data-R 签 `reports/closure_freeze_record.json`，formal_day1_started=false）。
 - **C0-C5 当前状态只由 `reports/closure_status_v4.1.json` 维护**（Data-R review §9 / R5 Blocking-6）；本文件不独立维护 PASS/PENDING 数字。
 - **Closure 证据落盘（closure_content_commit=737ef19，基于最新 master f3cdd2a 含 #34+#36）**：
-  - C0 `reports/independence_manifest.json`；C1 `reports/legacy_inventory_v4_full.jsonl`（**tool_source=f3cdd2a**，895：IN_SCOPE 465/DUP 430/465 组，canonical PASS）；C2 `reports/seal_audit_v4.1.json`（seal-v1 REVOKED）；C3 `reports/tooling_bootstrap_report.json`（P2-A #36 merged f3cdd2a）；C4 `reports/trial40_reuse_audit.json`（HISTORY_ONLY）+ leak registry（81 条）；C5 `reports/main_dependency_gate.json`（依赖已登记，M1/M3=BLOCKED）。
-  - 证据 commit 以 closure_status_v4.1.json / closure_freeze_record.json 为准，不在此硬编码。
+  - C0 `reports/independence_manifest.json`；C1 `reports/legacy_inventory_v4_full.jsonl`（**tool_source/scan=f3cdd2a**，895：IN_SCOPE 465/DUP 430/465 组，canonical PASS；inventory 仍 NOT_FROZEN，LEGACY_SET_FROZEN 待 Data-R Freeze）；C2 `reports/seal_audit_v4.1.json`（seal-v1 REVOKED）；C3 `reports/tooling_bootstrap_report.json`（P2-A #36 merged f3cdd2a）；C4 `reports/trial40_reuse_audit.json`（HISTORY_ONLY）+ leak registry（81 条）；C5 `reports/main_dependency_gate.json`（依赖已登记，M1/M3=BLOCKED）。
+  - 各 Gate evidence_path/commit(40-char)/SHA256 以 closure_status_v4.1.json / closure_freeze_record.json 为准。
 - **历史评论级声明（HISTORICAL_COMMENT_ONLY / NOT_HEAD_EVIDENCE）**：早期 PR comment 中「P01 N=265 已盘点」「P03 12 工具已完成 13/14 测试」「C1 250 IN_SCOPE」等均非当前 HEAD 证据，已由本分支真实账本/审计取代。
 - 已核验：B 的 inventory/tooling/preflight JSON 产出均为仓库相对路径（无本机绝对路径），跨仓可移植性 OK。
 - 当前工作分支：v4.1 执行 = PR#33 `feat/B-stage8-v4.1-closure`（已 rebase 到 post-#32 master；HEAD 不在此硬编码，以 `reports/closure_status_v4.1.json` 的 closure_head 为准）；docs = PR#32（已 merge）；P2-A = PR#36 `feat/B-stage8-p2a-tools`；Candidate-Prep = PR#34（已 merge）。
