@@ -62,6 +62,21 @@ def run_check_assert(root, src_rel, dst_rel, commit):
         p = os.path.join(root, dst_rel, rel)
         if not os.path.exists(p) or sha(nl(open(p, "rb").read())) != sha(text.encode("utf-8")):
             fails.append("disk %s mismatch" % rel)
+    # 6) contract single-source consistency（防双口径/旧 hash 残留）
+    cj = os.path.join(root, "reports", "v4.1_D1_A_A218_template_family_mapping_contract_draft_20260906.json")
+    if not os.path.exists(cj):
+        fails.append("contract json missing")
+    else:
+        c = json.load(open(cj, encoding="utf-8"))
+        for stale in ("mapping_rule", "mapping_basis", "mapping_payload"):
+            if stale in c:
+                fails.append("contract stale key present: %s" % stale)
+        if c.get("mapping_payload_file_sha256_lf") != r["manifest"]["mapping_payload_file_sha256_lf"]:
+            fails.append("contract mapping_payload_file_sha256_lf mismatch")
+        if c.get("mapping_authority", {}).get("sha256_lf") != r["manifest"]["mapping_authority"]["sha256_lf"]:
+            fails.append("contract mapping_authority sha mismatch")
+        if not c.get("approved") is False or c.get("status") != "DRAFT_FOR_R_REVIEW":
+            fails.append("contract must remain DRAFT_FOR_R_REVIEW/approved=false")
     return fails, r
 
 

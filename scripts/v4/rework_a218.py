@@ -64,9 +64,11 @@ def load_authority(root, commit):
     if auth.get("source_commit") != commit:
         raise SystemExit("authority source_commit mismatch")
     if auth.get("approved"):
-        raise SystemExit("authority must stay DRAFT_FOR_R_REVIEW")
-    fams = {}
+        raise SystemExit("authority must stay DRAFT_FOR_R_REVIEW (Data-R Review ID + exact HEAD is approval)")
+
+    # ---- fail-closed pin validation: scenario_specs ----
     spec_files = []
+    fams = {}
     for fn in SPEC_FILES:
         rel = "data/interim/candidates_v4/scenario_specs/" + fn
         b = git_bytes(root, commit, rel)
@@ -75,13 +77,40 @@ def load_authority(root, commit):
         for sc in spec.get("scenarios", []):
             if sc.get("scenario_id"):
                 fams[sc["scenario_id"]] = sc["scenario_family"]
+    pinned_specs = auth.get("pinned", {}).get("scenario_spec_files", [])
+    if len(pinned_specs) != len(spec_files) or any(a["file"] != b0["file"] or a["sha256_lf"] != b0["sha256_lf"]
+                                                   for a, b0 in zip(sorted(pinned_specs, key=lambda x: x["file"]),
+                                                                   sorted(spec_files, key=lambda x: x["file"]))):
+        raise SystemExit("authority pinned scenario_specs mismatch vs git show actual")
+
+    # ---- fail-closed pin validation: factory_config + historical plan ----
+    fc = auth.get("pinned", {}).get("factory_config", {})
+    fc_rel = fc.get("file")
+    fc_raw = git_bytes(root, commit, fc_rel)
+    if sha(nl(fc_raw)) != fc.get("sha256_lf"):
+        raise SystemExit("authority pinned factory_config sha mismatch")
+    fccfg = json.loads(nl(fc_raw).decode("utf-8"))
+    plan_by_task = {
+        "preference": set(fccfg["template_family_plan"].get("preference_families", [])),
+        "conflict": set(fccfg["template_family_plan"].get("conflict_families", [])),
+        "forgetting": set(fccfg["template_family_plan"].get("forgetting_families", [])),
+    }
+
     entries = {}
+    seen = set()
     for e in auth["entries"]:
         sid = e["scenario_spec_id"]
+        if sid in seen:
+            raise SystemExit("duplicate scenario_spec_id in authority: %s" % sid)
+        seen.add(sid)
         if fams.get(sid) != e["scenario_family"]:
             raise SystemExit("authority %s family mismatch vs pinned spec" % sid)
         if not e.get("current_template_family"):
             raise SystemExit("authority %s missing current_template_family" % sid)
+        task = "preference" if sid.startswith("OSPREF") else ("conflict" if sid.startswith("OSCONF") else "forgetting")
+        inplan = e["scenario_family"] in plan_by_task[task]
+        if e.get("in_factory_config_plan") != inplan:
+            raise SystemExit("authority %s in_factory_config_plan=%s inconsistent with pinned plan" % (sid, e.get("in_factory_config_plan")))
         entries[sid] = e
     if set(fams) != set(entries):
         raise SystemExit("authority must cover all pinned scenario_spec ids")
@@ -154,7 +183,9 @@ def compute(root, src_rel, dst_rel, commit):
         "source_files": src_meta,
         "input_manifest_payload_sha256": sha(input_payload.encode("utf-8")),
         "mapping_authority": {"file": AUTHORITY_FILE, "sha256_lf": auth_sha,
-                              "pinned": authobj.get("pinned")},
+                              "pinned": authobj.get("pinned"),
+                              "lifecycle": "file stays DRAFT_FOR_R_REVIEW; Data-R Review ID + exact HEAD is the approval authority; tool rejects approved=true" +
+                                          " (pin validation: scenario_specs+factory_config sha compared in code; duplicate scenario_spec_id rejected; in_factory_config_plan machine-checked)"},
         "mapping_payload_file_sha256_lf": sha(mp_text.encode("utf-8")),
         "output_files": [{"file": o["file"], "count": o["count"], "sha256_lf": o["sha256_lf"]} for o in outputs],
         "output_set_aggregate_sha256": sha(out_payload.encode("utf-8")),

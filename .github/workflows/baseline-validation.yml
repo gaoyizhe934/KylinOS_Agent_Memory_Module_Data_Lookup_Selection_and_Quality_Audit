@@ -45,8 +45,12 @@ jobs:
           W="$RUNNER_TEMP/a218_neg"
           git worktree add --detach "$W" HEAD >/dev/null
           cd "$W"
-          DST="data/interim/d1_candidates_A_20260906_rw"
-          for F in "$DST/preference_candidates.jsonl" "$DST/template_family_mapping_payload.json" "$DST/rework_manifest_20260906.json"; do
+          for F in \
+            "data/interim/d1_candidates_A_20260906_rw/preference_candidates.jsonl" \
+            "data/interim/d1_candidates_A_20260906_rw/template_family_mapping_payload.json" \
+            "data/interim/d1_candidates_A_20260906_rw/rework_manifest_20260906.json" \
+            "reports/v4.1_D1_A_A218_template_family_mapping_authority.json" ; do
+            git restore --source=HEAD -- "$F"
             cp "$F" "$F.orig"
             printf '#' >> "$F"
             if python scripts/v4/rework_a218.py --repo "$PWD" --check >/dev/null 2>&1; then
